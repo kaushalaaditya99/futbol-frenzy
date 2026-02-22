@@ -4,7 +4,7 @@ Create a phone application that allows coaches to perform drills for students an
 ## Installation
 
 ### Setting up Virtual Environment
-First, ensure that Python(version 3.10 and up) with Pip, npm package manager, and Node.js are installed\
+First, ensure that Python(version 3.12 and up) with Pip, npm package manager, and Node.js are installed\
 Using a python virtual environment is strongly recommended for running the backend server
 
 #### Open a terminal at the directory and run the following commands
