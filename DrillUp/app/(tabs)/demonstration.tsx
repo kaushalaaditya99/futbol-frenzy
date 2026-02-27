@@ -186,7 +186,8 @@ export default function Demonstration() {
                     >
                         <Text
                             style={{
-                                fontSize: 48
+                                fontSize: 48,
+                                marginBottom: 8
                             }}
                         >
                             📁
