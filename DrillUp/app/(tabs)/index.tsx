@@ -1,9 +1,19 @@
 import { Bell, ChevronDown, ChevronRight, Flame } from "lucide-react-native";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from 'expo-status-bar';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {ParamListBase, useNavigation} from '@react-navigation/native';
+import { router } from 'expo-router';
+
 
 export default function Home() {
+    const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+    
+    const navigate = (dest: string) => {
+        navigation.navigate(dest);
+    }
+
     return (
         <>
             <SafeAreaView
@@ -20,7 +30,6 @@ export default function Home() {
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "center",
-                        // justifyContent: "space-between",
                         paddingHorizontal: 24,
                         columnGap: 12
                     }}
@@ -316,130 +325,135 @@ export default function Home() {
                                     imageEmoji: "🎯"
                                 }
                             ].map((session, i) => (
-                                <View
+                                <Pressable
                                     key={i}
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        paddingVertical: 8,
-                                        paddingHorizontal: 8,
-                                        borderWidth: 1,
-                                        borderColor: "black",
-                                        borderStyle: "solid",
-                                        borderRadius: 6,
-                                        columnGap: 8
-                                    }}
+                                    onPress={() => router.push('/demonstration')}
                                 >
                                     <View
                                         style={{
-                                            width: 48,
-                                            height: 48,
-                                            borderRadius: 6,
-                                            backgroundColor: session["imageBackgroundColor"],
                                             display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center"
+                                            flexDirection: "row",
+                                            paddingVertical: 8,
+                                            paddingHorizontal: 8,
+                                            borderWidth: 1,
+                                            borderColor: "black",
+                                            borderStyle: "solid",
+                                            borderRadius: 6,
+                                            columnGap: 8
                                         }}
+                                        
                                     >
-                                        <Text
+                                        <View
                                             style={{
-                                                fontSize: 24
-                                            }}
-                                        >
-                                            {session["imageEmoji"]}
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            rowGap: 2
-                                        }}
-                                    >
-                                        <View    
-                                            style={{
+                                                width: 48,
+                                                height: 48,
+                                                borderRadius: 6,
+                                                backgroundColor: session["imageBackgroundColor"],
                                                 display: "flex",
-                                                flexDirection: "row",
-                                                justifyContent: "space-between"
+                                                alignItems: "center",
+                                                justifyContent: "center"
                                             }}
                                         >
-                                            <Text>
-                                                {session["name"]}
+                                            <Text
+                                                style={{
+                                                    fontSize: 24
+                                                }}
+                                            >
+                                                {session["imageEmoji"]}
                                             </Text>
-                                            {(session["isNew"] || session["isDue"]) &&
-                                                <View
-                                                    style={{
-                                                        display: "flex",
-                                                        justifyContent: "center",
-                                                        alignItems: "center",
-                                                        paddingVertical: 0,
-                                                        paddingHorizontal: 8,
-                                                        backgroundColor: session["isNew"] ? "lightgreen" : "pink",
-                                                        borderRadius: 100
-                                                    }}
-                                                >
-                                                    <Text
-                                                        style={{
-                                                            fontSize: 10,
-                                                            fontWeight: 600,
-                                                            color: session["isNew"] ? "green" : "red",
-                                                        }}
-                                                    >
-                                                        {session["isNew"] ? "NEW" : session["isDue"] ? "DUE" : ""}
-                                                    </Text>
-                                                </View>
-                                            }
                                         </View>
                                         <View
                                             style={{
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                alignItems: "center",
-                                                columnGap: 8
+                                                flex: 1,
+                                                rowGap: 2
                                             }}
                                         >
-                                            <Text
+                                            <View    
                                                 style={{
-                                                    fontSize: 12,
-                                                    color: "gray"
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                    justifyContent: "space-between"
                                                 }}
                                             >
-                                                {session["type"]}
-                                            </Text>
+                                                <Text>
+                                                    {session["name"]}
+                                                </Text>
+                                                {(session["isNew"] || session["isDue"]) &&
+                                                    <View
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent: "center",
+                                                            alignItems: "center",
+                                                            paddingVertical: 0,
+                                                            paddingHorizontal: 8,
+                                                            backgroundColor: session["isNew"] ? "lightgreen" : "pink",
+                                                            borderRadius: 100
+                                                        }}
+                                                    >
+                                                        <Text
+                                                            style={{
+                                                                fontSize: 10,
+                                                                fontWeight: 600,
+                                                                color: session["isNew"] ? "green" : "red",
+                                                            }}
+                                                        >
+                                                            {session["isNew"] ? "NEW" : session["isDue"] ? "DUE" : ""}
+                                                        </Text>
+                                                    </View>
+                                                }
+                                            </View>
                                             <View
                                                 style={{
-                                                    width: 3,
-                                                    height: 3,
-                                                    borderRadius: 100,
-                                                    backgroundColor: "gray"
-                                                }}
-                                            />
-                                            <Text
-                                                style={{
-                                                    fontSize: 12,
-                                                    color: "gray"
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                    alignItems: "center",
+                                                    columnGap: 8
                                                 }}
                                             >
-                                                {session["time"]}
-                                            </Text>
-                                            <View
-                                                style={{
-                                                    width: 3,
-                                                    height: 3,
-                                                    borderRadius: 100,
-                                                    backgroundColor: "gray"
-                                                }}
-                                            />
-                                            <Text
-                                                style={{
-                                                    fontSize: 12,
-                                                    color: "gray"
-                                                }}
-                                            >
-                                                {session["class"]}
-                                            </Text>
+                                                <Text
+                                                    style={{
+                                                        fontSize: 12,
+                                                        color: "gray"
+                                                    }}
+                                                >
+                                                    {session["type"]}
+                                                </Text>
+                                                <View
+                                                    style={{
+                                                        width: 3,
+                                                        height: 3,
+                                                        borderRadius: 100,
+                                                        backgroundColor: "gray"
+                                                    }}
+                                                />
+                                                <Text
+                                                    style={{
+                                                        fontSize: 12,
+                                                        color: "gray"
+                                                    }}
+                                                >
+                                                    {session["time"]}
+                                                </Text>
+                                                <View
+                                                    style={{
+                                                        width: 3,
+                                                        height: 3,
+                                                        borderRadius: 100,
+                                                        backgroundColor: "gray"
+                                                    }}
+                                                />
+                                                <Text
+                                                    style={{
+                                                        fontSize: 12,
+                                                        color: "gray"
+                                                    }}
+                                                >
+                                                    {session["class"]}
+                                                </Text>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
+                                </Pressable>
                             ))}
                             <View
                                 style={{
