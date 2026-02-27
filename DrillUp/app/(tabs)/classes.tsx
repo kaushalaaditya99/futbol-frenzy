@@ -170,6 +170,7 @@ export default function Classes() {
                         ].map((group, i) => (
                             <Pressable
                                 key={i}
+                                onPress={() => router.push('/class')}
                             >
                                 <View
                                     style={{

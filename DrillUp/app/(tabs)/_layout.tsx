@@ -135,6 +135,12 @@ export default function Layout() {
                     href: null,
                 }}
             />
+            <Tabs.Screen 
+                name="class" 
+                options={{ 
+                    href: null,
+                }}
+            />
     </Tabs>
   );
 }
