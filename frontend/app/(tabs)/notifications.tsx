@@ -1,10 +1,10 @@
 import { Text, View } from "react-native";
 
-export default function Sessions() {
+export default function Notifications() {
     return (
         <View>
             <Text>
-                Sessions
+                Hello
             </Text>
         </View>
     )

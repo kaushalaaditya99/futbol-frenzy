@@ -1,16 +1,25 @@
+import ThemedText from '@/components/ThemedText';
+import { colors } from '@/theme';
 import { Tabs } from 'expo-router';
-import { Calendar, ClipboardList, Cog, Home, Zap } from 'lucide-react-native';
-import { Text } from 'react-native';
+import { Bell, Calendar, ClipboardList, Cog, Home, Zap } from 'lucide-react-native';
+import { useState } from 'react';
+import { Text, View } from 'react-native';
 
 const ICON_SIZE = 20;
 
 export default function Layout() {
+    const [numNotifications, setNumNotifications] = useState(3);
+
     return (
         <Tabs
             screenOptions={{
                 headerShown: false,
                 tabBarLabelStyle: { 
-                    fontSize: 12 
+                    fontSize: 12
+                },
+                tabBarStyle: {
+                    borderTopWidth: 0,
+                    backgroundColor: "black",
                 }
             }}
         >
@@ -84,14 +93,46 @@ export default function Layout() {
                 }}
             />
             <Tabs.Screen 
-                name="sessions" 
+                name="notifications" 
                 options={{ 
-                    title: "Sessions",
+                    title: "Notifications",
                     tabBarIcon: ({color, size }) => (
-                        <Calendar
-                            size={ICON_SIZE}
-                            color={color}
-                        />
+                        <View
+                            style={{
+                                position: "relative"
+                            }}
+                        >
+                            <Bell
+                                size={ICON_SIZE}
+                                color={color}
+                            />
+                            <View
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: 14,
+                                    height: 14,
+                                    position: "absolute",
+                                    top: -5,
+                                    left: 9,
+                                    backgroundColor: colors.coreColors.primary,
+                                    borderRadius: 100
+                                }}
+                            >
+                                {numNotifications !== 0 &&
+                                    <ThemedText
+                                        style={{
+                                            fontSize: 9,
+                                            fontWeight: 700,
+                                            color: colors.schemes.light.onPrimary
+                                        }}
+                                    >
+                                        {numNotifications}
+                                    </ThemedText>
+                                }
+                            </View>
+                        </View>
                     ),
                     tabBarLabel: ({color, focused}) => (
                         <Text
@@ -101,30 +142,7 @@ export default function Layout() {
                                 color: color
                             }}
                         >
-                            Calendar
-                        </Text>
-                    )
-                }} 
-            />
-            <Tabs.Screen 
-                name="settings" 
-                options={{ 
-                    title: "Settings",
-                    tabBarIcon: ({color, size }) => (
-                        <Cog
-                            size={ICON_SIZE}
-                            color={color}
-                        />
-                    ),
-                    tabBarLabel: ({color, focused}) => (
-                        <Text
-                            style={{
-                                fontSize: 12,
-                                fontWeight: focused ? "600" : "500",
-                                color: color
-                            }}
-                        >
-                            Settings
+                            Notifications
                         </Text>
                     )
                 }} 
@@ -137,6 +155,12 @@ export default function Layout() {
             />
             <Tabs.Screen 
                 name="class" 
+                options={{ 
+                    href: null,
+                }}
+            />
+            <Tabs.Screen 
+                name="settings" 
                 options={{ 
                     href: null,
                 }}

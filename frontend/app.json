@@ -1,0 +1,94 @@
+{
+  "expo": {
+    "name": "DrillUp",
+    "slug": "DrillUp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "drillup",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "fonts": [
+        "./assets/fonts/Doto/Doto-Regular.ttf",
+        "./assets/fonts/Doto/Doto-Medium.ttf",
+        "./assets/fonts/Doto/Doto-Bold.ttf",
+        "./assets/fonts/Doto/Doto-SemiBold.ttf",
+        "./assets/fonts/Doto/Doto-Bold.ttf",
+        "./assets/fonts/Doto/Doto-ExtraBold.ttf",
+        "./assets/fonts/Doto/Doto-Black.ttf"
+      ]
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "fonts": [
+        {
+          "fontFamily": "Doto",
+          "fontDefinitions": [
+            {
+              "path": "./assets/fonts/Doto/Doto-Regular.ttf",
+              "weight": 400
+            },
+            {
+              "path": "./assets/fonts/Doto/Doto-Medium.ttf",
+              "weight": 500
+            },
+            {
+              "path": "./assets/fonts/Doto/Doto-Bold.ttf",
+              "weight": 600
+            },
+            {
+              "path": "./assets/fonts/Doto/Doto-SemiBold.ttf",
+              "weight": 700
+            },
+            {
+              "path": "./assets/fonts/Doto/Doto-Bold.ttf",
+              "weight": 800
+            },
+            {
+              "path": "./assets/fonts/Doto/Doto-ExtraBold.ttf",
+              "weight": 900
+            },
+            {
+              "path": "./assets/fonts/Doto/Doto-Black.ttf",
+              "weight": 1000
+            }
+          ]
+        }
+      ]
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      "expo-video",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
