@@ -26,6 +26,7 @@ export default function Layout() {
             <Tabs.Screen 
                 name="index" 
                 options={{ 
+                    headerShown: false,
                     title: "Home",
                     tabBarIcon: ({color, size }) => (
                         <Home
@@ -148,14 +149,9 @@ export default function Layout() {
                 }} 
             />
             <Tabs.Screen 
-                name="demonstration" 
-                options={{ 
-                    href: null,
-                }}
-            />
-            <Tabs.Screen 
                 name="class" 
                 options={{ 
+                    headerShown: false,
                     href: null,
                 }}
             />

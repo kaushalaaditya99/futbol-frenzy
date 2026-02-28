@@ -1,10 +1,6 @@
-import ButtonField from "@/components/ButtonField";
-import TextInputField from "@/components/TextInputField";
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import { Redirect } from "expo-router";
-import { Text, Touchable, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
 	const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();

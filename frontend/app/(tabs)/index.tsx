@@ -79,7 +79,7 @@ export default function Home() {
 
     const loadSessions = async () => {
         const studentID = 0;
-        const sessions = getSessions(studentID);
+        const sessions = await getSessions(studentID);
         setSessions(sessions);
     }
 

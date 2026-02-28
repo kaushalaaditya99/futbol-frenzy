@@ -473,5 +473,14 @@ export const shadow = {
             width: 0,
             height: 2
         }
+    },
+    lg: {
+        shadowColor: colors.schemes.light.shadow,
+        shadowOpacity: 0.075,
+        shadowRadius: 3,
+        shadowOffset: {
+            width: 0,
+            height: 4
+        }
     }
 }
