@@ -508,7 +508,7 @@ export default function Demonstration() {
                                     </ThemedText>
                                 </Button>
                             </View>
-                            {submissionPlayer.status === "idle" &&
+                            {!submissions[drillIndex]?.uri &&
                                 <View 
                                     style={{ 
                                         width: "auto", 
@@ -557,7 +557,7 @@ export default function Demonstration() {
                                     </ThemedText>
                                 </View>
                             }
-                            {(submissionPlayer.status === "loading" || submissionPlayer.status === "readyToPlay") &&
+                            {!!submissions[drillIndex]?.uri &&
                                 <VideoView 
                                     player={submissionPlayer}
                                     style={{ 
