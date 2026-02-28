@@ -5,10 +5,12 @@ import { colors, margin, padding } from "@/theme";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeftFromLine, Cog } from "lucide-react-native";
+import { useRouter } from "expo-router";
 
 export function SideBarLink(props: {icon: ReactNode; label: string; onPress: () => void; style?: {[k: string]: string|number}}) {
     return (
         <Pressable
+            onPress={props.onPress}
             style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -41,6 +43,7 @@ interface SideBarProps {
 }
 
 export default function SideBar(props: SideBarProps) {
+    const router = useRouter();
     return (
         <Animated.View
             style={[
@@ -119,7 +122,7 @@ export default function SideBar(props: SideBarProps) {
                             />
                         }
                         label="Settings"
-                        onPress={() => 0}
+                        onPress={() => router.push("/(tabs)/settings" as any)}
                     />
                     <SideBarLink
                         icon={
