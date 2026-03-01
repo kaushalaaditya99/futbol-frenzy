@@ -27,4 +27,6 @@ urlpatterns = [
     # The Router will define the paths that ultimately
     # allow us to access /api/drills and /api/enrollments.
     path('api/', include(api_router.urls)),
+    path('', views.home, name='test-home'),
+    path('get_presigned_url/', views.get_presigned_url, name='get_presigned_url'),
 ]
