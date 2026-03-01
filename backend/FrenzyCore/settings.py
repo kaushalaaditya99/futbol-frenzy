@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,7 +48,10 @@ INSTALLED_APPS = [
     "corsheaders",
 
     #connect app
-    "futbolfrenzy"
+    "futbolfrenzy",
+
+    #django-storages for s3
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -69,7 +76,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",
     "http://127.0.0.1:8081",
 ]
-
+CORS_ALLOW_ALL_ORIGINS = True #needed for it to work when I tested it, im propably just used the wrong address, probably unsafe to publish with it set to True
 ROOT_URLCONF = 'FrenzyCore.urls'
 
 TEMPLATES = [
@@ -130,6 +137,13 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = "direct-object-upload-seniorproj-s3"
+AWS_S3_REGION_NAME = "us-east-1"
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 
 
 # Static files (CSS, JavaScript, Images)
