@@ -13,15 +13,23 @@ import JoinClassButton1 from "@/components/Classes/JoinClassButton1";
 import CreateClassButton from "@/components/Classes/CreateClassButton";
 import JoinClassButton2 from "@/components/Classes/JoinClassButton2";
 import ModalJoinClass from "@/components/Classes/ModalJoinClass";
+import ModalCreateClass from "@/components/Classes/ModalCreateClass";
 
 export default function Classes() {
     const [classes, setClasses] = useState<Array<Class>>([]);
-    const [filteredClasses, setFilteredClasses] = useState<Array<Class>>([]);
-    const [showJoinClass, setShowJoinClass] = useState(false);
-    const [showCreateClass, setShowCreateClass] = useState(false);
+    
     const [search, setSearch] = useState("");
-    const [classCode, setClassCode] = useState("");
     const [sortDirection, setSortDirection] = useState<0|1|2>(0);
+    const [filteredClasses, setFilteredClasses] = useState<Array<Class>>([]);
+    
+    const [showJoinClass, setShowJoinClass] = useState(false);
+    const [classCode, setClassCode] = useState("");
+    
+    const [showCreateClass, setShowCreateClass] = useState(true);
+    const [className, setClassName] = useState("");
+    const [imageEmoji, setImageEmoji] = useState("");
+    const [imageBackgroundColor, setImageBackgroundColor] = useState("");
+
     const sideBar = useSideBar();
 
     useEffect(() => {
@@ -68,7 +76,7 @@ export default function Classes() {
     }
 
 
-    const addClass_ = async (classCode: string) => {
+    const joinClass_ = async (classCode: string) => {
         // The student's ID would be provided
         // elsewhere, but walk with me.
         const studentID = 0;
@@ -78,6 +86,11 @@ export default function Classes() {
             return true;
         }
         return false;
+    }
+
+    
+    const createClass_ = async () => {
+        return true;
     }
 
 
@@ -98,7 +111,19 @@ export default function Classes() {
                     classCode={classCode}
                     setClassCode={setClassCode}
                     setShowJoinClass={setShowJoinClass}
-                    onJoin={async () => addClass_(classCode)}
+                    onJoin={async () => joinClass_(classCode)}
+                />
+            }
+            {showCreateClass &&
+                <ModalCreateClass
+                    imageBackgroundColor={imageBackgroundColor}
+                    setImageBackgroundColor={setImageBackgroundColor}
+                    imageEmoji={imageEmoji}
+                    setImageEmoji={setImageEmoji}
+                    className={className}
+                    setClassName={setClassName}
+                    setShowCreateClass={setShowCreateClass}
+                    onCreate={createClass_}
                 />
             }
             <SafeAreaView
@@ -150,7 +175,7 @@ export default function Classes() {
                                 }}
                             >
                                 <CreateClassButton
-                                    onPress={() => setShowJoinClass(true)}
+                                    onPress={() => setShowCreateClass(true)}
                                 />
                                 <JoinClassButton2
                                     onPress={() => setShowJoinClass(true)}

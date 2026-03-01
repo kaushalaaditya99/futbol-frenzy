@@ -1,4 +1,6 @@
+import { colors } from "@/theme";
 import { Text, TextInput, View } from "react-native";
+import ThemedText from "./ThemedText";
 
 export interface TextInputFieldProps {
     label?: string;
@@ -21,26 +23,29 @@ export default function TextInputField(props: TextInputFieldProps) {
             }}
         >
             <View>
-                <Text
+                <ThemedText
                     style={{
-                        fontSize: 16,
-                        fontWeight: 400
+                        marginBottom: 2,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        letterSpacing: 0.1,
+                        color: colors.schemes.light.onSurfaceVariant
                     }}
                 >
                     {props.label}
-                </Text>
+                </ThemedText>
                 <TextInput
                     style={{
-                        fontSize: 16,
+                        fontSize: 14,
+                        fontFamily: "Inter_400Regular",
                         backgroundColor: "white",
                         width: "100%",
                         minWidth: "100%",
-                        minHeight: 44,
                         paddingVertical: 10,
                         paddingHorizontal: 10,
                         borderWidth: 1,
                         borderStyle: "solid",
-                        borderColor: "#000",
+                        borderColor: colors.schemes.light.outlineVariant,
                         borderRadius: 8,
                         shadowColor: "#000",
                         shadowOffset: { 

@@ -26,8 +26,6 @@ export default function ProgressBar(props: ProgressBarProps) {
                         flex: 1,
                         paddingVertical: padding.sm,
                         paddingHorizontal: padding.md,
-                        // 1. Selected -> Blue
-                        // 2. Submitted -> Green
                         backgroundColor: i === props.drillIndex ? colors.coreColors.primary : props.submittedDrills.findIndex(n => i === n) !== -1 ? "#3AB82C" : colors.palettes.neutral[0]
                     }}
                 >

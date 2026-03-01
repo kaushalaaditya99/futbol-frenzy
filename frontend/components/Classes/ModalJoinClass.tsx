@@ -1,5 +1,3 @@
-// Class Code
-// Enter
 import { Modal, Pressable, TextInput, TextInputChangeEvent, View } from "react-native";
 import ThemedText from "../ThemedText";
 import Button from "../Button";
@@ -82,12 +80,12 @@ export default function ModalJoinClass(props: ModalJoinClassProps) {
                         style={{
                             paddingTop: 12,
                             paddingBottom: 12,
-                            paddingHorizontal: 25,
+                            paddingHorizontal: 24,
                         }}
                     >
                         <ThemedText
                             style={{
-                                marginBottom: 2,
+                                marginBottom: 0,
                                 fontSize: 12,
                                 fontWeight: 500,
                                 letterSpacing: 0.2,
@@ -112,6 +110,7 @@ export default function ModalJoinClass(props: ModalJoinClassProps) {
                         onChangeText={(text) => props.setClassCode(text)}
                         keyboardType="number-pad"
                         style={{
+                            fontFamily: "Inter_700Bold",
                             marginHorizontal: 24,
                             marginBottom: 12,
                             paddingVertical: 12,
@@ -119,9 +118,9 @@ export default function ModalJoinClass(props: ModalJoinClassProps) {
                             borderWidth: 1,
                             borderColor: colors.schemes.light.outlineVariant,
                             borderRadius: 12,
-                            backgroundColor: colors.schemes.light.surfaceContainerHighest,
+                            backgroundColor: "white",
                             fontSize: 24,
-                            fontWeight: 600,
+                            textAlign: "center"
                         }}
                     />
                     <View
