@@ -3,11 +3,48 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
 import ButtonField from "@/components/ButtonField";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import { uploadVideo, getVideoUrl } from "@/services/cloud";
+import "expo-document-picker"
+import * as DocumentPicker from "expo-document-picker";
 
 export default function Demonstration() {
-    const player = useVideoPlayer(require('../../assets/videos/video.mp4'));
+     // usestate for the uploaded/retrieved video URL
+      const [videoSource, setVideoSource] = useState<string | null>(null);
+      const [isUploading, setIsUploading] = useState(false);
 
+      // Use remote URL if available, otherwise fall back to local asset
+      const player = useVideoPlayer(
+          videoSource || require('../../assets/videos/video.mp4')
+      );
+
+    // user taps the upload button, it opens the document picker, if a file is chosen, calls the backend
+    // flow in `services/cloud` to get a presigned URL and upload the
+    // selected video directly to S3.
+    const pickAndUpload = async () => {
+        try {
+            setIsUploading
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'video/*',
+            });
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const { uri } = result.assets[0];
+                const { videoUrl } = await uploadVideo(uri);
+                console.log('uploaded URL', videoUrl);
+                // TODO: you could set state here to display the video or
+                // a confirmation message.
+                //setVideoSource(videoUrl);
+            }
+        } catch (e) {
+            console.error('upload failed', e);
+        }
+    };
+    // Load a video from S3 by fileName (for testing retrieval, wont be like this in actual product)
+    const loadVideoFromS3 = (fileName: string) => {
+        const url = getVideoUrl(fileName);
+        console.log("Loading video from S3:", url);
+        setVideoSource(url);
+    };
     return (
         <SafeAreaView
             edges={["top"]}
@@ -79,6 +116,11 @@ export default function Demonstration() {
                             borderRadius: 8,
                         }}
                     />
+                    {videoSource && (
+                        <Text style={{ fontSize: 12, color: "gray" }}>
+                            Playing: S3 Video 
+                        </Text>
+                    )}
                 </View>
                 {/* Instructions */}
                 <View
@@ -198,7 +240,7 @@ export default function Demonstration() {
                                 fontWeight: 600
                             }}
                         >
-                            Tap to Upload Video
+                            {isUploading ? "Uploading..." : "Tap to Upload Video"}
                         </Text>
                         <View
                             style={{
@@ -270,6 +312,8 @@ export default function Demonstration() {
                             </Text>
                         </Pressable>
                         <Pressable
+                            onPress={pickAndUpload}
+                            disabled={isUploading}
                             style={{
                                 flex: 1,
                                 backgroundColor: "white",
@@ -282,7 +326,8 @@ export default function Demonstration() {
                                 flexDirection: "row",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                columnGap: 4
+                                columnGap: 4,
+                                opacity: isUploading ? 0.5 : 1
                             }}
                         >
                             <FolderOpen
@@ -327,5 +372,5 @@ export default function Demonstration() {
                 </View>
             </ScrollView>
         </SafeAreaView>
-    )
+    );
 }
