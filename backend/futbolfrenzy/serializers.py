@@ -11,7 +11,7 @@ class AccountSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'typeId']
         """
 
-class DrillSerializer(serializers.modelSerializer):
+class DrillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drill
         fields = ['id', 'drillName', 'coachID']
