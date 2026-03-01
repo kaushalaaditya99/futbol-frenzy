@@ -17,13 +17,15 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-
 from routers import router
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    path('futbolfrenzy/', include('futbolfrenzy.urls'))
-
-    #path('api/', include((router.urls, 'core_api'), namespace='core_api')),
+    # The paths defined in futbolfrenzy.urls
+    # are included here. Since the route in this
+    # path is an empty string, there'd be no prefix.
+    # If the route was 'futbolfrenzy/', you'd then
+    # access the routes like 'futbolfrenzy/api/...'
+    # instead of 'api/...'.
+    path('', include('futbolfrenzy.urls')),
 ]

@@ -45,3 +45,6 @@ Start the server using
 python manage.py runserver
 ```
 Login at `http://127.0.0.1:8000/admin/` using the new credentials
+
+#### Connecting the Back to the Front
+If you are using your phone to view the frontend, you will need to run python manage.py runserver 0.0.0.0:8000.

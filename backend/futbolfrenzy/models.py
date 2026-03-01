@@ -20,7 +20,8 @@ class Account(models.Model):
 class Drill(models.Model):
     # id
     drillName = models.CharField(max_length = 255) # listed as varchar
-    coachID = models.ForeignKey(User, on_delete=models.CASCADE)
+    # coachID = models.ForeignKey(User, on_delete=models.CASCADE)
+    coachID = models.CharField(max_length = 255)
 
     def __str__(self):
         return self.drillName

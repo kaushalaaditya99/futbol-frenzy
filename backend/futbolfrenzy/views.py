@@ -3,13 +3,11 @@ from .models import Drill, Enrollment
 from .serializers import DrillSerializer, EnrollmentSerializer
 from django.http import HttpResponse
 
-# Create your views here.
-
-
+# /home/
 def home(request):
-    context = {
-        'drills': Drill.objects.all()
-    }
-    return render (request, 'futbolfrenzy/home.html', context)
+    return HttpResponse('<h1>Home</h1>')
 
+# /test/
+def test(request):
+    return HttpResponse('<h1>Test</h1>')
 

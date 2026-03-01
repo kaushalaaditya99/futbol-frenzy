@@ -1,29 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
+import resolveEndpoint from '@/services/resolveEndpoint';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DrillScreen() {
+  console.log("Hello");
   const [drills, setDrills] = useState([]);
 
   useEffect(() => {
-    fetch('http://100.76.132.101/futbolfrenzy/drills/') // <-- replace with your IP
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setDrills(data);
-      })
-      .catch(error => console.error(error));
+    loadData();
   }, []);
 
+  const loadData = async () => {
+    const URL = resolveEndpoint("/api/drills");
+    const response = await fetch(URL);
+    const output = await response.json();
+    console.log(output);
+  }
+
   return (
-    <View>
+    <SafeAreaView>
       <FlatList
         data={drills}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => "Here"}
         renderItem={({ item }) => (
-          <Text>{item.drillName}</Text>
+          <Text>{JSON.stringify(item)}</Text>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

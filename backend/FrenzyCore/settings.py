@@ -25,8 +25,11 @@ SECRET_KEY = 'django-insecure-lz7&augwja#**)u2u9nsd%u%5x%s_hv0ld(fywlh4=mw#83_l=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# Added so that the mobile app can connect.
+# I think you'd put IP addresses here, but I don't
+# want anyone to have to deal with this so I'm just
+# gonna allow everything.
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -62,10 +65,11 @@ MIDDLEWARE = [
 
 
 #outlines allowed IP addresses for backend
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'FrenzyCore.urls'
 
