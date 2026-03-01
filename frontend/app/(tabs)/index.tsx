@@ -18,7 +18,7 @@ import { Calendar } from "react-native-calendars";
 import { getResults, Result } from "@/services/results";
 import ModalCalendar from "@/components/Home/ModalCalendar";
 import { useFocusEffect } from "expo-router";
-import SideBar from "@/components/SideBar";
+import SideBar from "@/components/SideBar/SideBar";
 
 const TODAY = new Date();
 const WEEK_START = new Date();

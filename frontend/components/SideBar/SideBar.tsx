@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { View, ImageBackground, Pressable } from "react-native"
-import ThemedText from "./ThemedText";
+import ThemedText from "@/components/ThemedText";
 import { colors, margin, padding } from "@/theme";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -69,7 +69,7 @@ export default function SideBar(props: SideBarProps) {
                     }}
                 >
                     <ImageBackground
-                        source={require('../assets/images/Pedri-11.jpg')}
+                        source={require('../../assets/images/Pedri-11.jpg')}
                         style={{
                             width: 48,
                             height: 48,

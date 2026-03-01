@@ -1,319 +1,188 @@
-import { router } from "expo-router";
-import { ArrowDownUp, Plus, Search } from "lucide-react-native";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import SearchBar from "@/components/Classes/SearchBar";
+import Header from "@/components/Header";
+import SideBar from "@/components/SideBar/SideBar";
+import useSideBar from "@/components/SideBar/useSideBar";
+import ThemedText from "@/components/ThemedText";
+import { joinClass, Class, getClasses } from "@/services/classes";
+import { colors } from "@/theme";
+import { Fragment, useEffect, useState } from "react";
+import { Dimensions, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CardClass from "@/components/Classes/CardClass";
+import JoinClassButton1 from "@/components/Classes/JoinClassButton1";
+import CreateClassButton from "@/components/Classes/CreateClassButton";
+import JoinClassButton2 from "@/components/Classes/JoinClassButton2";
+import ModalJoinClass from "@/components/Classes/ModalJoinClass";
 
 export default function Classes() {
+    const [classes, setClasses] = useState<Array<Class>>([]);
+    const [filteredClasses, setFilteredClasses] = useState<Array<Class>>([]);
+    const [showJoinClass, setShowJoinClass] = useState(false);
+    const [showCreateClass, setShowCreateClass] = useState(false);
+    const [search, setSearch] = useState("");
+    const [classCode, setClassCode] = useState("");
+    const [sortDirection, setSortDirection] = useState<0|1|2>(0);
+    const sideBar = useSideBar();
+
+    useEffect(() => {
+        loadClasses();
+    }, []);
+
+
+    useEffect(() => {
+        if (!showJoinClass)
+            setClassCode("");
+    }, [showJoinClass]);
+
+
+    // Search and Sort Classes
+    useEffect(() => {
+        let filteredClasses = [...classes];
+        
+        if (search) {
+            filteredClasses = filteredClasses.filter((class_) => {
+                return class_.name.toLowerCase().includes(search.toLowerCase());
+            });
+        }
+        
+        if (sortDirection) {
+            filteredClasses.sort((a, b) => {
+                if (sortDirection === 1)
+                    return a.name.localeCompare(b.name);
+                return b.name.localeCompare(a.name);
+            });
+        }
+
+        setFilteredClasses(filteredClasses);
+    }, [search, sortDirection, classes]);
+
+
+    const loadClasses = async () => {
+        // To whom does this ID belong to?
+        // A student or teacher?
+        const id = 0;
+        const role = "Student";
+        const classes = await getClasses(id, role);
+        setClasses(classes);
+        setFilteredClasses(classes);
+    }
+
+
+    const addClass_ = async (classCode: string) => {
+        // The student's ID would be provided
+        // elsewhere, but walk with me.
+        const studentID = 0;
+        if (await joinClass(classCode, studentID)) {
+            setShowJoinClass(false);
+            loadClasses();
+            return true;
+        }
+        return false;
+    }
+
+
     return (
-        <SafeAreaView
-            edges={["top"]}
+        <View
             style={{
                 flex: 1,
+                flexDirection: "row",
                 backgroundColor: "black"
             }}
         >
-            <View
+            <SideBar
+                targetWidth={sideBar.sideBarTargetWidth}
+                animatedExpandFromLeft={sideBar.animatedExpandFromLeft}
+            />
+            {showJoinClass &&
+                <ModalJoinClass
+                    classCode={classCode}
+                    setClassCode={setClassCode}
+                    setShowJoinClass={setShowJoinClass}
+                    onJoin={async () => addClass_(classCode)}
+                />
+            }
+            <SafeAreaView
+                edges={["top"]}
                 style={{
-                    backgroundColor: "black",
-                    height: 12 * 6,
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    paddingHorizontal: 24,
-                    columnGap: 12
+                    flex: 1,
+                    width: Dimensions.get('window').width,
+                    minWidth: Dimensions.get('window').width,
+                    backgroundColor: colors.palettes.neutral[0],
+                    position: "relative"
                 }}
             >
-                <View
+                <Header
+                    openSideBar={() => sideBar.setShowSideBar(true)}
+                />
+                <ScrollView
                     style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 100,
-                        backgroundColor: "white",
-                        position: "relative"
-                    }}
-                >
-                    <View
-                        style={{
-                            width: 12,
-                            height: 12,
-                            backgroundColor: "transparent",
-                            borderRadius: 100,
-                            position: "absolute",
-                            bottom: 0,
-                            right: 0
-                        }}
-                    />
-                </View>
-            </View>
-            <ScrollView
-                style={{
-                    backgroundColor: "white",
-                    paddingVertical: 24,
-                    paddingHorizontal: 24,
-                    display: "flex",
-                    rowGap: 24
-                }}
-            >
-                <View
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        marginBottom: 24
-                    }}
-                >
-                    <Text
-                        style={{
-                            fontSize: 18,
-                            fontWeight: 600
-                        }}
-                    >
-                        My Classes
-                    </Text>
-                    <View
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            columnGap: 4,
-                            paddingVertical: 2,
-                            paddingHorizontal: 8,
-                            borderWidth: 1,
-                            borderColor: "black",
-                            borderStyle: "solid",
-                            borderRadius: 4,
-                            backgroundColor: "black"
-                        }}
-                    >
-                        <Plus
-                            size={16}
-                            color="white"
-                        />
-                        <Text
-                            style={{
-                                fontSize: 12,
-                                fontWeight: 600,
-                                color: "white"
-                            }}
-                        >
-                            Add Class
-                        </Text>
-                        
-                    </View>
-                </View>
-                <View
-                    style={{
-                        borderWidth: 1,
-                        borderColor: "black",
-                        borderStyle: "solid",
-                        borderRadius: 8,
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginBottom: 24
-                    }}
-                >
-                    <View
-                        style={{
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
-                            borderRightWidth: 1,
-                            borderColor: "black",
-                            borderStyle: "solid"
-                        }}
-                    >
-                        <Search
-                            size={18}
-                        />
-                    </View>
-                    <TextInput
-                        style={{
-                            flex: 1,
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
-                            color: "black",
-                            
-                        }}
-                        placeholderTextColor="gray"
-                        placeholder="Search Classes..."
-                    />
-                    <View
-                        style={{
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
-                            borderLeftWidth: 1,
-                            borderColor: "black",
-                            borderStyle: "solid"
-                        }}
-                    >
-                        <ArrowDownUp
-                            size={18}
-                        />
-                    </View>
-                </View>
-                <View>
-                    {
-                        [
-                            {
-                                name: "U12 Boys A-Team",
-                                coach: "Martinez",
-                                numStudents: 18,
-                                imageEmoji: "⚽"
-                            },
-                            {
-                                name: "Chelsea FC",
-                                coach: "John",
-                                numStudents: 18,
-                                imageEmoji: "🏃"
-                            }
-                        ].map((group, i) => (
-                            <Pressable
-                                key={i}
-                                onPress={() => router.push('/class')}
-                            >
-                                <View
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        paddingVertical: 8,
-                                        paddingHorizontal: 8,
-                                        borderWidth: 1,
-                                        borderColor: "black",
-                                        borderStyle: "solid",
-                                        borderRadius: 6,
-                                        columnGap: 8,
-                                        marginBottom: 12
-                                    }}
-                                    
-                                >
-                                    <View
-                                        style={{
-                                            width: 48,
-                                            height: 48,
-                                            borderRadius: 6,
-                                            backgroundColor: "lightgray",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center"
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                fontSize: 24
-                                            }}
-                                        >
-                                            {group["imageEmoji"]}
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            rowGap: 2
-                                        }}
-                                    >
-                                        <View    
-                                            style={{
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                justifyContent: "space-between"
-                                            }}
-                                        >
-                                            <Text>
-                                                {group["name"]}
-                                            </Text>
-                                        </View>
-                                        <View
-                                            style={{
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                alignItems: "center",
-                                                columnGap: 8
-                                            }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    fontSize: 12,
-                                                    color: "gray"
-                                                }}
-                                            >
-                                                Coach {group["coach"]}
-                                            </Text>
-                                            <View
-                                                style={{
-                                                    width: 3,
-                                                    height: 3,
-                                                    borderRadius: 100,
-                                                    backgroundColor: "gray"
-                                                }}
-                                            />
-                                            <Text
-                                                style={{
-                                                    fontSize: 12,
-                                                    color: "gray"
-                                                }}
-                                            >
-                                                {group["numStudents"]} students
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </Pressable>
-                        ))
-                    }
-                </View>
-                <View
-                    style={{
-                        borderWidth: 1,
-                        borderColor: "black",
-                        borderStyle: "dashed",
-                        borderRadius: 8,
-                        paddingHorizontal: 24,
                         paddingVertical: 24,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginTop: 12
+                        paddingHorizontal: 24,
+                        backgroundColor: colors.schemes.light.surface,
                     }}
                 >
-                    <Text
-                        style={{
-                            fontSize: 48,
-                            marginBottom: 8
-                        }}
-                    >
-                        📎
-                    </Text>
-                    <Text
-                        style={{
-                            fontSize: 16,
-                            fontWeight: 600,
-                            marginBottom: 2
-                        }}
-                    >
-                        Join a Class
-                    </Text>
                     <View
                         style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            columnGap: 8
+                            rowGap: 12
                         }}
                     >
-                        <Text
+                        <View
                             style={{
-                                fontSize: 12,
-                                color: "gray",
-                                maxWidth: 200,
-                                textAlign: "center"
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between"
                             }}
                         >
-                            Enter a class code or scan a QR code from your coach
-                        </Text>
+                            <ThemedText
+                                style={{
+                                    fontSize: 18,
+                                    fontWeight: 500,
+                                    letterSpacing: -0.25
+                                }}
+                            >
+                                My Classes
+                            </ThemedText>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    columnGap: 8
+                                }}
+                            >
+                                <CreateClassButton
+                                    onPress={() => setShowJoinClass(true)}
+                                />
+                                <JoinClassButton2
+                                    onPress={() => setShowJoinClass(true)}
+                                />
+                            </View>
+                        </View>
+                        <SearchBar
+                            search={search}
+                            setSearch={setSearch}
+                            onSearch={() => null}
+                            sortDirection={sortDirection}
+                            setSortDirection={setSortDirection}
+                        />
                     </View>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                    <View
+                        style={{
+                            rowGap: 12
+                        }}
+                    >
+                        {filteredClasses.map((class_, i) => (
+                            <Fragment key={i}>
+                                <CardClass
+                                    {...class_}
+                                />
+                            </Fragment>
+                        ))}
+                    </View>
+                    <JoinClassButton1
+                        onPress={() => setShowJoinClass(true)}
+                    />
+                </ScrollView>
+            </SafeAreaView>
+        </View>
     )
 }

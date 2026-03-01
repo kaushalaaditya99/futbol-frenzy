@@ -28,8 +28,8 @@ export default function Header(props: HeaderProps) {
                 alignItems: "center",
                 flexDirection: "row",
                 backgroundColor: colors.palettes.neutral[0],
-                borderBottomWidth: 1,
-                borderColor: colors.schemes.light.outlineVariant
+                // borderBottomWidth: 1,
+                // borderColor: colors.schemes.light.outlineVariant
             }}
         >
             <View
