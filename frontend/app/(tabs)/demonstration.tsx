@@ -2,7 +2,7 @@ import { Camera, FolderOpen, MoveLeft } from "lucide-react-native";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
-//import ButtonField from "@/components/ButtonField";
+import ButtonField from "@/components/ButtonField";
 import { Fragment, useState } from "react";
 import { uploadVideo, getVideoUrl } from "@/services/cloud";
 import "expo-document-picker"
