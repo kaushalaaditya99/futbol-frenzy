@@ -29,7 +29,7 @@ export default function Home() {
     const [dateStart, setDateStart] = useState(WEEK_START);
     const [dateOffset, setDateOffset] = useState(TODAY.getDay());
     const [results, setResults] = useState<Array<Result>>([]);
-    const [sessions, setSessions] = useState<Array<Session>>([]);
+    const [sessions, setSessions] = useState<Session[]>([]);
     const [showCalendar, setShowCalendar] = useState(false);
     const [showSideBar, setShowSideBar] = useState(false);
 
@@ -79,8 +79,10 @@ export default function Home() {
 
     const loadSessions = async () => {
         const studentID = 0;
-        const sessions = getSessions(studentID);
-        setSessions(sessions);
+        const loadSessions = async () => {
+        const data = await getSessions(1);
+        setSessions(data);
+  };
     }
 
     const prevDay = () => {
