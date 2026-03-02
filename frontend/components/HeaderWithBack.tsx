@@ -25,6 +25,7 @@ export default function HeaderWithBack(props: HeaderWithBackProps) {
                 columnGap: padding.lg,
                 borderBottomWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
+                backgroundColor: colors.schemes.light.background,
                 ...props.containerStyle
             }}
         >

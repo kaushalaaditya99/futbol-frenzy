@@ -11,7 +11,6 @@ import NavigateDate from "@/components/Home/NavigateDate";
 import Week from "@/components/Home/Week";
 import CardSession from "@/components/Home/CardSession";
 import ViewAllButton from "@/components/Home/ViewAll";
-import ViewAll from "@/components/Home/ViewAll";
 import CardResult from "@/components/Home/CardResult";
 import { getSessions, Session } from "@/services/sessions";
 import { getResults, Result } from "@/services/results";
@@ -268,7 +267,7 @@ export default function Home() {
                                             />
                                         </Fragment>
                                     ))}
-                                    <ViewAll/>
+                                    <ViewAllButton/>
                                 </View>
                             </View>
                             <View

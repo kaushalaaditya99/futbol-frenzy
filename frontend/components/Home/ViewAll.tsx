@@ -1,12 +1,17 @@
 import { colors, padding, shadow } from "@/theme";
 import { LinearGradient } from "expo-linear-gradient";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import ThemedText from "../ThemedText";
 import { MoveRight } from "lucide-react-native";
 
-export default function ViewAll() {
+interface ViewAllButtonProps {
+    onPress?: () => void;
+}
+
+export default function ViewAllButton(props: ViewAllButtonProps) {
     return (
-        <View
+        <Pressable
+            onPress={props.onPress}
             style={{
                 padding: 1,
                 backgroundColor: "#2989ff",
@@ -44,7 +49,7 @@ export default function ViewAll() {
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "center",
-                        columnGap: padding.sm,
+                        columnGap: 6,
                         borderRadius: 8,
                         backgroundColor: colors.coreColors.primary,
                     }}
@@ -55,7 +60,6 @@ export default function ViewAll() {
                             color: colors.schemes.light.onPrimary,
                             fontSize: 14,
                             fontWeight: 500,
-                            letterSpacing: -0.1,
                             textAlign: "right",
                         }}
                     >
@@ -68,6 +72,6 @@ export default function ViewAll() {
                     />
                 </View>
             </LinearGradient>
-        </View>
+        </Pressable>
     )
 }

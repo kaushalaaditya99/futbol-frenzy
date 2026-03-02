@@ -5,7 +5,9 @@ import ThemedText from "../ThemedText";
 import { Session } from "@/services/sessions";
 import RowCardWrapper from "../RowCardWrapper";
 
-interface SessionProps extends Session {}
+interface SessionProps extends Session {
+    showTag?: boolean;
+}
 
 export default function CardSession(props: SessionProps) {
     return (
@@ -20,6 +22,7 @@ export default function CardSession(props: SessionProps) {
                 props.class,
             ]}
             titleTag={
+                props.showTag ?
                 <>
                     {(props["isNew"] || props["isDue"]) &&
                         <View
@@ -45,6 +48,7 @@ export default function CardSession(props: SessionProps) {
                         </View>
                     }
                 </>
+                : <></>
             }
             onPress={() => router.push('/demonstration')}
         />

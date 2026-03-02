@@ -9,8 +9,9 @@ interface ButtonProps {
     inBetweenStyle?: StyleProp<ViewStyle>;
     innerStyle?: StyleProp<ViewStyle>;
     onPress?: () => void;
-    borderColor?: string;
     tintColor?: string;
+    tintUpsideDown?: boolean;
+    borderColor?: string;
     backgroundColor?: string;
 }
 
@@ -19,6 +20,11 @@ export const buttonThemes: {[k: string]: {borderColor: string; tintColor: string
         borderColor: "black",
         tintColor: "#646464f0",
         backgroundColor: "black"
+    },
+    "white": {
+        borderColor: colors.schemes.light.outlineVariant,
+        tintColor: "#efefef",
+        backgroundColor: "white"
     },
     "disabled": {
         borderColor: "gray",
@@ -51,11 +57,11 @@ export default function Button(props: ButtonProps) {
                 ]}
                 start={{ 
                     x: 0, 
-                    y: 0 
+                    y: props.tintUpsideDown ? 1 : 0
                 }}
                 end={{ 
                     x: 0, 
-                    y: 1 
+                    y: props.tintUpsideDown ? 0 : 1
                 }}
                 style={{
                     padding: 1,

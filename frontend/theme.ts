@@ -454,6 +454,8 @@ export const ZERO_SIZING: Sizing = {
 };
 
 export const margin: Sizing = Object.assign({}, ZERO_SIZING, {
+    "3xs": 8,
+    "2xs": 12,
     xs: 20,
     sm: 24,
     md: 28,
