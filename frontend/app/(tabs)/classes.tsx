@@ -6,31 +6,21 @@ import ThemedText from "@/components/ThemedText";
 import { joinClass, Class, getClasses } from "@/services/classes";
 import { colors } from "@/theme";
 import { Fragment, useEffect, useState } from "react";
-import { Dimensions, ScrollView, View } from "react-native";
+import { Dimensions, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CardClass from "@/components/Classes/CardClass";
-import JoinClassButton1 from "@/components/Classes/JoinClassButton1";
+import MissingClass from "@/components/Classes/MissingClass";
 import CreateClassButton from "@/components/Classes/CreateClassButton";
-import JoinClassButton2 from "@/components/Classes/JoinClassButton2";
-import ModalJoinClass from "@/components/Classes/ModalJoinClass";
-import ModalCreateClass from "@/components/Classes/ModalCreateClass";
+import JoinClassButton from "@/components/Classes/JoinClassButton";
+import { router } from "expo-router";
 
 export default function Classes() {
     const [classes, setClasses] = useState<Array<Class>>([]);
-    
     const [search, setSearch] = useState("");
     const [sortDirection, setSortDirection] = useState<0|1|2>(0);
     const [filteredClasses, setFilteredClasses] = useState<Array<Class>>([]);
-    
-    const [showJoinClass, setShowJoinClass] = useState(false);
-    const [classCode, setClassCode] = useState("");
-    
-    const [showCreateClass, setShowCreateClass] = useState(true);
-    const [className, setClassName] = useState("");
-    const [imageEmoji, setImageEmoji] = useState("");
-    const [imageBackgroundColor, setImageBackgroundColor] = useState("");
-
     const sideBar = useSideBar();
+
 
     useEffect(() => {
         loadClasses();
@@ -38,59 +28,38 @@ export default function Classes() {
 
 
     useEffect(() => {
-        if (!showJoinClass)
-            setClassCode("");
-    }, [showJoinClass]);
-
-
-    // Search and Sort Classes
-    useEffect(() => {
-        let filteredClasses = [...classes];
+        let classesFiltered = [...classes];
         
         if (search) {
-            filteredClasses = filteredClasses.filter((class_) => {
-                return class_.name.toLowerCase().includes(search.toLowerCase());
+            const searchLowerCase = search.toLowerCase();
+            classesFiltered = classesFiltered.filter((class_) => {
+                const classNameLower = class_.name.toLowerCase();
+                const match = classNameLower.includes(searchLowerCase)
+                return match;
             });
         }
         
         if (sortDirection) {
-            filteredClasses.sort((a, b) => {
+            classesFiltered.sort((a, b) => {
                 if (sortDirection === 1)
                     return a.name.localeCompare(b.name);
                 return b.name.localeCompare(a.name);
             });
         }
 
-        setFilteredClasses(filteredClasses);
+        setFilteredClasses(classesFiltered);
     }, [search, sortDirection, classes]);
 
 
     const loadClasses = async () => {
         // To whom does this ID belong to?
         // A student or teacher?
+        // Does this differentiation matter in the DB?
         const id = 0;
         const role = "Student";
         const classes = await getClasses(id, role);
         setClasses(classes);
         setFilteredClasses(classes);
-    }
-
-
-    const joinClass_ = async (classCode: string) => {
-        // The student's ID would be provided
-        // elsewhere, but walk with me.
-        const studentID = 0;
-        if (await joinClass(classCode, studentID)) {
-            setShowJoinClass(false);
-            loadClasses();
-            return true;
-        }
-        return false;
-    }
-
-    
-    const createClass_ = async () => {
-        return true;
     }
 
 
@@ -106,36 +75,30 @@ export default function Classes() {
                 targetWidth={sideBar.sideBarTargetWidth}
                 animatedExpandFromLeft={sideBar.animatedExpandFromLeft}
             />
-            {showJoinClass &&
-                <ModalJoinClass
-                    classCode={classCode}
-                    setClassCode={setClassCode}
-                    setShowJoinClass={setShowJoinClass}
-                    onJoin={async () => joinClass_(classCode)}
-                />
-            }
-            {showCreateClass &&
-                <ModalCreateClass
-                    imageBackgroundColor={imageBackgroundColor}
-                    setImageBackgroundColor={setImageBackgroundColor}
-                    imageEmoji={imageEmoji}
-                    setImageEmoji={setImageEmoji}
-                    className={className}
-                    setClassName={setClassName}
-                    setShowCreateClass={setShowCreateClass}
-                    onCreate={createClass_}
-                />
-            }
             <SafeAreaView
                 edges={["top"]}
                 style={{
                     flex: 1,
                     width: Dimensions.get('window').width,
                     minWidth: Dimensions.get('window').width,
-                    backgroundColor: colors.palettes.neutral[0],
+                    backgroundColor: colors.schemes.light.background,
                     position: "relative"
                 }}
             >
+                {sideBar.showSideBar &&
+                    <Pressable
+                        onPress={() => sideBar.setShowSideBar(false)}
+                        style={{
+                            position: "absolute",
+                            zIndex: 100,
+                            height: Dimensions.get('window').height,
+                            minHeight: Dimensions.get('window').height,
+                            width: Dimensions.get('window').width,
+                            minWidth: Dimensions.get('window').width,
+                            backgroundColor: "#000000D0"
+                        }}
+                    />
+                }
                 <Header
                     openSideBar={() => sideBar.setShowSideBar(true)}
                 />
@@ -175,10 +138,10 @@ export default function Classes() {
                                 }}
                             >
                                 <CreateClassButton
-                                    onPress={() => setShowCreateClass(true)}
+                                    onPress={() => router.push("/createClass")}
                                 />
-                                <JoinClassButton2
-                                    onPress={() => setShowJoinClass(true)}
+                                <JoinClassButton
+                                    onPress={() => router.push("/joinClass")}
                                 />
                             </View>
                         </View>
@@ -203,8 +166,10 @@ export default function Classes() {
                             </Fragment>
                         ))}
                     </View>
-                    <JoinClassButton1
-                        onPress={() => setShowJoinClass(true)}
+                    <MissingClass
+                        onPress={() => {
+                            router.push("/joinClass");
+                        }}
                     />
                 </ScrollView>
             </SafeAreaView>

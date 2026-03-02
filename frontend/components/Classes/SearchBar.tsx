@@ -1,4 +1,4 @@
-import { colors, shadow } from "@/theme";
+import { colors, margin, shadow } from "@/theme";
 import { ArrowDownUp, Search } from "lucide-react-native";
 import { Pressable, TextInput, View } from "react-native";
 
@@ -17,7 +17,7 @@ export default function SearchBar(props: SearchProps) {
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                marginBottom: 24,
+                marginBottom: margin.sm,
                 borderWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
                 borderStyle: "solid",
@@ -34,7 +34,7 @@ export default function SearchBar(props: SearchProps) {
                     paddingVertical: 8,
                     paddingHorizontal: 12,
                     color: "black",
-                    fontFamily: "Inter_400Regular"
+                    fontFamily: "Arimo-Regular"
                 }}
                 placeholderTextColor={colors.schemes.light.onSurfaceVariant}
                 placeholder="Search Classes..."

@@ -1,7 +1,7 @@
 import { Drill } from "@/services/sessions";
 import { Pressable, View } from "react-native";
 import ThemedText from "../ThemedText";
-import { colors, padding } from "@/theme";
+import { colors, fontSize, padding } from "@/theme";
 
 interface ProgressBarProps {
     drills: Array<Drill>;
@@ -31,6 +31,7 @@ export default function ProgressBar(props: ProgressBarProps) {
                 >
                     <ThemedText
                         style={{
+                            fontSize: fontSize.base,
                             fontWeight: 500,
                             color: colors.schemes.light.onPrimary,
                             textAlign: "center",

@@ -1,32 +1,45 @@
-import { colors, padding, shadow } from "@/theme";
+import { borderRadius, colors, padding, shadow } from "@/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { ReactNode } from "react";
 
 interface ButtonProps {
     children: ReactNode;
-    style1?: StyleProp<ViewStyle>;
-    style2?: StyleProp<ViewStyle>;
-    style3?: StyleProp<ViewStyle>;
+    outerStyle?: StyleProp<ViewStyle>;
+    inBetweenStyle?: StyleProp<ViewStyle>;
+    innerStyle?: StyleProp<ViewStyle>;
     onPress?: () => void;
     borderColor?: string;
     tintColor?: string;
     backgroundColor?: string;
 }
 
+export const buttonThemes: {[k: string]: {borderColor: string; tintColor: string; backgroundColor: string}} = {
+    "black": {
+        borderColor: "black",
+        tintColor: "#646464f0",
+        backgroundColor: "black"
+    },
+    "disabled": {
+        borderColor: "gray",
+        tintColor: "#ffffffad",
+        backgroundColor: "gray"
+    }
+}
+
 export default function Button(props: ButtonProps) {
-    const flatStyle1 = StyleSheet.flatten(props.style1);
-    const flatStyle2 = StyleSheet.flatten(props.style2);
-    const flatStyle3 = StyleSheet.flatten(props.style3);
+    const flatStyle1 = StyleSheet.flatten(props.outerStyle);
+    const flatStyle2 = StyleSheet.flatten(props.inBetweenStyle);
+    const flatStyle3 = StyleSheet.flatten(props.innerStyle);
 
     return (
         <Pressable
             onPress={props.onPress}
             style={{
-                flex: 1,
+                alignSelf: "flex-start",
                 padding: 1,
                 backgroundColor: props.borderColor || "#2989FF",
-                borderRadius: 10,
+                borderRadius: borderRadius.base,
                 ...shadow.md,
                 ...flatStyle1,
             }}
@@ -50,13 +63,12 @@ export default function Button(props: ButtonProps) {
                     flexDirection: "row",
                     alignItems: "center",
                     columnGap: padding.sm,
-                    borderRadius: 10,
+                    borderRadius: borderRadius.base - 1,
                     ...flatStyle2,
                 }}
             >
                 <View
                     style={{
-                        flex: 1,
                         paddingVertical: padding.lg,
                         paddingHorizontal: padding.lg,
                         display: "flex",
@@ -64,7 +76,7 @@ export default function Button(props: ButtonProps) {
                         alignItems: "center",
                         justifyContent: "center",
                         columnGap: padding.sm,
-                        borderRadius: 8,
+                        borderRadius: borderRadius.base - 2,
                         backgroundColor: props.backgroundColor || colors.coreColors.primary,
                         ...flatStyle3
                     }}

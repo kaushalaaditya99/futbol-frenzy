@@ -113,13 +113,13 @@ export default function CreateAccount() {
                 >
                     <TextInputField
                         label="First Name"
-                        style={{
+                        containerStyle={{
                             flex: 0.5
                         }}
                     />
                     <TextInputField
                         label="Last Name"
-                        style={{
+                        containerStyle={{
                             flex: 0.5
                         }}
                     />

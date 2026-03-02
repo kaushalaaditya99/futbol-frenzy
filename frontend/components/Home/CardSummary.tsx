@@ -1,4 +1,4 @@
-import { colors, shadow } from "@/theme";
+import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "@/theme";
 import { View } from "react-native";
 import { ReactNode } from "react";
 import ThemedText from "../ThemedText";
@@ -8,14 +8,14 @@ export default function CardSummary(props: {k: string; v1?: ReactNode; v2: strin
         <View
             style={{
                 flex: 1,
-                paddingVertical: 12,
-                paddingHorizontal: 12,
-                backgroundColor: colors.schemes.light.surfaceContainerLowest,
+                paddingVertical: padding.lg,
+                paddingHorizontal: padding.lg,
                 borderWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
                 borderStyle: "solid",
-                borderRadius: 12,
-                ...shadow.md
+                borderRadius: borderRadius.base,
+                backgroundColor: colors.schemes.light.surfaceContainerLowest,
+                ...shadow.sm
             }}
         >
             <View
@@ -24,14 +24,14 @@ export default function CardSummary(props: {k: string; v1?: ReactNode; v2: strin
                     flexDirection: "row",
                     justifyContent: "center",
                     alignItems: "center",
-                    columnGap: 4
+                    columnGap: padding.sm
                 }}
             >
                 {props.v1}
                 <ThemedText
                     style={{
                         fontWeight: 500,
-                        fontSize: 16,
+                        fontSize: fontSize.base,
                         color: colors.coreColors.primary
                     }}
                 >
@@ -41,8 +41,8 @@ export default function CardSummary(props: {k: string; v1?: ReactNode; v2: strin
             <ThemedText
                 style={{
                     fontWeight: 500,
-                    letterSpacing: 0.1,
-                    fontSize: 12,
+                    letterSpacing: letterSpacing.lg,
+                    fontSize: fontSize.sm,
                     textAlign: "center",
                     color: colors.schemes.light.onSurfaceVariant,
                 }}

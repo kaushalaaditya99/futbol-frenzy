@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { View, ImageBackground, Pressable } from "react-native"
 import ThemedText from "@/components/ThemedText";
-import { colors, margin, padding } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeftFromLine, Cog } from "lucide-react-native";
@@ -13,7 +13,7 @@ export function SideBarLink(props: {icon: ReactNode; label: string; onPress: () 
                 flexDirection: "row",
                 alignItems: "center",
                 columnGap: padding.md,
-                paddingVertical: margin.xs,
+                paddingVertical: padding.xl,
                 paddingHorizontal: margin.sm,
                 ...props.style
             }}
@@ -21,10 +21,10 @@ export function SideBarLink(props: {icon: ReactNode; label: string; onPress: () 
             {props.icon}
             <ThemedText
                 style={{
-                    fontSize: 14,
+                    fontSize: fontSize.base,
                     fontWeight: 500,
-                    letterSpacing: 0.1,
-                    color: colors.schemes.light.onPrimary
+                    letterSpacing: letterSpacing.base,
+                    color: colors.schemes.light.onSurface
                 }}
             >
                 {props.label}
@@ -46,7 +46,7 @@ export default function SideBar(props: SideBarProps) {
             style={[
                 {
                     flex: 1,
-                    backgroundColor: colors.palettes.neutral[0],
+                    backgroundColor: colors.schemes.light.background,
                 },
                 props.animatedExpandFromLeft
             ]}
@@ -62,7 +62,7 @@ export default function SideBar(props: SideBarProps) {
                 <View
                     style={{
                         borderBottomWidth: 1,
-                        borderColor: "#FFFFFF20",
+                        borderColor: colors.schemes.light.outlineVariant,
                         paddingVertical: margin.sm,
                         paddingHorizontal: margin.sm,
                         rowGap: padding.lg
@@ -85,20 +85,20 @@ export default function SideBar(props: SideBarProps) {
                     >
                         <ThemedText
                             style={{
-                                fontSize: 14,
+                                fontSize: fontSize.md,
                                 fontWeight: 500,
-                                letterSpacing: 0.1,
-                                color: colors.schemes.dark.onSurfaceVariant,
+                                letterSpacing: letterSpacing.lg,
+                                color: colors.schemes.light.onSurfaceVariant,
                             }}
                         >
                             Good Morning,
                         </ThemedText>
                         <ThemedText
                             style={{
-                                fontSize: 18,
-                                fontWeight: 500,
-                                letterSpacing: -0.1,
-                                color: colors.schemes.light.onPrimary
+                                fontSize: fontSize.lg,
+                                fontWeight: 600,
+                                letterSpacing: letterSpacing.sm,
+                                color: colors.schemes.light.onSurface
                             }}
                         >
                             Alex Rivera
@@ -108,14 +108,14 @@ export default function SideBar(props: SideBarProps) {
                 <View
                     style={{
                         borderTopWidth: 1,
-                        borderColor: "#FFFFFF20"
+                        borderColor: colors.schemes.light.outlineVariant
                     }}
                 >
                     <SideBarLink
                         icon={
                             <Cog
-                                size={16}
-                                color={colors.schemes.light.onPrimary}
+                                size={18}
+                                color={colors.schemes.light.onSurfaceVariant}
                             />
                         }
                         label="Settings"
@@ -124,15 +124,14 @@ export default function SideBar(props: SideBarProps) {
                     <SideBarLink
                         icon={
                             <ArrowLeftFromLine
-                                size={16}
-                                color={colors.schemes.light.onPrimary}
+                                size={18}
+                                color={colors.schemes.light.onSurfaceVariant}
                             />
                         }
                         label="Log Out"
                         style={{
                             borderTopWidth: 1,
-                            borderBottomWidth: 1,
-                            borderColor: "#FFFFFF20"
+                            borderColor: colors.schemes.light.outlineVariant
                         }}
                         onPress={() => 0}
                     />

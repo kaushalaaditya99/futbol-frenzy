@@ -12,13 +12,14 @@ export interface Session {
     id: number;
     name: string;
     type: string;
-    time: number;
+    durationInMins: number;
     class: string;
+    drills: Array<Drill>;
     isNew: boolean;
     isDue: boolean;
     imageBackgroundColor: string;
-    imageEmoji: string;
-    drills: Array<Drill>;
+    imageTextColor?: string;
+    imageText: string;
 }
 
 export async function getSessions(studentID: number): Promise<Array<Session>> {
@@ -31,36 +32,36 @@ export async function getSessions(studentID: number): Promise<Array<Session>> {
             id: 0,
             name: "Cone Dribbling",
             type: "Ball Control",
-            time: 5,
+            durationInMins: 5,
             class: "U12 Boys",
             isNew: true,
             isDue: false,
             imageBackgroundColor: "#1C1C1C",
-            imageEmoji: "🏃‍♂️",
+            imageText: "🏃‍♂️",
             drills: []
         },
         {
             id: 1,
             name: "Wall Pass & Receive",
             type: "Passing",
-            time: 8,
+            durationInMins: 8,
             class: "U12 Boys",
             isNew: true,
             isDue: false,
             imageBackgroundColor: "#000",
-            imageEmoji: "⚽",
+            imageText: "⚽",
             drills: []
         },
         {
             id: 2,
             name: "Shooting Accuracy",
             type: "Shooting",
-            time: 10,
+            durationInMins: 10,
             class: "U12 Boys",
             isNew: false,
             isDue: true,
             imageBackgroundColor: "#e9e9e9",
-            imageEmoji: "🥅",
+            imageText: "🥅",
             drills: []
         }
     ];
@@ -72,48 +73,48 @@ export async function getSession(sessionID: number, sestudentID: number): Promis
             id: 0,
             name: "Cone Dribbling",
             type: "Ball Control",
-            time: 5,
+            durationInMins: 5,
             class: "U12 Boys",
             isNew: true,
             isDue: false,
             imageBackgroundColor: "#1C1C1C",
-            imageEmoji: "🏃‍♂️",
+            imageText: "🏃‍♂️",
             drills: []
         },
         {
             id: 1,
             name: "Wall Pass & Receive",
             type: "Passing",
-            time: 8,
+            durationInMins: 8,
             class: "U12 Boys",
             isNew: true,
             isDue: false,
             imageBackgroundColor: "#000",
-            imageEmoji: "⚽",
+            imageText: "⚽",
             drills: []
         },
         {
             id: 2,
             name: "Shooting Accuracy",
             type: "Shooting",
-            time: 10,
+            durationInMins: 10,
             class: "U12 Boys",
             isNew: false,
             isDue: true,
             imageBackgroundColor: "#e9e9e9",
-            imageEmoji: "🥅",
+            imageText: "🥅",
             drills: []
         },
         {
             id: 3,
             name: "Passing & Movement",
             type: "Passing",
-            time: 60,
+            durationInMins: 60,
             class: "U12 Boys",
             isNew: false,
             isDue: true,
             imageBackgroundColor: "#e9e9e9",
-            imageEmoji: "🙂",
+            imageText: "🙂",
             drills: [
                 {
                     id: 0,

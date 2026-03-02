@@ -2,7 +2,7 @@ import { Camera, Check, FolderOpen, MoveLeft, MoveRight, NotepadText, Sparkle } 
 import { ActivityIndicator, Dimensions, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { colors, padding, shadow } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
 import ThemedText from "@/components/ThemedText";
 import { useEffect, useState } from "react";
 import { Drill, getSession, Session, submitSessionForGrading } from "@/services/sessions";
@@ -13,7 +13,8 @@ import { router } from "expo-router";
 import { Analysis, getAnalysis } from "@/services/analysis";
 import { BlurView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
-import Button from "@/components/Button";
+import Button, { buttonThemes } from "@/components/Button";
+import ButtonBack from "@/components/ButtonBack";
 
 // Example
 // This is just a workaround so you can see the functionality.
@@ -216,7 +217,6 @@ export default function Demonstration() {
         // values here.
         const sessionID = 0;
         const studentID = 2;
-
         const drills = Object.fromEntries(Object.entries(submissions).map(([k, v]) => [k, v.uri]));
         
         // Error (Missing Video)
@@ -276,27 +276,12 @@ export default function Demonstration() {
                             flexDirection: "row",
                             alignItems: "center",
                             columnGap: 12,
-                            backgroundColor: "#000000F0"
+                            backgroundColor: "#ffffff75"
                         }}
                     >
-                        <Pressable
-                            onPress={() => router.back()}
-                            style={{
-                                width: 36,
-                                height: 36,
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                backgroundColor: "#000000FF",
-                                borderRadius: 100
-                            }}
-                        >
-                            <MoveLeft
-                                size={20}
-                                color={colors.schemes.light.onPrimary}
-                            />
-                        </Pressable>
+                        <ButtonBack
+                            onBack={() => router.back()}
+                        />
                     </BlurView>
                     <VideoView 
                         player={drillPlayer}
@@ -331,20 +316,21 @@ export default function Demonstration() {
                         />
                         <View
                             style={{
+                                paddingTop: margin.sm,
                                 borderBottomWidth: 1,
                                 borderColor: colors.schemes.light.outlineVariant,
                                 borderStyle: "solid",
-                                paddingTop: 12,
-                                backgroundColor: colors.schemes.light.surface
+                                backgroundColor: colors.schemes.light.background
                             }}
                         >
                             <View>
                                 <ThemedText
                                     style={{
                                         paddingHorizontal: 12,
+                                        paddingBottom: padding.xs,
                                         fontSize: 12,
-                                        fontWeight: 500,
-                                        letterSpacing: 0.1,
+                                        fontWeight: 600,
+                                        letterSpacing: letterSpacing.xl,
                                         color: colors.schemes.light.onSurfaceVariant
                                     }}
                                 >
@@ -353,9 +339,10 @@ export default function Demonstration() {
                                 <ThemedText
                                     style={{
                                         paddingHorizontal: 12,
+                                        paddingBottom: padding.sm,
                                         fontSize: 20,
                                         fontWeight: 600,
-                                        letterSpacing: -0.5,
+                                        letterSpacing: letterSpacing.sm,
                                         marginBottom: 2
                                     }}
                                 >
@@ -364,10 +351,10 @@ export default function Demonstration() {
                                 <ThemedText
                                     style={{
                                         paddingHorizontal: 12,
-                                        fontSize: 14,
-                                        letterSpacing: 0.25,
-                                        color: colors.schemes.light.onSurfaceVariant,
-                                        marginBottom: 12,
+                                        marginBottom: margin.sm,
+                                        fontSize: fontSize.base,
+                                        letterSpacing: letterSpacing.xl,
+                                        color: colors.schemes.light.onSurfaceVariant
                                     }}
                                 >
                                     {drill.instructions}
@@ -458,10 +445,15 @@ export default function Demonstration() {
                                 }}
                             >
                                 <Button
-                                    borderColor="black"
-                                    tintColor="#646464f0"
-                                    backgroundColor="black"
-                                    style3={{
+                                    tintColor={buttonThemes.black.tintColor}
+                                    borderColor={buttonThemes.black.borderColor}
+                                    backgroundColor={buttonThemes.black.backgroundColor}
+                                    outerStyle={{
+                                        flex: 1,
+                                        alignSelf: undefined,
+                                    }}
+                                    innerStyle={{
+                                        flex: 1,
                                         columnGap: 6
                                     }}
                                     onPress={() => uploadVideoFromCamera(drillIndex)}
@@ -483,10 +475,16 @@ export default function Demonstration() {
                                     </ThemedText>
                                 </Button>
                                 <Button
-                                    borderColor="black"
-                                    tintColor="#646464f0"
-                                    backgroundColor="black"
-                                    style3={{
+                                    tintColor={buttonThemes.black.tintColor}
+                                    borderColor={buttonThemes.black.borderColor}
+                                    backgroundColor={buttonThemes.black.backgroundColor}
+                                    outerStyle={{
+                                        flex: 1,
+                                        alignSelf: undefined,
+                                    }}
+                                    innerStyle={{
+                                        flex: 1,
+                                        width: "100%",
                                         columnGap: 6
                                     }}
                                     onPress={() => uploadVideoFromLibrary(drillIndex)}
@@ -509,7 +507,8 @@ export default function Demonstration() {
                                 </Button>
                             </View>
                             {!submissions[drillIndex]?.uri &&
-                                <View 
+                                <Pressable
+                                    onPress={() => uploadVideoFromCamera(drillIndex)} 
                                     style={{ 
                                         width: "auto", 
                                         height: 180,
@@ -527,7 +526,7 @@ export default function Demonstration() {
                                 >
                                     <ThemedText
                                         style={{
-                                            fontSize: 36,
+                                            fontSize: 32,
                                             marginBottom: 8
                                         }}
                                     >
@@ -555,7 +554,7 @@ export default function Demonstration() {
                                     >
                                         Max 500MB
                                     </ThemedText>
-                                </View>
+                                </Pressable>
                             }
                             {!!submissions[drillIndex]?.uri &&
                                 <VideoView 
@@ -578,18 +577,20 @@ export default function Demonstration() {
                                 }}
                             >
                                 <Button
-                                    borderColor={(submissionPlayer.status === "loading" || submissionPlayer.status === "readyToPlay") ? "black" : "gray"}
-                                    tintColor={(submissionPlayer.status === "loading" || submissionPlayer.status === "readyToPlay") ? "#646464f0" : "#ffffffad"}
-                                    backgroundColor={(submissionPlayer.status === "loading" || submissionPlayer.status === "readyToPlay") ? "black" : "gray"}
-                                    style1={{
+                                    tintColor={(!!submissions[drillIndex]?.uri) ? buttonThemes.black.tintColor : buttonThemes.disabled.tintColor}
+                                    borderColor={(!!submissions[drillIndex]?.uri) ? buttonThemes.black.borderColor : buttonThemes.disabled.borderColor}
+                                    backgroundColor={(!!submissions[drillIndex]?.uri) ? buttonThemes.black.backgroundColor : buttonThemes.disabled.backgroundColor}
+                                    outerStyle={{
+                                        alignSelf: undefined,
                                         borderBottomLeftRadius: !submissions[drillIndex]?.analysis ? 10 : 0,
                                         borderBottomRightRadius: !submissions[drillIndex]?.analysis ? 10 : 0
                                     }}
-                                    style3={{
+                                    innerStyle={{
+                                        flex: 1,
                                         columnGap: 6
                                     }}
                                     onPress={() => {
-                                        if (submissionPlayer.status !== "readyToPlay")
+                                        if (!submissions[drillIndex]?.uri)
                                             return;
                                         analyzeVideoSubmission(submissions, session.drills, drillIndex);
                                     }}
@@ -597,7 +598,7 @@ export default function Demonstration() {
                                     <Sparkle
                                         color={"white"}
                                         size={18}
-                                        opacity={(submissionPlayer.status === "loading" || submissionPlayer.status === "readyToPlay") ? 1: 0.75}
+                                        opacity={(!!submissions[drillIndex]?.uri) ? 1: 0.75}
                                     />
                                     <ThemedText
                                         style={{
@@ -606,7 +607,7 @@ export default function Demonstration() {
                                             letterSpacing: -0.1,
                                             color: "white",
                                             textAlign: "center",
-                                            opacity: (submissionPlayer.status === "loading" || submissionPlayer.status === "readyToPlay") ? 1: 0.75
+                                            opacity: (!!submissions[drillIndex]?.uri) ? 1: 0.75
                                         }}
                                     >
                                         Analyze Video
@@ -767,10 +768,15 @@ export default function Demonstration() {
                                 }}
                             >
                                 <Button
-                                    borderColor={drillIndex !== 0 ? "black" : "gray"}
-                                    tintColor={drillIndex !== 0 ? "#646464f0" : "#ffffffad"}
-                                    backgroundColor={drillIndex !== 0 ? "black" : "gray"}
-                                    style3={{
+                                    tintColor={(drillIndex !== 0) ? buttonThemes.black.tintColor : buttonThemes.disabled.tintColor}
+                                    borderColor={(drillIndex !== 0) ? buttonThemes.black.borderColor : buttonThemes.disabled.borderColor}
+                                    backgroundColor={(drillIndex !== 0) ? buttonThemes.black.backgroundColor : buttonThemes.disabled.backgroundColor}
+                                    outerStyle={{
+                                        flex: 1,
+                                        alignSelf: undefined
+                                    }}
+                                    innerStyle={{
+                                        flex: 1,
                                         columnGap: 6
                                     }}
                                     onPress={prevDrill}
@@ -795,10 +801,15 @@ export default function Demonstration() {
                                 </Button>
                                 {(session && session.drills && (drillIndex || 0) !== session.drills.length - 1) &&
                                     <Button
-                                        borderColor="black"
-                                        tintColor="#646464f0"
-                                        backgroundColor="black"
-                                        style3={{
+                                        tintColor={buttonThemes.black.tintColor}
+                                        borderColor={buttonThemes.black.borderColor}
+                                        backgroundColor={buttonThemes.black.backgroundColor}
+                                        outerStyle={{
+                                            flex: 1,
+                                            alignSelf: undefined
+                                        }}
+                                        innerStyle={{
+                                            flex: 1,
                                             columnGap: 6
                                         }}
                                         onPress={nextDrill}
@@ -822,7 +833,12 @@ export default function Demonstration() {
                                 }
                                 {(session && session.drills && (drillIndex || 0) === session.drills.length - 1) &&
                                     <Button
-                                        style3={{
+                                        outerStyle={{
+                                            flex: 1,
+                                            alignSelf: undefined
+                                        }}
+                                        innerStyle={{
+                                            flex: 1,
                                             columnGap: 6
                                         }}
                                         onPress={() => submitSession(session, submissions)}

@@ -1,9 +1,11 @@
 export interface Class {
     id: number;
     name: string;
-    size: number;
+    numStudents: number;
     teacherName: string;
-    imageEmoji: string;
+    imageText: string;
+    imageTextColor?: string;
+    imageBackgroundColor?: string;
 }
 
 export async function getClasses(id: number, role: string): Promise<Array<Class>> {
@@ -11,21 +13,25 @@ export async function getClasses(id: number, role: string): Promise<Array<Class>
         {
             id: 0,
             name: "U12 Boys A-Team",
-            size: 18,
+            numStudents: 18,
             teacherName: "Martinez",
-            imageEmoji: "⚽"
+            imageText: "⚽"
         },
         {
             id: 1,
             name: "Chelsea FC",
-            size: 18,
+            numStudents: 18,
             teacherName: "John",
-            imageEmoji: "🏃"
+            imageText: "🏃"
         }
     ]
 }
 
 export async function joinClass(classCode: string, studentID: number): Promise<boolean> {
-    const successful = classCode === "0000"
+    const successful = classCode === "0000";
     return successful;
+}
+
+export async function createClass(teacherID: number, className: string, imageBackgroundColor: string, imageTextColor: string, imageAbbrev: string) {
+    return true;
 }

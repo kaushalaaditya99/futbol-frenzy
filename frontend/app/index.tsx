@@ -11,7 +11,7 @@ export default function Index() {
 
 	return (
 		<Redirect
-			href="/(tabs)/classes"
+			href="/(tabs)"
 		/>
 		// <SafeAreaView
 		// 	style={{

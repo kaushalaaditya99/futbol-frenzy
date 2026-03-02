@@ -1,5 +1,5 @@
 import ThemedText from '@/components/ThemedText';
-import { colors } from '@/theme';
+import { colors, fontSize, letterSpacing } from '@/theme';
 import { Tabs } from 'expo-router';
 import { Bell, Calendar, ClipboardList, Cog, Home, Zap } from 'lucide-react-native';
 import { useState } from 'react';
@@ -18,8 +18,9 @@ export default function Layout() {
                     fontSize: 12
                 },
                 tabBarStyle: {
-                    borderTopWidth: 0,
-                    backgroundColor: "black",
+                    borderTopWidth: 1,
+                    borderColor: colors.schemes.light.outlineVariant,
+                    backgroundColor: colors.schemes.light.surface,
                 }
             }}
         >
@@ -35,15 +36,16 @@ export default function Layout() {
                         />
                     ),
                     tabBarLabel: ({color, focused}) => (
-                        <Text
+                        <ThemedText
                             style={{
-                                fontSize: 12,
-                                fontWeight: focused ? "600" : "500",
+                                fontSize: fontSize.sm,
+                                letterSpacing: letterSpacing.lg,
+                                fontWeight: 500,
                                 color: color
                             }}
                         >
                             Home
-                        </Text>
+                        </ThemedText>
                     )
                 }}
             />
@@ -58,15 +60,16 @@ export default function Layout() {
                         />
                     ),
                     tabBarLabel: ({color, focused}) => (
-                        <Text
+                        <ThemedText
                             style={{
-                                fontSize: 12,
-                                fontWeight: focused ? "600" : "500",
+                                fontSize: fontSize.sm,
+                                letterSpacing: letterSpacing.lg,
+                                fontWeight: 500,
                                 color: color
                             }}
                         >
                             Classes
-                        </Text>
+                        </ThemedText>
                     )
                 }} 
             />
@@ -81,15 +84,16 @@ export default function Layout() {
                         />
                     ),
                     tabBarLabel: ({color, focused}) => (
-                        <Text
+                        <ThemedText
                             style={{
-                                fontSize: 12,
-                                fontWeight: focused ? "600" : "500",
+                                fontSize: fontSize.sm,
+                                letterSpacing: letterSpacing.lg,
+                                fontWeight: 500,
                                 color: color
                             }}
                         >
                             Drills
-                        </Text>
+                        </ThemedText>
                     )
                 }}
             />
@@ -136,15 +140,16 @@ export default function Layout() {
                         </View>
                     ),
                     tabBarLabel: ({color, focused}) => (
-                        <Text
+                        <ThemedText
                             style={{
-                                fontSize: 12,
-                                fontWeight: focused ? "600" : "500",
+                                fontSize: fontSize.sm,
+                                letterSpacing: letterSpacing.lg,
+                                fontWeight: 500,
                                 color: color
                             }}
                         >
                             Notifications
-                        </Text>
+                        </ThemedText>
                     )
                 }} 
             />

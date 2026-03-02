@@ -1,8 +1,11 @@
-import { colors, margin, padding } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import { Modal, Pressable, View } from "react-native";
 import ThemedText from "../ThemedText";
-import { ChevronLeft, ChevronRight, X } from "lucide-react-native";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, X } from "lucide-react-native";
 import { Calendar } from "react-native-calendars";
+import { useFonts } from "@expo-google-fonts/lato";
+import useLocalFonts from "@/hooks/useFonts";
+import ButtonExit from "../ButtonExit";
 
 interface ModalCalendarProps {
     date: Date;
@@ -13,6 +16,11 @@ interface ModalCalendarProps {
 }
 
 export default function ModalCalendar(props: ModalCalendarProps) {
+    const fonts = useLocalFonts();
+
+    if (!fonts.fontsLoaded)
+        return null;
+    
     return (
         <Modal
             visible={props.showCalendar} 
@@ -51,32 +59,17 @@ export default function ModalCalendar(props: ModalCalendarProps) {
                     >
                         <ThemedText
                             style={{
-                                fontSize: 14,
+                                fontSize: fontSize.base,
                                 fontWeight: 500,
-                                letterSpacing: 0.1,
+                                letterSpacing: letterSpacing.md,
                                 color: colors.schemes.light.onSurface
                             }}
                         >
                             Calendar
                         </ThemedText>
-                        <Pressable
-                            style={{
-                                width: 20,
-                                height: 20,
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                borderRadius: 100,
-                                backgroundColor: colors.schemes.light.surfaceContainerLowest
-                            }}
+                        <ButtonExit
                             onPress={() => props.setShowCalendar(false)}
-                        >
-                            <X
-                                size={12}
-                                strokeWidth={3}
-                                color={colors.schemes.light.onSurface}
-                            />
-                        </Pressable>
+                        />
                     </View>
                     <Calendar
                         style={{
@@ -84,24 +77,21 @@ export default function ModalCalendar(props: ModalCalendarProps) {
                         }}
                         theme={{
                             calendarBackground: colors.schemes.light.surface,
-                            textDayFontWeight: "400",
-                            textMonthFontWeight: "600",
-                            textDayHeaderFontWeight: "600",
-                            textDayFontFamily: 'Inter_400Regular',
-                            textMonthFontFamily: 'Inter_600Bold',
-                            textDayHeaderFontFamily: 'Inter_500Medium',
+                            textDayFontFamily: 'Arimo-Regular',
+                            textMonthFontFamily: 'Arimo-Medium',
+                            textDayHeaderFontFamily: 'Arimo-Medium',
                             todayTextColor: colors.coreColors.primary,
                         }}
                         renderArrow={(direction) => (
                             <>
                                 {direction === "left" &&
-                                    <ChevronLeft
+                                    <ArrowLeft
                                         size={18}
                                         strokeWidth={2}
                                     />
                                 }
                                 {direction !== "left" &&
-                                    <ChevronRight
+                                    <ArrowRight
                                         size={18}
                                         strokeWidth={2}
                                     />

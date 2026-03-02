@@ -1,4 +1,4 @@
-import { colors, padding, shadow } from "@/theme";
+import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "@/theme";
 import { ChevronDown, MoveLeft, MoveRight } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 import ThemedText from "../ThemedText";
@@ -49,7 +49,7 @@ export default function NavigateDate(props: NavigateDateProps) {
                 borderWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
                 borderStyle: "solid",
-                borderRadius: 10,
+                borderRadius: borderRadius.base,
                 ...shadow.sm
             }}
         >
@@ -60,8 +60,8 @@ export default function NavigateDate(props: NavigateDateProps) {
                     paddingHorizontal: padding.lg,
                     borderRightWidth: 1,
                     borderColor: colors.schemes.light.outlineVariant,
-                    borderTopLeftRadius: 10,
-                    borderBottomLeftRadius: 10,
+                    borderTopLeftRadius: borderRadius.base,
+                    borderBottomLeftRadius: borderRadius.base,
                     backgroundColor: colors.schemes.light.surfaceContainerLowest,
                 }}
             >
@@ -98,8 +98,8 @@ export default function NavigateDate(props: NavigateDateProps) {
                 <ThemedText
                     style={{
                         fontWeight: 500,
-                        fontSize: 12,
-                        letterSpacing: 0.1,
+                        fontSize: fontSize.sm,
+                        letterSpacing: letterSpacing.lg,
                         color: colors.schemes.light.onSurfaceVariant
                     }}
                 >
@@ -118,8 +118,8 @@ export default function NavigateDate(props: NavigateDateProps) {
                     paddingHorizontal: padding.lg,
                     borderLeftWidth: 1,
                     borderColor: colors.schemes.light.outlineVariant,
-                    borderTopRightRadius: 10,
-                    borderBottomRightRadius: 10,
+                    borderTopRightRadius: borderRadius.base,
+                    borderBottomRightRadius: borderRadius.base,
                     backgroundColor: colors.schemes.light.surfaceContainerLowest,
                 }}
             >

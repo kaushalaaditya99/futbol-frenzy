@@ -35,6 +35,13 @@ export default function RootLayout() {
           headerShown: false
         }}
       />
+      <Stack.Screen 
+        name="createClass"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
     </Stack>
   );
 }

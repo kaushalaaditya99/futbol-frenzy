@@ -57,9 +57,6 @@ export default function ViewAll() {
                             fontWeight: 500,
                             letterSpacing: -0.1,
                             textAlign: "right",
-                            textShadowColor: 'hsla(0, 0%, 0%, 0.25)',
-                            textShadowOffset: { width: 0, height: 1 },
-                            textShadowRadius: 2,
                         }}
                     >
                         View All

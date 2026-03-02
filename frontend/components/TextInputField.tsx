@@ -1,65 +1,67 @@
-import { colors } from "@/theme";
-import { Text, TextInput, View } from "react-native";
-import ThemedText from "./ThemedText";
+import { colors, shadow } from "@/theme";
+import { StyleSheet, StyleProp, TextInput, TextStyle, ViewStyle } from "react-native";
+import InputLabel from "./SideBar/InputLabel";
+import InputWrapper from "./SideBar/InputWrapper";
 
 export interface TextInputFieldProps {
     label?: string;
     value?: string;
+    errorMessage?: string;
     placeholder?: string;
     onChangeText?: (text: string) => void;
-    style?: {[k: string]: string|number};
+    inputStyle?: StyleProp<TextStyle>;
+    labelStyle?: TextStyle;
+    containerStyle?: StyleProp<ViewStyle>;
 }
 
 export default function TextInputField(props: TextInputFieldProps) {
+    const flatInputStyle = StyleSheet.flatten(props.inputStyle);
+
     return (
-        <View
-            style={{
-                display: "flex",
-                alignSelf: "stretch",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                ...props.style
-            }}
+        <InputWrapper
+            containerStyle={props.containerStyle}
         >
-            <View>
-                <ThemedText
-                    style={{
-                        marginBottom: 2,
-                        fontSize: 14,
-                        fontWeight: 500,
+            <InputLabel
+                label={props.label}
+                labelStyle={{
+                    ...props.labelStyle,
+                    color: props.errorMessage ? colors.schemes.light.error : colors.schemes.light.onSurface
+                }}
+            />
+            <TextInput
+                style={{
+                    fontSize: 14,
+                    fontFamily: "Inter_400Regular",
+                    color: props.errorMessage ? colors.schemes.light.onErrorContainer : colors.schemes.light.onBackground,
+                    backgroundColor: "white",
+                    width: "100%",
+                    minWidth: "100%",
+                    paddingVertical: 10,
+                    paddingHorizontal: 10,
+                    borderWidth: 1,
+                    borderStyle: props.errorMessage ? "dashed" : "solid",
+                    borderColor: props.errorMessage ? colors.schemes.light.error : colors.schemes.light.outlineVariant,
+                    borderRadius: 8,
+                    ...shadow.sm,
+                    ...flatInputStyle
+                }}
+                value={props.value}
+                onChangeText={props.onChangeText}
+                placeholder={props.placeholder}
+            />
+            {props.errorMessage &&
+                <InputLabel
+                    label={props.errorMessage}
+                    labelStyle={{
+                        ...props.labelStyle,
+                        marginTop: 2,
+                        fontSize: 13,
+                        fontWeight: 400,
                         letterSpacing: 0.1,
-                        color: colors.schemes.light.onSurfaceVariant
+                        color: colors.schemes.light.error
                     }}
-                >
-                    {props.label}
-                </ThemedText>
-                <TextInput
-                    style={{
-                        fontSize: 14,
-                        fontFamily: "Inter_400Regular",
-                        backgroundColor: "white",
-                        width: "100%",
-                        minWidth: "100%",
-                        paddingVertical: 10,
-                        paddingHorizontal: 10,
-                        borderWidth: 1,
-                        borderStyle: "solid",
-                        borderColor: colors.schemes.light.outlineVariant,
-                        borderRadius: 8,
-                        shadowColor: "#000",
-                        shadowOffset: { 
-                            width: 0, 
-                            height: 1 
-                        },
-                        shadowOpacity: 0,
-                        shadowRadius: 1, 
-                    }}
-                    value={props.value}
-                    onChangeText={props.onChangeText}
-                    placeholder={props.placeholder}
                 />
-            </View>
-        </View>
+            }
+        </InputWrapper>
     )
 }

@@ -1,9 +1,11 @@
 export interface Result {
+    id: number;
     name: string;
     date: string;
     type: string;
     score: number;
     imageBackgroundColor: string;
+    imageTextColor?: string;
     imageColor: string;
 }
 
@@ -14,6 +16,7 @@ export function getResults(studentID: number): Array<Result> {
     // if that makes sense.
     return [
         {
+            id: 0,
             name: "Juggling Challenge",
             date: "Feb 12",
             type: "Ball Control",
@@ -22,6 +25,7 @@ export function getResults(studentID: number): Array<Result> {
             imageColor: "#FFF"
         },
         {
+            id: 1,
             name: "First Touch Control",
             date: "Feb 10",
             type: "Receiving",

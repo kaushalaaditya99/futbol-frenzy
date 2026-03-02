@@ -1,4 +1,4 @@
-import { colors, margin, padding } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import { GestureResponderEvent, ImageBackground, Pressable, View } from "react-native";
 import ThemedText from "./ThemedText";
 
@@ -7,29 +7,16 @@ interface HeaderProps {
 }
 
 export default function Header(props: HeaderProps) {
-    // Not Needed Now
-    // const [fontsLoaded] = useFonts({
-    //     'Doto-Regular': require('../assets/fonts/Doto/Doto-Regular.ttf'),
-    //     'Doto-Medium': require('../assets/fonts/Doto/Doto-Medium.ttf'),
-    //     'Doto-Bold': require('../assets/fonts/Doto/Doto-Bold.ttf'),
-    //     'Doto-SemiBold': require('../assets/fonts/Doto/Doto-SemiBold.ttf'),
-    //     'Doto-ExtraBold': require('../assets/fonts/Doto/Doto-ExtraBold.ttf'),
-    //     'Doto-Black': require('../assets/fonts/Doto/Doto_Rounded-Black.ttf'),
-    // });
-
-    // if (!fontsLoaded)
-    //     return null;
-
     return (
         <View
             style={{
-                height: 72,
+                paddingVertical: padding.xl,
                 display: "flex",
                 alignItems: "center",
                 flexDirection: "row",
-                backgroundColor: colors.palettes.neutral[0],
-                // borderBottomWidth: 1,
-                // borderColor: colors.schemes.light.outlineVariant
+                backgroundColor: colors.schemes.light.surface,
+                borderBottomWidth: 1,
+                borderColor: colors.schemes.light.outlineVariant
             }}
         >
             <View
@@ -84,13 +71,10 @@ export default function Header(props: HeaderProps) {
                 >
                     <ThemedText
                         style={{
-                            transform: [{ 
-                                scaleY: 0.9375 
-                            }],
-                            letterSpacing: -0.1,
-                            fontSize: 20,
+                            letterSpacing: letterSpacing.lg,
+                            fontSize: fontSize.lg,
                             fontWeight: 500,
-                            color: colors.schemes.light.onPrimary,
+                            color: colors.schemes.light.onSurface,
                             textAlign: "center",
                         }}
                     >

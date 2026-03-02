@@ -1,15 +1,15 @@
-import { Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import ThemedText from "../ThemedText";
-import { colors, padding, shadow } from "@/theme";
-import { ArrowRightToLine } from "lucide-react-native";
+import { colors, fontSize, letterSpacing, padding } from "@/theme";
 
-interface JoinClassButton1Props {
+interface MissingClassProps {
     onPress: () => void;
 }
 
-export default function JoinClassButton1(props: JoinClassButton1Props) {
+export default function MissingClass(props: MissingClassProps) {
     return (
-        <View
+        <Pressable
+            onPress={props.onPress}
             style={{
                 marginTop: 12,
                 paddingHorizontal: 24,
@@ -22,12 +22,11 @@ export default function JoinClassButton1(props: JoinClassButton1Props) {
                 borderStyle: "dashed",
                 borderRadius: 12,
                 backgroundColor: colors.schemes.light.surfaceContainer,
-                // ...shadow.sm
             }}
         >
             <ThemedText
                 style={{
-                    fontSize: 36,
+                    fontSize: fontSize["2xl"],
                     marginBottom: padding.lg
                 }}
             >
@@ -36,9 +35,9 @@ export default function JoinClassButton1(props: JoinClassButton1Props) {
             <ThemedText
                 style={{
                     marginBottom: padding.sm,
-                    fontSize: 16,
+                    fontSize: fontSize.base,
                     fontWeight: 500,
-                    letterSpacing: -0.25,
+                    letterSpacing: letterSpacing.xs,
                     color: "black"
                 }}
             >
@@ -55,9 +54,9 @@ export default function JoinClassButton1(props: JoinClassButton1Props) {
                 <ThemedText
                     style={{
                         maxWidth: 200,
-                        fontSize: 13,
+                        fontSize: fontSize.md,
                         fontWeight: 400,
-                        letterSpacing: 0.25,
+                        letterSpacing: letterSpacing.md,
                         color: colors.schemes.light.onSurfaceVariant,
                         textAlign: "center"
                     }}
@@ -65,6 +64,6 @@ export default function JoinClassButton1(props: JoinClassButton1Props) {
                     To join a class, enter its class code or scan its QR code.
                 </ThemedText>
             </View>
-        </View>
+        </Pressable>
     )
 }

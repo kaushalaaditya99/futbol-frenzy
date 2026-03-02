@@ -1,33 +1,26 @@
-import { ReactNode, useEffect } from "react";
-import { Text, type TextProps, StyleSheet, TextStyle, StyleProp } from 'react-native';
-import { useFonts, Lato_400Regular, Lato_700Bold, Lato_900Black } from '@expo-google-fonts/lato';
-import { Inter_400Regular, Inter_700Bold, Inter_500Medium, Inter_600SemiBold, Inter_900Black } from '@expo-google-fonts/inter';
+import { ReactNode } from "react";
+import { Text, TextStyle } from 'react-native';
+import useLocalFonts from "@/hooks/useFonts";
 
+interface ThemedTextProps {
+    children?: ReactNode;
+    style?: TextStyle; 
+    fontFamily?: "Arimo"|"Inter";
+    numberLines?: number;
+}
 
-export default function ThemedText(props: {
-    children?: ReactNode; 
-    style?: StyleProp<TextStyle>; 
-}) {
-    const flatStyle = StyleSheet.flatten(props.style);
-    const [fontsLoaded] = useFonts({
-        Lato_400Regular,
-        Lato_700Bold,
-        Lato_900Black,
-        Inter_400Regular,
-        Inter_500Medium,
-        Inter_600SemiBold,
-        Inter_700Bold,
-        Inter_900Black
-    });
-  
-    if (!fontsLoaded)
+export default function ThemedText(props: ThemedTextProps) {
+    const fonts = useLocalFonts();
+
+    if (!fonts.fontsLoaded)
         return null;
 
     return (
         <Text
+            numberOfLines={props.numberLines}
             style={{
-                fontFamily: flatStyle?.fontWeight === 400 ? "Inter_400Regular" : flatStyle?.fontWeight === 500 ? "Inter_500Medium" : flatStyle?.fontWeight === 600 ? "Inter_600SemiBold" : flatStyle?.fontWeight === 700 ? "Inter_700Bold" : flatStyle?.fontWeight === 900 ? "Inter_900Black" : "Inter_400Regular",
-                ...flatStyle,
+                fontFamily: fonts.fonts[props.fontFamily || "Arimo"][(props.style?.fontWeight as 400|500|600|700|800|900) || 400],
+                ...props.style,
             }}
         >
             {props.children}

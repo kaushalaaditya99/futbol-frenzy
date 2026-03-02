@@ -1,5 +1,5 @@
 import { padding } from "@/theme";
-import Button from "../Button";
+import Button, { buttonThemes } from "../Button";
 import { Plus } from "lucide-react-native";
 import ThemedText from "../ThemedText";
 
@@ -11,24 +11,20 @@ export default function CreateClassButton(props: CreateClassButtonProps) {
     return (
         <Button
             onPress={props.onPress}
-            borderColor="black"
-            tintColor="#646464f0"
-            backgroundColor="black"
-            style1={{
-                flex: 0,
-                alignSelf: "flex-start",
+            borderColor={buttonThemes.black.borderColor}
+            tintColor={buttonThemes.black.tintColor}
+            backgroundColor={buttonThemes.black.backgroundColor}
+            outerStyle={{
+                width: undefined,
+                flexShrink: 1,
                 borderRadius: 8,
             }}
-            style2={{
-                flex: 0,
-                alignSelf: "flex-start",
+            inBetweenStyle={{
                 borderRadius: 8,
             }}
-            style3={{
+            innerStyle={{
                 paddingVertical: padding.sm,
                 paddingHorizontal: padding.lg,
-                flex: 0,
-                alignSelf: "flex-start",
                 borderRadius: 6,
             }}
         >
