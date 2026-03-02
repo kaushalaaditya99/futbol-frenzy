@@ -56,7 +56,12 @@ export default function Home() {
     }, [dateStart, dateOffset]);
 
     useEffect(() => {
-        loadSessions();
+        const loadSessions = async () => {
+        const data = await getSessions(1);
+        setSessions(data);
+  };
+
+  loadSessions();
     }, [date]);
 
     useEffect(() => {
@@ -79,10 +84,8 @@ export default function Home() {
 
     const loadSessions = async () => {
         const studentID = 0;
-        const loadSessions = async () => {
-        const data = await getSessions(1);
-        setSessions(data);
-  };
+        const sessions = await getSessions(studentID);
+        setSessions(sessions);
     }
 
     const prevDay = () => {
