@@ -3,22 +3,14 @@ from futbolfrenzy.models import Drill, Enrollment
 
 #class serializers to help django convert JSON data to python objects
 
-"""
-class AccountSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Account
-        fields = ['id', 'typeId', 'username', 'hashpassword']
-        read_only_fields = ['id', 'typeId']
-        """
-
 class DrillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drill
-        fields = ['id', 'drillName', 'coachID']
+        fields = ['id', 'drillName', 'drillType', 'coachID', 'imageBackgroundColor', 'imageEmoji']
         read_only_fields = ['id']
 
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
-        fields = ['id', 'studentID', 'coachID', 'drillID', 'assignedDate', 'dueDate', 'completed']
+        fields = ['id', 'studentID', 'coachID', 'drillID', 'time', 'completed']
         read_only_fields = ['id']
