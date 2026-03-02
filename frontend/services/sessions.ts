@@ -1,12 +1,12 @@
 export interface Session {
-    name: string;
-    type: string;
-    time: number;
-    class: string;
-    isNew: boolean;
-    isDue: boolean;
-    imageBackgroundColor: string;
-    imageEmoji: string;
+    name: string; // drillName (in Drill)
+    type: string; // drillType (in Drill)
+    time: number; // time (in Enrollment)
+    class: string; // not implemented
+    isNew: boolean; // not implemented
+    isDue: boolean; // not implemented
+    imageBackgroundColor: string; // coach chooses (in Drill)
+    imageEmoji: string; // coach chooses (in Drill)
 }
 
 export function getSessions(studentID: number): Array<Session> {
