@@ -4,6 +4,9 @@ from futbolfrenzy.models import Drill, Enrollment
 #class serializers to help django convert JSON data to python objects
 
 class DrillSerializer(serializers.ModelSerializer):
+    imageBackgroundColor = serializers.CharField(required=False, allow_blank=True)
+    imageEmoji = serializers.CharField(required=False, allow_blank=True)
+
     class Meta:
         model = Drill
         fields = ['id', 'drillName', 'drillType', 'coachID', 'imageBackgroundColor', 'imageEmoji']

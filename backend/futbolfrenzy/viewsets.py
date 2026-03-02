@@ -5,21 +5,6 @@ from django.http import HttpResponse
 from django.template import loader
 from futbolfrenzy.serializers import DrillSerializer, EnrollmentSerializer
 
-"""
-class AccountViewSet(viewsets.ModelViewSet):
-    queryset = Account.objects.all()
-    serializer_class = AccountSerializer
-    permission_classes = [AllowAny]
-"""
-
-"""
-def drills(request):
-    drill = Drill.objects.all()
-    template = loader.get_template('drills.html')
-    context = {'drill': drill,}
-    return HttpResponse(template.render(context, request))
-"""
-
 # viewsets for databases
 class DrillViewSet(viewsets.ModelViewSet):
     queryset = Drill.objects.all()

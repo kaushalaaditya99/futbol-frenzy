@@ -7,47 +7,59 @@ export default function DrillScreen() {
   console.log("Hello");
   const [drills, setDrills] = useState([]);
   const [drillName, setDrillName] = useState("");
-  const [coachID, setCoachID] = useState("");
+  const [drillType, setDrillType] = useState("");
+  const [coachID, setCoachID] = useState(1);
+  const [imageBackgroundColor, setImageBackgroundColor] = useState("");
+  const [imageEmoji, setImageEmoji] = useState("");
 
   const URL = resolveEndpoint("/api/drills/");
 
   // READ
-const fetchDrills = async () => {
-    try {
-      const res = await fetch(URL);
-      const data = await res.json();
-      setDrills(data);
-      console.log(data);
-    } catch (err) {
-      console.log("Fetch error:", err);
-    }
+  const fetchDrills = async () => {
+      try {
+        const res = await fetch(URL);
+        const data = await res.json();
+        setDrills(data);
+        console.log(data);
+      } catch (err) {
+        console.log("Fetch error:", err);
+      }
 
-  };
+    };
 
-  useEffect(() => {
-    fetchDrills();
-  }, []);
+    useEffect(() => {
+      fetchDrills();
+    }, []);
 
-  // 🔹 CREATE (POST)
+    // 🔹 CREATE (POST)
   const createDrill = async () => {
     try {
       const res = await fetch(URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          drillName: drillName,
-          coachID: parseInt(coachID),
+          drillName,
+          drillType,
+          coachID: Number(coachID),
+          imageBackgroundColor,
+          imageEmoji,
         }),
       });
 
       const data = await res.json();
+
+      if (!res.ok) {
+        console.log("SERVER VALIDATION ERROR:", data);
+        return;
+      }
+
       setDrills([...drills, data]);
-      setDrillName("");
-      setCoachID("");
+
     } catch (err) {
       console.log("Create error:", err);
     }
   };
+
 
   // 🔹 UPDATE (PUT)
   const updateDrill = async (id: number) => {
@@ -57,7 +69,10 @@ const fetchDrills = async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           drillName: "Updated Name",    // NAME
+          drillType: "Update Drill Type",
           coachID: 1,                   // COACH ID
+          imageBackgroundColor: "#1C1C1C",
+          imageEmoji: "🏃‍♂️",
         }),
       });
 
@@ -95,6 +110,13 @@ const fetchDrills = async () => {
       />
 
       <TextInput
+        placeholder="Drill Type"
+        value={drillType}
+        onChangeText={setDrillType}
+        style={{ borderWidth: 1, marginBottom: 10 }}
+      />
+
+      <TextInput
         placeholder="Coach ID"
         value={coachID}
         onChangeText={setCoachID}
@@ -106,7 +128,7 @@ const fetchDrills = async () => {
 
       <FlatList
         data={drills}
-        keyExtractor={(item) => item.id.toString()}
+        //keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={{ marginTop: 15 }}>
             <Text>{item.drillName}</Text>
