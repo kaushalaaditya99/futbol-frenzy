@@ -3,14 +3,19 @@ import { getSessions, Session } from "@/services/sessions";
 import { useEffect, useState } from "react";
 import { MarkedDates } from "react-native-calendars/src/types";
 import Tabs from "./Tabs";
-import TabOverview from "./TabOverview";
-import TabWorkout from "./WorkoutTab/TabWorkout";
+import TabOverview from "./TabOverview/TabOverview";
+import TabWorkout from "./TabWorkout/TabWorkout";
 import { ScrollView } from "react-native";
+import useSearchBar from "@/hooks/useSearchBar";
+import TabStudent from "./TabStudent/TabStudent";
+import { getStudents, Student } from "@/services/students";
+import TabProgress from "./TabProgress/TabProgress";
 
 export default function CoachView() {
+    const [classID, setClassID] = useState(0);
     const [teacherID, setTeacherID] = useState(0);
-        
-    const [tab, setTab] = useState("Workout");
+
+    const [tab, setTab] = useState("Progress");
     const tabs = ["Overview", "Workout", "Students", "Progress"];
 
     const functionalDate = useFunctionalDate();
@@ -21,11 +26,21 @@ export default function CoachView() {
     const [sessionsToday, setSessionsToday] = useState<Array<Session>>([]);
     const [sessionsOnDate, setSessionsOnDate] =  useState<Array<Session>>([]);
     const [sessionsOnDateLabel, setSessionsOnDateLabel] = useState("");
+    const sessionsOnDateSearchBar = useSearchBar<Session>(sessionsOnDate, "name", "name");
+    
+    const [students, setStudents] = useState<Array<Student>>([]);
+    const studentSearchBar = useSearchBar<Student>(
+        students, 
+        (student: Student) => `${student.fName} ${student.lName}`, 
+        (student: Student) => `${student.fName} ${student.lName}`
+    );
 
-    const [search, setSearch] = useState("");
+    const [showShareClass, setShowShareClass] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
 
     useEffect(() => {
         loadSessions(teacherID);
+        loadStudents(classID);
     }, []);
 
 
@@ -50,6 +65,11 @@ export default function CoachView() {
         updateSessionsOnDateLabel(functionalDate.date);
     }, [functionalDate.date]);
 
+
+    const loadStudents = async (classID: number) => {
+        const students = await getStudents(classID);
+        setStudents(students);
+    }
 
     const loadSessions = async (teacherID: number) => {
         const sessions = await getSessions(teacherID);
@@ -117,8 +137,10 @@ export default function CoachView() {
             />
             {tab === "Overview" &&
                 <TabOverview
-                    onSharePress={() => console.log("Share Pressed")}
-                    onSettingsPress={() => console.log("Settings Pressed")}
+                    showShareClass={showShareClass}
+                    setShowShareClass={setShowShareClass}
+                    showSettings={showSettings}
+                    setShowSettings={setShowSettings}
                     sessionsToday={sessionsToday}
                 />
             }
@@ -126,15 +148,23 @@ export default function CoachView() {
                 <TabWorkout
                     onAssignPress={() => console.log("Assign Pressed")}
                     onCreatePress={() => console.log("Create Pressed")}
-                    search={search}
-                    setSearch={setSearch}
+                    searchBar={sessionsOnDateSearchBar}
                     viewType={sessionsViewType}
                     setViewType={setSessionsViewType}
-                    sessionsOnDate={sessionsOnDate}
+                    sessionsOnDate={sessionsOnDateSearchBar.filtered}
                     sessionsOnDateLabel={sessionsOnDateLabel}
                     functionalDate={functionalDate}
                     markedDatesAndSessions={markedDatesAndSessions}
                 />
+            }
+            {tab === "Students" &&
+                <TabStudent
+                    searchBar={studentSearchBar}
+                    students={studentSearchBar.filtered}
+                />
+            }
+            {tab === "Progress" &&
+                <TabProgress/>
             }
         </ScrollView>
     )

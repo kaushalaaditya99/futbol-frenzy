@@ -540,3 +540,14 @@ export const letterSpacing: Sizing = Object.assign({}, ZERO_SIZING, {
     xl: 0.25,
     "2xl": 0.5
 });
+
+export const theme = {
+    fontSize,
+    letterSpacing,
+    borderRadius,
+    shadow,
+    padding,
+    spacing,
+    margin,
+    colors
+}

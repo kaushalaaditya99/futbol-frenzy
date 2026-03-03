@@ -24,7 +24,7 @@ export default function CalendarModal(props: CalendarModalProps) {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: "#000000DA"
+                    backgroundColor: "#00000020"
                 }}
             >
                 <View

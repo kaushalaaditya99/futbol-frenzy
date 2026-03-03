@@ -3,10 +3,10 @@ import { LucideProps, X } from "lucide-react-native";
 import { Pressable, ViewStyle } from "react-native";
 
 interface ButtonExitProps {
-    onExit: () => void;
+    onExit?: () => void;
     buttonStyle?: ViewStyle;
-    svgStyle?: LucideProps;
-    svgContainerStyle?: ViewStyle;
+    svgProps?: LucideProps;
+    svgStyle?: ViewStyle;
 }
 
 export default function ButtonExit(props: ButtonExitProps) {
@@ -28,8 +28,8 @@ export default function ButtonExit(props: ButtonExitProps) {
                 size={12}
                 strokeWidth={3}
                 color={colors.schemes.light.onSurface}
-                style={props.svgContainerStyle}
-                {...props.svgStyle}
+                style={props.svgStyle}
+                {...props.svgProps}
             />
          </Pressable>
     )

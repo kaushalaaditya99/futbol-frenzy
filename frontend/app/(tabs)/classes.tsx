@@ -14,42 +14,16 @@ import SideBarDim from "@/components/ui/user/sideBar/SideBarDim";
 import Header from "@/components/ui/user/Header";
 import ThemedText from "@/components/ui/ThemedText";
 import SearchBar from "@/components/ui/SearchBar";
+import useSearchBar from "@/hooks/useSearchBar";
 
 export default function Classes() {
     const [classes, setClasses] = useState<Array<Class>>([]);
-    const [search, setSearch] = useState("");
-    const [sortDirection, setSortDirection] = useState<0|1|2>(0);
-    const [filteredClasses, setFilteredClasses] = useState<Array<Class>>([]);
     const sideBar = useSideBar();
-
+    const searchBar = useSearchBar(classes, "name", "name");
 
     useEffect(() => {
         loadClasses();
     }, []);
-
-
-    useEffect(() => {
-        let classesFiltered = [...classes];
-        
-        if (search) {
-            const searchLowerCase = search.toLowerCase();
-            classesFiltered = classesFiltered.filter((class_) => {
-                const classNameLower = class_.name.toLowerCase();
-                const match = classNameLower.includes(searchLowerCase)
-                return match;
-            });
-        }
-        
-        if (sortDirection) {
-            classesFiltered.sort((a, b) => {
-                if (sortDirection === 1)
-                    return a.name.localeCompare(b.name);
-                return b.name.localeCompare(a.name);
-            });
-        }
-
-        setFilteredClasses(classesFiltered);
-    }, [search, sortDirection, classes]);
 
 
     const loadClasses = async () => {
@@ -60,7 +34,7 @@ export default function Classes() {
         const role = "Student";
         const classes = await getClasses(id, role);
         setClasses(classes);
-        setFilteredClasses(classes);
+        searchBar.setFiltered(classes);
     }
 
 
@@ -138,11 +112,11 @@ export default function Classes() {
                             </View>
                         </View>
                         <SearchBar
-                            search={search}
-                            setSearch={setSearch}
+                            search={searchBar.search}
+                            setSearch={searchBar.setSearch}
                             enableSort={true}
-                            sortDirection={sortDirection}
-                            setSortDirection={setSortDirection}
+                            sortDirection={searchBar.sortDirection}
+                            setSortDirection={searchBar.setSortDirection}
                         />
                     </View>
                     <View
@@ -151,7 +125,7 @@ export default function Classes() {
                             rowGap: padding.lg
                         }}
                     >
-                        {filteredClasses.map((class_, i) => (
+                        {searchBar.filtered.map((class_, i) => (
                             <Fragment key={i}>
                                 <RowCardClass
                                     {...class_}

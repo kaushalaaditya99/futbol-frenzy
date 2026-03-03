@@ -10,7 +10,7 @@ interface HeaderWithBackProps {
     containerStyle?: ViewStyle;
     headerStyle?: TextStyle;
     buttonStyle?: ViewStyle;
-    svgProps?: LucideProps
+    svgProps?: LucideProps;
     svgStyle?: ViewStyle;
 }
 

@@ -21,7 +21,7 @@ export const buttonTheme: {[k: string]: Theme} = {
         backgroundColor: "black"
     },
     "white": {
-        tintColor: "#efefef",
+        tintColor: "white",
         tintUpsideDown: true,
         borderColor: colors.schemes.light.outlineVariant,
         backgroundColor: "white"

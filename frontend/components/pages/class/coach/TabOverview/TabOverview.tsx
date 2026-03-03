@@ -5,13 +5,18 @@ import { Fragment } from "react";
 import RowCardSession from "@/components/pages/home/RowCardSession";
 import ViewAllButton from "@/components/pages/home/ViewAllButton";
 import { Session } from "@/services/sessions";
-import ButtonShare from "./ButtonShare";
-import ButtonSettings from "./ButtonSettings";
+import ButtonShare from "../ButtonShare";
+import ButtonSettings from "../ButtonSettings";
 import ThemedText from "@/components/ui/ThemedText";
+import NoSessions from "../../NoSessions";
+import ShareClass from "./ShareClass";
+import Settings from "./Settings";
 
 interface TabOverviewProps {
-    onSharePress: () => void;
-    onSettingsPress: () => void;
+    showShareClass: boolean;
+    showSettings: boolean;
+    setShowSettings: (settings: boolean) => void;
+    setShowShareClass: (shareClass: boolean) => void;
     sessionsToday: Array<Session>;
 }
 
@@ -22,6 +27,16 @@ export default function TabOverview(props: TabOverviewProps) {
                 backgroundColor: colors.schemes.light.background
             }}
         >
+            {props.showSettings &&
+                <Settings
+                    onClose={() => props.setShowSettings(false)}
+                />
+            }
+            {props.showShareClass &&
+                <ShareClass
+                    onClose={() => props.setShowShareClass(false)}
+                />
+            }
             <View
                 style={{
                     paddingVertical: margin["3xs"],
@@ -34,10 +49,10 @@ export default function TabOverview(props: TabOverviewProps) {
                 }}
             >
                 <ButtonShare
-                    onPress={props.onSharePress}
+                    onPress={() => props.setShowShareClass(true)}
                 />
                 <ButtonSettings
-                    onPress={props.onSettingsPress}
+                    onPress={() => props.setShowSettings(true)}
                 />
             </View>
             <View
@@ -51,12 +66,12 @@ export default function TabOverview(props: TabOverviewProps) {
                 }}
             >
                 <CardMetric
-                    label={"Number\nStudents"}
+                    label={"Students\nIn Class"}
                     value="10"
                 />
                 <CardMetric
-                    label={"Sessions\nToday"}
-                    value="5"
+                    label={props.sessionsToday.length === 1 ? "Session\nToday" : "Sessions\nToday"}
+                    value={""+props.sessionsToday.length}
                 />
                 <CardMetric
                     label={"Sessions\nUngraded"}
@@ -94,7 +109,9 @@ export default function TabOverview(props: TabOverviewProps) {
                             />
                         </Fragment>
                     ))}
-                    <ViewAllButton/>
+                    {!props.sessionsToday.length &&
+                        <NoSessions/>
+                    }
                 </View>
             </View>
         </View>

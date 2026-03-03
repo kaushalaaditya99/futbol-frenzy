@@ -12,12 +12,13 @@ import { MarkedDates } from "react-native-calendars/src/types";
 import { Fragment } from "react";
 import RowCardSession from "@/components/pages/home/RowCardSession";
 import { TreePalm } from "lucide-react-native";
+import useSearchBar from "@/hooks/useSearchBar";
+import NoSessions from "../../NoSessions";
 
 interface TabWorkoutProps {
     onAssignPress: () => void;
     onCreatePress: () => void;
-    search: string;
-    setSearch: (search: string) => void;
+    searchBar: ReturnType<typeof useSearchBar<Session>>;
     viewType: string;
     setViewType: (viewType: string) => void;
     sessionsOnDate: Array<Session>;
@@ -59,7 +60,7 @@ export default function TabWorkout(props: TabWorkoutProps) {
                     rowGap: padding.lg,
                 }}
             >
-                <ThemedText
+                {/* <ThemedText
                     style={{
                         fontWeight: 500,
                         fontSize: fontSize.lg,
@@ -68,10 +69,13 @@ export default function TabWorkout(props: TabWorkoutProps) {
                     }}
                 >
                     Sessions
-                </ThemedText>
+                </ThemedText> */}
                 <SessionSearchBar
-                    search={props.search}
-                    setSearch={props.setSearch}
+                    search={props.searchBar.search}
+                    setSearch={props.searchBar.setSearch}
+                    enableSort={true}
+                    sortDirection={props.searchBar.sortDirection}
+                    setSortDirection={props.searchBar.setSortDirection}
                     placeholder="Search Sessions..."
                     viewType={props.viewType}
                     setViewType={props.setViewType}
@@ -148,54 +152,7 @@ export default function TabWorkout(props: TabWorkoutProps) {
                     </Fragment>
                 ))}
                 {!props.sessionsOnDate.length &&
-                    <View
-                        style={{
-                            width: "100%",
-                            paddingHorizontal: 24,
-                            paddingVertical: 24,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            rowGap: padding.xs,
-                            borderWidth: 1,
-                            borderStyle: "dashed",
-                            borderColor: colors.schemes.light.outlineVariant,
-                            borderRadius: borderRadius.base,
-                            backgroundColor: colors.schemes.light.surfaceContainer
-                        }}
-                    >
-                        <TreePalm
-                            size={36}
-                            strokeWidth={1.5}
-                            color={colors.schemes.light.onSurfaceVariant}
-                            style={{
-                                marginBottom: padding.sm
-                            }}
-                        />
-                        <ThemedText
-                            style={{
-                                fontSize: fontSize.base,
-                                fontWeight: 500,
-                                letterSpacing: letterSpacing.lg,
-                                color: colors.schemes.light.onSurface,
-                                textAlign: "center"
-                            }}
-                        >
-                            No Sessions
-                        </ThemedText>
-                        <ThemedText
-                            style={{
-                                maxWidth: 200,
-                                fontSize: 14,
-                                fontWeight: 400,
-                                color: colors.schemes.light.onSurfaceVariant,
-                                letterSpacing: letterSpacing.xl,
-                                textAlign: "center"
-                            }}
-                        >
-                            There are no sessions scheduled for today.
-                        </ThemedText>
-                    </View>
+                    <NoSessions/>
                 }
             </View>
         </View>

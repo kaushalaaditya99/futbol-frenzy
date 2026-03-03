@@ -1,12 +1,14 @@
 import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "@/theme";
-import { View } from "react-native";
+import { TextStyle, View } from "react-native";
 import { ReactNode } from "react";
 import ThemedText from "../ui/ThemedText";
 
 interface CardMetricProps {
     label: string;
+    labelStyle?: TextStyle;
     value: string;
     valueIcon?: ReactNode;
+    valueIconSide?: "left" | "right";
 }
 
 export default function CardMetric(props: CardMetricProps) {
@@ -33,16 +35,26 @@ export default function CardMetric(props: CardMetricProps) {
                     columnGap: padding.sm
                 }}
             >
-                {props.valueIcon}
+                {props.valueIconSide !== "right" &&
+                    <>
+                        {props.valueIcon}
+                    </>
+                }
                 <ThemedText
                     style={{
                         fontWeight: 500,
                         fontSize: fontSize.base,
-                        color: colors.coreColors.primary
+                        color: colors.coreColors.primary,
+                        ...props.labelStyle
                     }}
                 >
                     {props.value}
                 </ThemedText>
+                {props.valueIconSide === "right" &&
+                    <>
+                        {props.valueIcon}
+                    </>
+                }
             </View>
             <ThemedText
                 style={{
