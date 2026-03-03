@@ -1,12 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
-# from futbolfrenzy.models import Account
-
-# from futbolfrenzy.serializers import AccountSerializer
-
-"""
-class AccountViewSet(viewsets.ModelViewSet):
-    queryset = Account.objects.all()
-    serializer_class = AccountSerializer
+from . models import Drill
+from django.http import HttpResponse
+from django.template import loader
+from futbolfrenzy.serializers import DrillSerializer
+# viewsets for databases
+class DrillViewSet(viewsets.ModelViewSet):
+    queryset = Drill.objects.all()
+    serializer_class = DrillSerializer
     permission_classes = [AllowAny]
-"""
