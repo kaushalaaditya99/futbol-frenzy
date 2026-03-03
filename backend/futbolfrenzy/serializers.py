@@ -6,5 +6,7 @@ from futbolfrenzy.models import Drill
 class DrillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drill
-        fields = ['id', 'drillName', 'coachID']
+        fields = ['id', 'drillName', 'drillType', 'coachID', 'url',
+                  'time', 'difficultyLevel', 'instructions', 'imageBackgroundColor',
+                  'imageText', 'imageTextColor', 'publicDrill']
         read_only_fields = ['id']
