@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from futbolfrenzy.models import Drill, Workout
+from .models import Settings, Notification, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 
 #class serializers to help django convert JSON data to python objects
 
