@@ -2,16 +2,16 @@ import { TextStyle, View, ViewStyle } from "react-native";
 import ThemedText from "./ThemedText";
 import { LucideProps } from "lucide-react-native";
 import { colors, letterSpacing, padding } from "@/theme";
-import ButtonBack from "./ButtonBack";
+import ButtonBack from "./button/ButtonBack";
 
 interface HeaderWithBackProps {
     onBack: () => void;
     header: string;
     containerStyle?: ViewStyle;
-    buttonStyle?: ViewStyle;
-    buttonIconStyle1?: LucideProps
-    buttonIconStyle2?: ViewStyle;
     headerStyle?: TextStyle;
+    buttonStyle?: ViewStyle;
+    svgProps?: LucideProps
+    svgStyle?: ViewStyle;
 }
 
 export default function HeaderWithBack(props: HeaderWithBackProps) {
@@ -31,8 +31,8 @@ export default function HeaderWithBack(props: HeaderWithBackProps) {
             <ButtonBack
                 onBack={props.onBack}
                 buttonStyle={props.buttonStyle}
-                buttonIconStyle1={props.buttonIconStyle1}
-                buttonIconStyle2={props.buttonIconStyle2}
+                svgStyle={props.svgStyle}
+                svgProps={props.svgProps}
             />
             <ThemedText
                 style={{

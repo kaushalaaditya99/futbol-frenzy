@@ -5,16 +5,19 @@ import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reani
 
 export default function useSideBar() {
     const [showSideBar, setShowSideBar] = useState(false);
-    const width = useSharedValue(0);
     const animatedExpandFromLeft = useAnimatedStyle(() => ({
         minWidth: width.value,
     }));
 
+
+    const width = useSharedValue(0);
     const sideBarTargetWidth = Dimensions.get("window").width * 0.75; 
     
+
     useEffect(() => {
         width.value = withTiming(showSideBar ? sideBarTargetWidth : 0, {duration: 300});
     }, [showSideBar]);
+
 
     useFocusEffect(
         useCallback(() => {
@@ -24,6 +27,7 @@ export default function useSideBar() {
         }, [])
     );
 
+    
     return {
         showSideBar,
         setShowSideBar,

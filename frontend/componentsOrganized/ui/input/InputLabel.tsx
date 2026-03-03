@@ -1,6 +1,6 @@
 import { StyleSheet, StyleProp, TextStyle } from "react-native";
 import ThemedText from "../ThemedText";
-import { colors, fontSize } from "@/theme";
+import { colors, fontSize, letterSpacing } from "@/theme";
 
 export interface InputLabelProps {
     label?: string;
@@ -15,7 +15,7 @@ export default function InputLabel(props: InputLabelProps) {
             style={{
                 fontSize: fontSize.base,
                 fontWeight: 500,
-                letterSpacing: -0.1,
+                letterSpacing: letterSpacing.sm,
                 color: colors.schemes.light.onSurfaceVariant,
                 ...flatLabelStyle
             }}

@@ -16,8 +16,8 @@ import { getSessions, Session } from "@/services/sessions";
 import { getResults, Result } from "@/services/results";
 import ModalCalendar from "@/components/Home/ModalCalendar";
 import { useFocusEffect } from "expo-router";
-import SideBar from "@/components/SideBar/SideBar";
 import { StatusBar } from "expo-status-bar";
+import SideBar from "@/componentsOrganized/ui/user/sideBar/SideBar";
 
 const TODAY = new Date();
 const WEEK_START = new Date();

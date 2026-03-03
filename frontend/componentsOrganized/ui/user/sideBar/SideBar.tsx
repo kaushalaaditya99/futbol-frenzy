@@ -1,37 +1,11 @@
-import { ReactNode } from "react";
-import { View, ImageBackground, Pressable } from "react-native"
-import ThemedText from "@/components/ThemedText";
 import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
+import { ArrowLeftFromLine, Settings, View } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeftFromLine, Cog } from "lucide-react-native";
-
-export function SideBarLink(props: {icon: ReactNode; label: string; onPress: () => void; style?: {[k: string]: string|number}}) {
-    return (
-        <Pressable
-            style={{
-                flexDirection: "row",
-                alignItems: "center",
-                columnGap: padding.md,
-                paddingVertical: padding.xl,
-                paddingHorizontal: margin.sm,
-                ...props.style
-            }}
-        >
-            {props.icon}
-            <ThemedText
-                style={{
-                    fontSize: fontSize.base,
-                    fontWeight: 500,
-                    letterSpacing: letterSpacing.base,
-                    color: colors.schemes.light.onSurface
-                }}
-            >
-                {props.label}
-            </ThemedText>
-        </Pressable>
-    )
-}
+import ProfilePicture from "../ProfilePicture";
+import ThemedText from "../../ThemedText";
+import { SideBarLink } from "./SideBarLink";
+import { router } from "expo-router";
 
 interface SideBarProps {
     targetWidth: number;
@@ -41,6 +15,11 @@ interface SideBarProps {
 }
 
 export default function SideBar(props: SideBarProps) {
+    const logOut = () => {
+        router.replace("/");
+    }
+
+
     return (
         <Animated.View
             style={[
@@ -61,30 +40,21 @@ export default function SideBar(props: SideBarProps) {
             >
                 <View
                     style={{
-                        borderBottomWidth: 1,
-                        borderColor: colors.schemes.light.outlineVariant,
                         paddingVertical: margin.sm,
                         paddingHorizontal: margin.sm,
-                        rowGap: padding.lg
+                        rowGap: padding.lg,
+                        borderBottomWidth: 1,
+                        borderColor: colors.schemes.light.outlineVariant,
                     }}
                 >
-                    <ImageBackground
-                        source={require('../../assets/images/Pedri-11.jpg')}
-                        style={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: 100,
-                            overflow: "hidden",
-                            backgroundColor: colors.schemes.light.surfaceContainerLowest,
-                        }}
+                    <ProfilePicture
+                        width={48}
+                        height={48}
                     />
-                    <View
-                        style={{
-                            rowGap: 1
-                        }}
-                    >
+                    <View>
                         <ThemedText
                             style={{
+                                marginBottom: 1,
                                 fontSize: fontSize.md,
                                 fontWeight: 500,
                                 letterSpacing: letterSpacing.lg,
@@ -113,13 +83,13 @@ export default function SideBar(props: SideBarProps) {
                 >
                     <SideBarLink
                         icon={
-                            <Cog
+                            <Settings
                                 size={18}
                                 color={colors.schemes.light.onSurfaceVariant}
                             />
                         }
                         label="Settings"
-                        onPress={() => 0}
+                        onPress={() => router.replace("/(tabs)/settings")}
                     />
                     <SideBarLink
                         icon={
@@ -129,11 +99,11 @@ export default function SideBar(props: SideBarProps) {
                             />
                         }
                         label="Log Out"
-                        style={{
+                        onPress={logOut}
+                        containerStyle={{
                             borderTopWidth: 1,
                             borderColor: colors.schemes.light.outlineVariant
                         }}
-                        onPress={() => 0}
                     />
                 </View>
             </SafeAreaView>

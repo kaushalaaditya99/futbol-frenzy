@@ -3,18 +3,18 @@ import { StyleSheet, StyleProp, View, ViewStyle } from "react-native";
 
 interface InputWrapperProps {
     children: ReactNode;
-    containerStyle?: StyleProp<ViewStyle>;
+    wrapperStyle?: StyleProp<ViewStyle>;
 }
 
 export default function InputWrapper(props: InputWrapperProps) {
-    const flatContainerStyle = StyleSheet.flatten(props.containerStyle);
+    const flatWrapperStyle = StyleSheet.flatten(props.wrapperStyle);
 
     return (
         <View
             style={{
                 display: "flex",
                 rowGap: 2,
-                ...flatContainerStyle
+                ...flatWrapperStyle
             }}
         >
             {props.children}

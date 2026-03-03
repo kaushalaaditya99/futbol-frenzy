@@ -3,21 +3,31 @@ import { useEffect, useState } from "react";
 import { DateData } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
 
-const TODAY = new Date();
-const WEEK_START = new Date();
-WEEK_START.setDate(WEEK_START.getDate() - WEEK_START.getDay());
+export default function useFunctionalDate() {
+    const today = new Date();
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
 
-export default function useNavigateCalendar() {
-    const [date, setDate] = useState(TODAY);
-    const [dateStart, setDateStart] = useState(WEEK_START);
-    const [dateOffset, setDateOffset] = useState(TODAY.getDay());
-    const [showCalendarModal, setShowCalendarModal] = useState(false);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const startOfWeek = new Date();
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+    const [date, setDate] = useState(today);
+    const [dateStart, setDateStart] = useState(startOfWeek);
+    const [dateOffset, setDateOffset] = useState(today.getDay());
+    
+    const [showCalendar, setShowCalendar] = useState(false);
+
 
     useEffect(() => {
         const date = new Date(dateStart);
         date.setDate(date.getDate() + dateOffset);
         setDate(date);
     }, [dateStart, dateOffset]);
+
 
     const prevDay = () => {
         const dDateOffset = dateOffset - 1;
@@ -33,6 +43,7 @@ export default function useNavigateCalendar() {
         }
     }
 
+
     const nextDay = () => {
         const iDateOffset = dateOffset + 1;
 
@@ -46,6 +57,7 @@ export default function useNavigateCalendar() {
             setDateOffset(iDateOffset);
         }
     }
+
 
     const onDayPress = (day: DateData) => {
         const pressedDateString = `${day.dateString}T00:00:00`;
@@ -65,9 +77,11 @@ export default function useNavigateCalendar() {
         setDateStart(baseDate);
     }
 
-    const getShortenedISOString = (date: Date) => {
+
+    const getShortISOString = (date: Date) => {
         return date.toISOString().split('T')[0];
     }
+
 
     const getMarkedDates = (): MarkedDates => {
         return ({
@@ -78,6 +92,22 @@ export default function useNavigateCalendar() {
             }
         })
     }
+
+
+    const isToday = (date: Date) => {
+        return getShortISOString(today) === getShortISOString(date);
+    }
+
+
+    const isYesterday = (date: Date) => {
+        return getShortISOString(yesterday) === getShortISOString(date);
+    }
+
+
+    const isTomorrow = (date: Date) => {
+        return getShortISOString(tomorrow) === getShortISOString(date);
+    }
+
 
     return {
         date,
@@ -90,8 +120,14 @@ export default function useNavigateCalendar() {
         nextDay,
         onDayPress,
         getMarkedDates,
-        showCalendarModal,
-        setShowCalendarModal,
-        getShortenedISOString
+        showCalendar,
+        setShowCalendar,
+        getShortISOString,
+        today,
+        tomorrow,
+        yesterday,
+        isToday,
+        isTomorrow,
+        isYesterday
     }
 }

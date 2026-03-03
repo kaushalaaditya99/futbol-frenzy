@@ -10,43 +10,64 @@ import { getSessions, Session } from "@/services/sessions";
 import ViewAllButton from "@/components/Home/ViewAll";
 import CardSession from "@/components/Home/CardSession";
 import CreateSessionFastButton from "./CreateSessionFastButton";
-import useNavigateCalendar from "@/hooks/useNavigateCalendar";
+import useFunctionalDate from "@/hooks/useFunctionalDate";
 import NavigateDate from "@/components/Home/NavigateDate";
-import { CalendarIcon, TextAlignJustify } from "lucide-react-native";
+import { ArrowUpDown, CalendarIcon, Search, TextAlignJustify, TreePalm } from "lucide-react-native";
 import InlineRadioButton from "@/components/InlineRadioButton";
 import Calendar from "@/components/Calendar";
 import Week from "@/components/Home/Week";
 import { MarkedDates } from "react-native-calendars/src/types";
-import TextInputField from "@/components/TextInputField";
+import FunctionalDateLarge from "@/components/Home/FunctionalDate";
+import Tabs from "./Tabs";
+import SessionsTab from "./SessionsTab";
+import OverviewTab from "./OverviewTab";
 
 export default function ClassTeacherView() {
     const [teacherID, setTeacherID] = useState(0);
-    const [tab, setTab] = useState("Sessions");
-    const [tabs, setTabs] = useState(["Overview", "Sessions", "Students", "Progress"]);
-    const [sessions, setSessions] = useState<Array<Session>>([]);
-    const [todaysSession, setTodaysSessions] = useState<Array<Session>>([]);
     
-    const navigateCalendar = useNavigateCalendar();
+    const [tab, setTab] = useState("Sessions");
+    const tabs = ["Overview", "Sessions", "Students", "Progress"];
+    
+    const functionalDate = useFunctionalDate();
     const [multiDotMarkedDates, setMultiDotMarkedDates] = useState<MarkedDates>({});
 
-    const [sessionView, setSessionView] = useState<"Calendar"|"List">("Calendar")
+    const [sessions, setSessions] = useState<Array<Session>>([]);
+    const [sessionsViewType, setSessionsViewType] = useState<"Calendar"|"List">("Calendar");
+    const [sessionsToday, setSessionsToday] = useState<Array<Session>>([]);
+    const [sessionsOnDate, setSessionsOnDate] =  useState<Array<Session>>([]);
+    const [sessionsOnDateLabel, setSessionsOnDateLabel] = useState("");
+
 
     useEffect(() => {
         loadSessions(teacherID);
     }, []);
 
+
     useEffect(() => {
         loadTodaysSessions(sessions);
     }, [sessions]);
 
+
     useEffect(() => {
-        loadMultiDotMarking(sessions);
-    }, [sessions, navigateCalendar.date]);
+        markSessionsOnCalendar(sessions);
+    }, [sessions, functionalDate.date]);
+
+
+    useEffect(() => {
+        getSessionsOnDate(functionalDate.date, sessions);
+    }, [sessions, functionalDate.date]);
+
+
+    useEffect(() => {
+        updateResultLabel(functionalDate.date);
+    }, [functionalDate.date]);
+
 
     const loadSessions = async (teacherID: number) => {
         const sessions = await getSessions(teacherID);
         setSessions(sessions);
     }
+
 
     const loadTodaysSessions = (sessions: Array<Session>) => {
         const todaysSessions: Array<Session> = [];
@@ -56,298 +77,87 @@ export default function ClassTeacherView() {
         const todayFullYear = today.getFullYear();
 
         for (const session of sessions) {
-            const sameDayAsToday = session.date.getDate() === todayDate && session.date.getMonth() === todayMonth &&  session.date.getFullYear() === todayFullYear
+            const sameDayAsToday = session.date.getDate() === todayDate && session.date.getMonth() === todayMonth &&  session.date.getFullYear() === todayFullYear;
             if (sameDayAsToday) {
                 todaysSessions.push(session);
             }
         }
-
-        setTodaysSessions(todaysSession);
+        
+        setSessionsToday(todaysSessions);
     }
 
-    const loadMultiDotMarking = (sessions: Array<Session>) => {
-        const markedDates = navigateCalendar.getMarkedDates();
 
+    const markSessionsOnCalendar = (sessions: Array<Session>) => {
+        const markedDates = functionalDate.getMarkedDates();
         for (const session of sessions) {
-            const shortISOString = navigateCalendar.getShortenedISOString(session.date);
-            
+            const shortISOString = functionalDate.getShortISOString(session.date);
             if (!markedDates[shortISOString])
                 markedDates[shortISOString] = {};
-            
             if (!markedDates[shortISOString].dots)
                 markedDates[shortISOString].dots = [];
-
             markedDates[shortISOString].dots.push({
                 color: colors.coreColors.primary, 
                 selectedDotColor: "white"
             });
         }
-
         setMultiDotMarkedDates(markedDates);
     }
 
+
+    const getSessionsOnDate = (date: Date, sessions: Array<Session>) => {
+        const dateShortISOString = functionalDate.getShortISOString(date);
+        const sessionsOnDate: Array<Session> = [];
+
+        for (const session of sessions)
+            if (functionalDate.getShortISOString(session.date) === dateShortISOString)
+                sessionsOnDate.push(session);
+
+        setSessionsOnDate(sessionsOnDate);
+    }
+
+
+    const updateResultLabel = (date: Date) => {
+        if (functionalDate.isToday(date)) {
+            setSessionsOnDateLabel("Today's Sessions");
+        }
+        else if (functionalDate.isYesterday(date)) {
+            setSessionsOnDateLabel("Yesterday's Sessions");
+        }
+        else if (functionalDate.isTomorrow(date)) {
+            setSessionsOnDateLabel("Tomorrow's Sessions");
+        }
+        else {
+            const dateLabel = functionalDate.date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            });
+            setSessionsOnDateLabel(`Sessions on ${dateLabel}`);
+        }
+    }
+
+
     return (
         <ScrollView>
-            <View
-                style={{
-                    flexDirection: "row",
-                }}
-            >
-                {tabs.map((tab_, i) => (
-                    <Pressable
-                        key={i}
-                        onPress={() => setTab(tab_)}
-                        style={{
-                            paddingVertical: padding.lg,
-                            paddingHorizontal: padding.lg,
-                            flex: 1,
-                            borderTopWidth: 1,
-                            borderBottomWidth: 1,
-                            borderLeftWidth: (i === 0 || tabs[i - 1] === tab) ? 0 : 1,
-                            borderColor: tab_ === tab ? colors.coreColors.primary : colors.schemes.light.outlineVariant,
-                            backgroundColor: (tab_ === tab) ? colors.coreColors.primary : colors.schemes.light.surfaceContainerHigh
-                        }}
-                    >
-                        <ThemedText
-                            style={{
-                                fontSize: fontSize.xs,
-                                fontWeight: 600,
-                                letterSpacing: letterSpacing.lg,
-                                textAlign: "center",
-                                color: tab_ === tab ? "white" : colors.schemes.light.onSurfaceVariant
-                            }}
-                        >
-                            {tab_.toUpperCase()}
-                        </ThemedText>
-                    </Pressable>
-                ))}
-            </View>
-            {tab === "Sessions" &&
-                <View
-                    style={{
-                        backgroundColor: colors.schemes.light.background
-                    }}
-                >
-                    <View
-                        style={{
-                            paddingVertical: margin["3xs"],
-                            paddingHorizontal: margin["3xs"],
-                            flexDirection: "row",
-                            justifyContent: "flex-end",
-                            columnGap: margin["3xs"],
-                            borderBottomWidth: 1,
-                            borderColor: colors.schemes.light.outlineVariant
-                        }}
-                    >
-                        <CreateSessionButton
-                            onPress={() => 1}
-                        />
-                        <ShareButton
-                            onPress={() => 1}
-                        />
-                        <SettingsButton
-                            onPress={() => 1}
-                        />
-                    </View>
-                    <View
-                        style={{
-                            paddingVertical: margin.sm,
-                            paddingHorizontal: margin.sm,
-                            rowGap: padding.lg,
-                        }}
-                    >
-                        <View
-                            style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between"
-                                }}
-                        >
-                            <ThemedText
-                                style={{
-                                    fontWeight: 500,
-                                    fontSize: fontSize.lg,
-                                    letterSpacing: letterSpacing.xs,
-                                    color: colors.schemes.light.onBackground,
-                                }}
-                            >
-                                Sessions
-                            </ThemedText>
-                            <TextInput
-                                style={{
-                                    height: 36,
-                                    flex: 1,
-                                    borderWidth: 1,
-                                    borderColor: colors.schemes.light.outlineVariant,
-                                    borderRadius: borderRadius.base,
-                                    backgroundColor: "white"
-                                }}
-                            />
-                            <InlineRadioButton
-                                selectedValue={sessionView}
-                                onChange={(value: string) => setSessionView(value as any)}
-                                options={[
-                                    ["Calendar",
-                                        <CalendarIcon
-                                            size={16}
-                                            color={sessionView === "Calendar" ? "black" : colors.schemes.light.onSurfaceVariant}
-                                        />
-                                    ],
-                                    ["List",
-                                        <TextAlignJustify
-                                            size={16}
-                                            color={sessionView === "List" ? "black" : colors.schemes.light.onSurfaceVariant}
-                                        />
-                                    ]
-                                ]}
-                                containerStyle={{
-                                    height: 36
-                                }}
-                                optionStyle={{
-                                    paddingVertical: padding.sm,
-                                    paddingHorizontal: padding.md,
-                                }}
-                                selectedOptionStyle={{
-                                    borderRadius: 6
-                                }}
-                            />
-                        </View>
-                        {sessionView === "List" &&
-                            <View>
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        justifyContent: "flex-end"
-                                    }}
-                                >
-                                    <NavigateDate
-                                        openCalendar={() => navigateCalendar.setShowCalendarModal(true)}
-                                        dateStart={navigateCalendar.dateStart}
-                                        dateOffset={navigateCalendar.dateOffset}
-                                        prevDay={navigateCalendar.prevDay}
-                                        nextDay={navigateCalendar.nextDay}
-                                    />
-                                </View>
-                                <Week
-                                    dateOffset={navigateCalendar.dateOffset}
-                                    setDateOffset={navigateCalendar.setDateOffset}
-                                />
-                            </View>
-                        }
-                        {sessionView === "Calendar" &&
-                            <View
-                                style={{
-                                    ...shadow.sm
-                                }}
-                            >
-                                <Calendar
-                                    onDayPress={navigateCalendar.onDayPress}
-                                    markingType={"multi-dot"}
-                                    markedDates={multiDotMarkedDates}
-                                    style={{
-                                        overflow: "hidden",
-                                        backgroundColor: "white",
-                                        borderWidth: 1,
-                                        borderColor: colors.schemes.light.outlineVariant,
-                                        borderRadius: borderRadius.base
-                                    }}
-                                    theme={{
-                                        calendarBackground: "white",
-                                        backgroundColor: "white",
-                                    }}
-                                />
-                            </View>
-                        }
-                    </View>
-                </View>
-            }
+            <Tabs
+                tab={tab}
+                tabs={tabs}
+                setTab={setTab}
+            />
             {tab === "Overview" &&
-                <View
-                    style={{
-                        backgroundColor: colors.schemes.light.background
-                    }}
-                >
-                    <View
-                        style={{
-                            paddingVertical: margin["3xs"],
-                            paddingHorizontal: margin["3xs"],
-                            flexDirection: "row",
-                            justifyContent: "flex-end",
-                            columnGap: margin["3xs"],
-                            borderBottomWidth: 1,
-                            borderColor: colors.schemes.light.outlineVariant
-                        }}
-                    >
-                        <CreateSessionFastButton
-                            onPress={() => 1}
-                        />
-                        <ShareButton
-                            onPress={() => 1}
-                        />
-                        <SettingsButton
-                            onPress={() => 1}
-                        />
-                    </View>
-                    <View
-                        style={{
-                            paddingVertical: margin.sm,
-                            paddingHorizontal: margin.sm,
-                            flexDirection: "row",
-                            columnGap: padding.lg,
-                            borderBottomWidth: 1,
-                            borderColor: colors.schemes.light.outlineVariant
-                        }}
-                    >
-                        <CardSummary
-                            k={"Number\nStudents"}
-                            v2="10"
-                        />
-                        <CardSummary
-                            k={"Sessions\nToday"}
-                            v2="5"
-                        />
-                        <CardSummary
-                            k={"Sessions\nUngraded"}
-                            v2="5"
-                        />
-                    </View>
-                    <View
-                        style={{
-                            paddingVertical: margin.sm,
-                            paddingHorizontal: margin.sm,
-                            rowGap: padding.lg,
-                        }}
-                    >
-                        <ThemedText
-                            style={{
-                                fontWeight: 500,
-                                fontSize: fontSize.lg,
-                                letterSpacing: letterSpacing.xs,
-                                color: colors.schemes.light.onBackground,
-                            }}
-                        >
-                            Today's Scheduled Sessions
-                        </ThemedText>
-                        <View
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                rowGap: 12
-                            }}
-                        >
-                            {todaysSession.map((session: any, i: number) => (
-                                <Fragment key={i}>
-                                    <CardSession
-                                        {...session}
-                                        showTag={false}
-                                    />
-                                </Fragment>
-                            ))}
-                            <ViewAllButton/>
-                        </View>
-                    </View>
-                </View>
+                <OverviewTab
+                    sessionsToday={sessionsToday}
+                />
+            }
+            {tab === "Sessions" &&
+                <SessionsTab
+                    sessionsViewType={sessionsViewType}
+                    setSessionsViewType={setSessionsViewType}
+                    sessionsOnDate={sessionsOnDate}
+                    sessionsOnDateLabel={sessionsOnDateLabel}
+                    functionalDate={functionalDate}
+                    multiDotMarkedDates={multiDotMarkedDates}
+                />
             }
         </ScrollView>
     )

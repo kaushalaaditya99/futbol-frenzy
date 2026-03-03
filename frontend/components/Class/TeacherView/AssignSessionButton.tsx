@@ -1,13 +1,13 @@
 import { colors, letterSpacing, padding, shadow } from "@/theme";
 import Button, { buttonThemes } from "@/components/Button";
-import { Plus } from "lucide-react-native";
+import { ClipboardPaste, Plus } from "lucide-react-native";
 import ThemedText from "@/components/ThemedText";
 
-interface CreateSessionButtonProps {
+interface AssignSessionButtonProps {
     onPress: () => void;
 }
 
-export default function CreateSessionButton(props: CreateSessionButtonProps) {
+export default function AssignSessionButton(props: AssignSessionButtonProps) {
     return (
         <Button
             onPress={props.onPress}
@@ -32,7 +32,7 @@ export default function CreateSessionButton(props: CreateSessionButtonProps) {
                 columnGap: 6,
             }}
         >
-            <Plus
+            <ClipboardPaste
                 size={14}
                 strokeWidth={2.5}
                 color={colors.schemes.light.onSurfaceVariant}
@@ -45,7 +45,7 @@ export default function CreateSessionButton(props: CreateSessionButtonProps) {
                     color: colors.schemes.light.onSurfaceVariant
                 }}
             >
-                Create
+                Assign
             </ThemedText>
         </Button>
     )

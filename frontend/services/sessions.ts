@@ -130,6 +130,7 @@ export const fakeData = [
         ]
     },
 ]
+
 export async function getSessions(id: number, role?: string): Promise<Array<Session>> {
     // We'd contact the API here, but I don't think
     // it's ready, so we can provide some fake data.
