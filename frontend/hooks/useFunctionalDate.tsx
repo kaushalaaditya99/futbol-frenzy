@@ -1,3 +1,4 @@
+import { Session } from "@/services/sessions";
 import { colors } from "@/theme";
 import { useEffect, useState } from "react";
 import { DateData } from "react-native-calendars";
@@ -94,6 +95,28 @@ export default function useFunctionalDate() {
     }
 
 
+    const markSessionsOnCalendar = (markedDates: MarkedDates, sessions: Array<Session>) => {
+        const markedDatesAndSessions: MarkedDates = {}
+
+        for (const session of sessions) {
+            const shortISOString = getShortISOString(session.date);
+            
+            if (!markedDatesAndSessions[shortISOString])
+                markedDatesAndSessions[shortISOString] = {};
+
+            if (!markedDatesAndSessions[shortISOString].dots)
+                markedDatesAndSessions[shortISOString].dots = [];
+
+            markedDatesAndSessions[shortISOString].dots.push({
+                color: colors.coreColors.primary, 
+                selectedDotColor: "white"
+            });
+        }
+        
+        return markedDatesAndSessions;
+    }
+    
+    
     const isToday = (date: Date) => {
         return getShortISOString(today) === getShortISOString(date);
     }
@@ -128,6 +151,7 @@ export default function useFunctionalDate() {
         yesterday,
         isToday,
         isTomorrow,
-        isYesterday
+        isYesterday,
+        markSessionsOnCalendar
     }
 }

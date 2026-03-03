@@ -1,28 +1,23 @@
-import ButtonField from "@/components/ButtonField";
-import TextInputField from "@/components/TextInputField";
-import { Text, TouchableWithoutFeedback, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, MoveLeft } from 'lucide-react-native';
-import {ParamListBase, useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { ArrowLeft } from 'lucide-react-native';
+import InputText from "@/components/ui/input/InputText";
+import SimpleButton from "@/components/ui/button/SimpleButton";
+import ThemedText from "@/components/ui/ThemedText";
+import { colors, fontSize, margin, padding } from "@/theme";
+import { router } from "expo-router";
 
 export default function ResetPassword() {
-    const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-    
-    const navigate = (dest: string) => {
-        navigation.navigate(dest);
-    }
-
     return (
         <SafeAreaView
             style={{
-                backgroundColor: "#FFF",
+                backgroundColor: colors.schemes.light.background,
 				display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-				rowGap: 36,
-				paddingVertical: 24,
-				paddingHorizontal: 36,
+				rowGap: margin.lg,
+				paddingVertical: margin.sm,
+				paddingHorizontal: margin.lg,
 				flex: 1
             }}
         >
@@ -45,13 +40,12 @@ export default function ResetPassword() {
                     🔒
                 </Text>
             </View>
-            {/* Header */}
             <View
                 style={{
-                    rowGap: 4
+                    rowGap: padding.sm
                 }}
             >
-                <Text
+                <ThemedText
                     style={{
                         fontSize: 32,
                         fontWeight: 600,
@@ -60,8 +54,8 @@ export default function ResetPassword() {
                     }}
                 >
                     Reset Password
-                </Text>
-                <Text
+                </ThemedText>
+                <ThemedText
                     style={{
                         fontSize: 16,
                         fontWeight: 400,
@@ -70,30 +64,28 @@ export default function ResetPassword() {
                     }}
                 >
                     Enter your email address and we'll send you a link to reset your password.
-                </Text>
+                </ThemedText>
             </View>
-            {/* Form */}
             <View
                 style={{
                     display: "flex",
-                    rowGap: 12
+                    rowGap: padding.lg
                 }}
             >
-                <TextInputField
+                <InputText
                     label="Email Address"
                 />
-                {/* Button */}
                 <View
                     style={{
                         display: "flex",
-                        rowGap: 4
+                        rowGap: padding.sm
                     }}
                 >
-                    <ButtonField
-                        title="Send Reset Link"
+                    <SimpleButton
+                        label="Send Reset Link"
                     />
-                    <TouchableWithoutFeedback
-                        onPress={() => navigate("index")}
+                    <Pressable
+                        onPress={() => router.replace("/")}
                     >
                         <View
                             style={{
@@ -108,15 +100,15 @@ export default function ResetPassword() {
                                 size={12}
                                 strokeWidth={3}
                             />
-                            <Text
+                            <ThemedText
                                 style={{
-                                    fontSize: 14
+                                    fontSize: fontSize.md
                                 }}
                             >
                                 Back to Login
-                            </Text>
+                            </ThemedText>
                         </View>
-                    </TouchableWithoutFeedback>
+                    </Pressable>
                 </View>
             </View>
         </SafeAreaView>

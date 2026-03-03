@@ -1,18 +1,21 @@
-import { Modal, Pressable, TextInput, View } from "react-native";
+import { Modal, Pressable, View } from "react-native";
 import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
 import { CircleX, Plus, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import ColorPicker, { Panel1, Swatches, Preview, OpacitySlider, HueSlider, Panel2, Panel3, Panel4, Panel5, ColorFormatsObject } from 'reanimated-color-picker';
-import TextInputField from "@/components/TextInputField";
-import ThemedText from "@/components/ThemedText";
-import Button, { buttonThemes } from "@/components/Button";
 import { SafeAreaView } from "react-native-safe-area-context";
-import HeaderWithBack from "@/components/HeaderWithBack";
 import { router } from "expo-router";
-import InputLabel from "@/components/SideBar/InputLabel";
-import InputWrapper from "@/components/SideBar/InputWrapper";
-import CardClass from "@/components/Classes/CardClass";
+import RowCardClass from "@/components/pages/classes/RowCardClass";
 import { createClass } from "@/services/classes";
+import HeaderWithBack from "@/components/ui/HeaderWithBack";
+import ThemedText from "@/components/ui/ThemedText";
+import InputText from "@/components/ui/input/InputText";
+import InputWrapper from "@/components/ui/input/InputWrapper";
+import InputLabel from "@/components/ui/input/InputLabel";
+import Button from "@/components/ui/button/Button";
+import { buttonTheme } from "@/components/ui/button/buttonTheme";
+import InlineRadioButton from "@/components/ui/input/InlineRadioGroup";
+import InlineRadioGroup from "@/components/ui/input/InlineRadioGroup";
 
 interface Errors {
     [inputName: string]: {
@@ -141,7 +144,7 @@ export default function CreateClass() {
                     >
                         General Information
                     </ThemedText>
-                    <TextInputField
+                    <InputText
                         label="Name of Class"
                         value={className}
                         errorMessage={errors?.className?.errorMessage}
@@ -183,54 +186,16 @@ export default function CreateClass() {
                             value="black"
                             onChangeJS={onColorChange}
                         >
-                            <View
-                                style={{
-                                    padding: padding.sm,
-                                    flexDirection: "row",
-                                    borderWidth: 1,
+                            <InlineRadioGroup
+                                value={ground}
+                                options={[["Background", "BACKGROUND"], ["Foreground", "FOREGROUND"]]}
+                                onChange={(value) => setGround(value)}
+                                containerStyle={{
                                     borderBottomWidth: 0,
-                                    borderColor: colors.schemes.light.outlineVariant,
-                                    borderRadius: borderRadius.base,
                                     borderBottomLeftRadius: 0,
                                     borderBottomRightRadius: 0,
-                                    backgroundColor: colors.schemes.light.surface,
-                                    ...shadow.sm
                                 }}
-                            >
-                                {["Background", "Foreground"].map((ground_, i) => (
-                                    <Pressable
-                                        key={i}
-                                        onPress={() => setGround(ground_)}
-                                        style={Object.assign({},
-                                            {
-                                                flex: 1,
-                                                paddingVertical: padding.lg,
-                                                paddingHorizontal: padding.lg,
-                                            },
-                                            ground_ === ground &&
-                                            {
-                                                "backgroundColor": "white",
-                                                "borderWidth": 1,
-                                                "borderColor": colors.schemes.light.outlineVariant,
-                                                "borderRadius": borderRadius.md,
-                                                ...shadow.sm
-                                            }
-                                        )}
-                                    >
-                                        <ThemedText
-                                            style={{
-                                                fontSize: 12,
-                                                fontWeight: ground === ground_ ? 600 : 400,
-                                                letterSpacing: letterSpacing.md,
-                                                color: ground === ground_ ? colors.schemes.light.onSurface : colors.schemes.light.onSurfaceVariant,
-                                                textAlign: "center"
-                                            }}
-                                        >
-                                            {ground_.toUpperCase()}
-                                        </ThemedText>
-                                    </Pressable>
-                                ))}
-                            </View>
+                            />
                             <View
                                 style={{
                                     overflow: "hidden",
@@ -264,11 +229,11 @@ export default function CreateClass() {
                             </View>
                         </ColorPicker>
                     </View>
-                    <TextInputField
+                    <InputText
                         label="Abbreviation"
                         value={imageAbbreviation}
                         onChangeText={setImageAbbreviation}
-                        containerStyle={{
+                        inputStyle={{
                             paddingBottom: padding.lg
                         }}
                     />
@@ -291,7 +256,7 @@ export default function CreateClass() {
                                     marginBottom: padding.md
                                 }}
                             />
-                            <CardClass
+                            <RowCardClass
                                 id={0}
                                 name={className || "Class Name"}
                                 numStudents={15}
@@ -315,9 +280,7 @@ export default function CreateClass() {
             >
                 <Button
                     onPress={onCreateClass}
-                    outerStyle={{
-                        ...shadow.sm
-                    }}
+                    {...buttonTheme.blue}
                     innerStyle={{
                         width: "100%"
                     }}
@@ -338,50 +301,6 @@ export default function CreateClass() {
                         Create Class
                     </ThemedText>
                 </Button>
-                <View
-                    style={{
-                        marginHorizontal: 24,
-                        marginVertical: 6,
-                        marginBottom: 24,
-                        paddingVertical: 8,
-                        paddingHorizontal: 12,
-                        flexDirection: "row",
-                        alignItems: "flex-start",
-                        columnGap: 6,
-                        borderWidth: 1,
-                        borderColor: colors.schemes.light.error,
-                        borderStyle: "dashed",
-                        borderRadius: 8,
-                        backgroundColor: colors.schemes.light.errorContainer,
-                        opacity: failed ? 1 : 0
-                    }}
-                >
-                    <CircleX
-                        size={14}
-                        color={colors.schemes.light.onErrorContainer}
-                        style={{
-                            position: "relative",
-                            top: 1.5
-                        }}
-                    />
-                    <View
-                        style={{
-                            flexShrink: 1,
-                        }}
-                    >
-                        <ThemedText
-                            style={{
-                                flexShrink: 1,
-                                fontSize: 12,
-                                fontWeight: 400,
-                                letterSpacing: 0.25,
-                                color: colors.schemes.light.onErrorContainer
-                            }}
-                        >
-                            A class with this code was not found. Please try again.
-                        </ThemedText>
-                    </View>
-                </View>
             </View>
         </SafeAreaView>
     )

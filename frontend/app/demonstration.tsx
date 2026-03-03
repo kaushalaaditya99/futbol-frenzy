@@ -3,18 +3,20 @@ import { ActivityIndicator, Dimensions, Pressable, ScrollView, View } from "reac
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
-import ThemedText from "@/components/ThemedText";
 import { useEffect, useState } from "react";
 import { Drill, getSession, Session, submitSessionForGrading } from "@/services/sessions";
 import { Asset } from 'expo-asset';
-import ProgressBar from "@/components/Demonstration/ProgressBar";
+import ProgressBar from "@/components/pages/demonstration/ProgressBar";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { Analysis, getAnalysis } from "@/services/analysis";
 import { BlurView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
-import Button, { buttonThemes } from "@/components/Button";
-import ButtonBack from "@/components/ButtonBack";
+import ButtonBack from "@/components/ui/button/ButtonBack";
+import ThemedText from "@/components/ui/ThemedText";
+import Button from "@/components/ui/button/Button";
+import { buttonTheme } from "@/components/ui/button/buttonTheme";
+import ButtonHalfWidth from "@/components/ui/button/ButtonHalfWidth";
 
 // Example
 // This is just a workaround so you can see the functionality.
@@ -444,18 +446,8 @@ export default function Demonstration() {
                                     marginBottom: 12,
                                 }}
                             >
-                                <Button
-                                    tintColor={buttonThemes.black.tintColor}
-                                    borderColor={buttonThemes.black.borderColor}
-                                    backgroundColor={buttonThemes.black.backgroundColor}
-                                    outerStyle={{
-                                        flex: 1,
-                                        alignSelf: undefined,
-                                    }}
-                                    innerStyle={{
-                                        flex: 1,
-                                        columnGap: 6
-                                    }}
+                                <ButtonHalfWidth
+                                    {...buttonTheme.black}
                                     onPress={() => uploadVideoFromCamera(drillIndex)}
                                 >
                                     <Camera
@@ -466,27 +458,16 @@ export default function Demonstration() {
                                         style={{
                                             fontSize: 14,
                                             fontWeight: 500,
-                                            letterSpacing: -0.1,
+                                            letterSpacing: letterSpacing.lg,
                                             color: "white",
                                             textAlign: "center"
                                         }}
                                     >
                                         Record Video
                                     </ThemedText>
-                                </Button>
-                                <Button
-                                    tintColor={buttonThemes.black.tintColor}
-                                    borderColor={buttonThemes.black.borderColor}
-                                    backgroundColor={buttonThemes.black.backgroundColor}
-                                    outerStyle={{
-                                        flex: 1,
-                                        alignSelf: undefined,
-                                    }}
-                                    innerStyle={{
-                                        flex: 1,
-                                        width: "100%",
-                                        columnGap: 6
-                                    }}
+                                </ButtonHalfWidth>
+                                <ButtonHalfWidth
+                                    {...buttonTheme.black}
                                     onPress={() => uploadVideoFromLibrary(drillIndex)}
                                 >
                                     <FolderOpen
@@ -497,14 +478,14 @@ export default function Demonstration() {
                                         style={{
                                             fontSize: 14,
                                             fontWeight: 500,
-                                            letterSpacing: -0.1,
+                                            letterSpacing: letterSpacing.lg,
                                             color: "white",
                                             textAlign: "center"
                                         }}
                                     >
                                         Upload Video
                                     </ThemedText>
-                                </Button>
+                                </ButtonHalfWidth>
                             </View>
                             {!submissions[drillIndex]?.uri &&
                                 <Pressable
@@ -577,9 +558,12 @@ export default function Demonstration() {
                                 }}
                             >
                                 <Button
-                                    tintColor={(!!submissions[drillIndex]?.uri) ? buttonThemes.black.tintColor : buttonThemes.disabled.tintColor}
-                                    borderColor={(!!submissions[drillIndex]?.uri) ? buttonThemes.black.borderColor : buttonThemes.disabled.borderColor}
-                                    backgroundColor={(!!submissions[drillIndex]?.uri) ? buttonThemes.black.backgroundColor : buttonThemes.disabled.backgroundColor}
+                                    {...((!!submissions[drillIndex]?.uri) ? buttonTheme.black : buttonTheme.disabled)}
+                                    onPress={() => {
+                                        if (!submissions[drillIndex]?.uri)
+                                            return;
+                                        analyzeVideoSubmission(submissions, session.drills, drillIndex);
+                                    }}
                                     outerStyle={{
                                         alignSelf: undefined,
                                         borderBottomLeftRadius: !submissions[drillIndex]?.analysis ? 10 : 0,
@@ -588,11 +572,6 @@ export default function Demonstration() {
                                     innerStyle={{
                                         flex: 1,
                                         columnGap: 6
-                                    }}
-                                    onPress={() => {
-                                        if (!submissions[drillIndex]?.uri)
-                                            return;
-                                        analyzeVideoSubmission(submissions, session.drills, drillIndex);
                                     }}
                                 >
                                     <Sparkle
@@ -604,7 +583,7 @@ export default function Demonstration() {
                                         style={{
                                             fontSize: 14,
                                             fontWeight: 500,
-                                            letterSpacing: -0.1,
+                                            letterSpacing: letterSpacing.lg,
                                             color: "white",
                                             textAlign: "center",
                                             opacity: (!!submissions[drillIndex]?.uri) ? 1: 0.75
@@ -644,7 +623,7 @@ export default function Demonstration() {
                                                 style={{
                                                     fontSize: 14,
                                                     fontWeight: 500,
-                                                    letterSpacing: -0.1,
+                                                    letterSpacing: letterSpacing.lg,
                                                     textAlign: "center"
                                                 }}
                                             >
@@ -767,18 +746,8 @@ export default function Demonstration() {
                                     columnGap: 12
                                 }}
                             >
-                                <Button
-                                    tintColor={(drillIndex !== 0) ? buttonThemes.black.tintColor : buttonThemes.disabled.tintColor}
-                                    borderColor={(drillIndex !== 0) ? buttonThemes.black.borderColor : buttonThemes.disabled.borderColor}
-                                    backgroundColor={(drillIndex !== 0) ? buttonThemes.black.backgroundColor : buttonThemes.disabled.backgroundColor}
-                                    outerStyle={{
-                                        flex: 1,
-                                        alignSelf: undefined
-                                    }}
-                                    innerStyle={{
-                                        flex: 1,
-                                        columnGap: 6
-                                    }}
+                                <ButtonHalfWidth
+                                    {...((drillIndex !== 0) ? buttonTheme.black : buttonTheme.disabled)}
                                     onPress={prevDrill}
                                 >
                                     <MoveLeft
@@ -790,7 +759,7 @@ export default function Demonstration() {
                                         style={{
                                             fontSize: 14,
                                             fontWeight: 500,
-                                            letterSpacing: -0.1,
+                                            letterSpacing: letterSpacing.lg,
                                             color: "white",
                                             textAlign: "center",
                                             opacity: drillIndex !== 0 ? 1: 0.75
@@ -798,27 +767,17 @@ export default function Demonstration() {
                                     >
                                         Back
                                     </ThemedText>
-                                </Button>
+                                </ButtonHalfWidth>
                                 {(session && session.drills && (drillIndex || 0) !== session.drills.length - 1) &&
-                                    <Button
-                                        tintColor={buttonThemes.black.tintColor}
-                                        borderColor={buttonThemes.black.borderColor}
-                                        backgroundColor={buttonThemes.black.backgroundColor}
-                                        outerStyle={{
-                                            flex: 1,
-                                            alignSelf: undefined
-                                        }}
-                                        innerStyle={{
-                                            flex: 1,
-                                            columnGap: 6
-                                        }}
+                                    <ButtonHalfWidth
+                                        {...buttonTheme.black}
                                         onPress={nextDrill}
                                     >
                                         <ThemedText
                                             style={{
                                                 fontSize: 14,
                                                 fontWeight: 500,
-                                                letterSpacing: -0.1,
+                                                letterSpacing: letterSpacing.lg,
                                                 color: "white",
                                                 textAlign: "center",
                                             }}
@@ -829,18 +788,11 @@ export default function Demonstration() {
                                             color={"white"}
                                             size={18}
                                         />
-                                    </Button>
+                                    </ButtonHalfWidth>
                                 }
                                 {(session && session.drills && (drillIndex || 0) === session.drills.length - 1) &&
-                                    <Button
-                                        outerStyle={{
-                                            flex: 1,
-                                            alignSelf: undefined
-                                        }}
-                                        innerStyle={{
-                                            flex: 1,
-                                            columnGap: 6
-                                        }}
+                                    <ButtonHalfWidth
+                                        {...buttonTheme.blue}
                                         onPress={() => submitSession(session, submissions)}
                                     >
                                         {sendingSubmission === true &&
@@ -859,14 +811,14 @@ export default function Demonstration() {
                                             style={{
                                                 fontSize: 14,
                                                 fontWeight: 500,
-                                                letterSpacing: -0.1,
+                                                letterSpacing: letterSpacing.lg,
                                                 color: "white",
                                                 textAlign: "center"
                                             }}
                                         >
                                             Complete Session
                                         </ThemedText>
-                                    </Button>
+                                    </ButtonHalfWidth>
                                 }
                             </View>
                         </ScrollView>

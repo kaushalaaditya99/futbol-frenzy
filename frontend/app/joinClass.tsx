@@ -1,15 +1,14 @@
-import { Modal, Pressable, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
-import { ArrowRightToLine, CircleX, X } from "lucide-react-native";
+import { ArrowRightToLine } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import ColorPicker, { Panel1, Swatches, Preview, OpacitySlider, HueSlider, Panel2, Panel3, Panel4, Panel5 } from 'reanimated-color-picker';
-import TextInputField from "@/components/TextInputField";
-import ThemedText from "@/components/ThemedText";
-import Button from "@/components/Button";
 import { router } from "expo-router";
 import { joinClass } from "@/services/classes";
 import { SafeAreaView } from "react-native-safe-area-context";
-import HeaderWithBack from "@/components/HeaderWithBack";
+import HeaderWithBack from "@/components/ui/HeaderWithBack";
+import ThemedText from "@/components/ui/ThemedText";
+import Button from "@/components/ui/button/Button";
+import ErrorMessage from "@/components/ui/input/ErrorMessage";
 
 export default function JoinClass() {
     const [failed, setFailed] = useState(false);
@@ -83,7 +82,7 @@ export default function JoinClass() {
                             fontWeight: 400,
                             letterSpacing: letterSpacing.lg,
                             textAlign: "center",
-                            color: "gray",
+                            color: colors.schemes.light.onSurfaceVariant,
                         }}
                     >
                         What's the code of the class you'd like to join?
@@ -98,7 +97,6 @@ export default function JoinClass() {
                         value={classCode}
                         onChangeText={(text) => setClassCode(text)}
                         style={{
-                            fontFamily: "Inter_700Bold",
                             paddingVertical: 8,
                             paddingHorizontal: 12,
                             borderWidth: 1,
@@ -107,18 +105,16 @@ export default function JoinClass() {
                             backgroundColor: "white",
                             fontSize: 24,
                             textAlign: "center",
+                            fontFamily: "Arimo-700Bold",
                             ...shadow.sm
                         }}
                     />
                     <Button
-                        onPress={onJoinClass}
-                        outerStyle={{
-                            ...shadow.md,
-                        }}
                         innerStyle={{
                             columnGap: 12,
                             width: "100%"
                         }}
+                        onPress={onJoinClass}
                     >
                         <ArrowRightToLine
                             size={18}
@@ -137,36 +133,12 @@ export default function JoinClass() {
                     </Button>
                     <View
                         style={{
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
-                            flexDirection: "row",
-                            alignItems: "flex-start",
-                            columnGap: 6,
-                            borderWidth: 1,
-                            borderColor: colors.schemes.light.error,
-                            borderStyle: "dashed",
-                            borderRadius: 8,
-                            backgroundColor: colors.schemes.light.errorContainer,
                             opacity: failed ? 1 : 0
                         }}
                     >
-                        <View
-                            style={{
-                                flexShrink: 1,
-                            }}
-                        >
-                            <ThemedText
-                                style={{
-                                    flexShrink: 1,
-                                    fontSize: fontSize.md,
-                                    fontWeight: 400,
-                                    letterSpacing: letterSpacing.xl,
-                                    color: colors.schemes.light.onErrorContainer
-                                }}
-                            >
-                                A class with this code was not found. Please try again.
-                            </ThemedText>
-                        </View>
+                        <ErrorMessage
+                            message="A class with this code was not found. Please try again."
+                        />
                     </View>
                 </View>
             </View>

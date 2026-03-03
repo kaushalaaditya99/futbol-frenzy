@@ -1,0 +1,141 @@
+import useFunctionalDate from "@/hooks/useFunctionalDate";
+import { getSessions, Session } from "@/services/sessions";
+import { useEffect, useState } from "react";
+import { MarkedDates } from "react-native-calendars/src/types";
+import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
+import Tabs from "./Tabs";
+import TabOverview from "./TabOverview";
+import TabWorkout from "./WorkoutTab/TabWorkout";
+
+export default function CoachView() {
+    const [teacherID, setTeacherID] = useState(0);
+        
+    const [tab, setTab] = useState("Workout");
+    const tabs = ["Overview", "Workout", "Students", "Progress"];
+
+    const functionalDate = useFunctionalDate();
+    const [markedDatesAndSessions, setMarkedDatesAndSessions] = useState<MarkedDates>({});
+
+    const [sessions, setSessions] = useState<Array<Session>>([]);
+    const [sessionsViewType, setSessionsViewType] = useState("Big");
+    const [sessionsToday, setSessionsToday] = useState<Array<Session>>([]);
+    const [sessionsOnDate, setSessionsOnDate] =  useState<Array<Session>>([]);
+    const [sessionsOnDateLabel, setSessionsOnDateLabel] = useState("");
+
+    const [search, setSearch] = useState("");
+
+    useEffect(() => {
+        loadSessions(teacherID);
+    }, []);
+
+
+    useEffect(() => {
+        loadSessionsToday(sessions);
+    }, [sessions]);
+
+
+    useEffect(() => {
+        const markedDates = functionalDate.getMarkedDates();
+        const markedDatesAndSessions = functionalDate.markSessionsOnCalendar(markedDates, sessions);
+        setMarkedDatesAndSessions(markedDatesAndSessions);
+    }, [sessions, functionalDate.date]);
+
+
+    useEffect(() => {
+        getSessionsOnDate(functionalDate.date, sessions);
+    }, [sessions, functionalDate.date]);
+
+
+    useEffect(() => {
+        updateSessionsOnDateLabel(functionalDate.date);
+    }, [functionalDate.date]);
+
+
+    const loadSessions = async (teacherID: number) => {
+        const sessions = await getSessions(teacherID);
+        setSessions(sessions);
+    }
+
+
+    const loadSessionsToday = (sessions: Array<Session>) => {
+        const todaysSessions: Array<Session> = [];
+        const today = new Date();
+        const todayDate = today.getDate();
+        const todayMonth = today.getMonth();
+        const todayFullYear = today.getFullYear();
+
+        for (const session of sessions) {
+            const sameDayAsToday = session.date.getDate() === todayDate && session.date.getMonth() === todayMonth &&  session.date.getFullYear() === todayFullYear;
+            if (sameDayAsToday) {
+                todaysSessions.push(session);
+            }
+        }
+        
+        setSessionsToday(todaysSessions);
+    }
+
+
+    const getSessionsOnDate = (date: Date, sessions: Array<Session>) => {
+        const dateShortISOString = functionalDate.getShortISOString(date);
+        const sessionsOnDate: Array<Session> = [];
+
+        for (const session of sessions)
+            if (functionalDate.getShortISOString(session.date) === dateShortISOString)
+                sessionsOnDate.push(session);
+
+        setSessionsOnDate(sessionsOnDate);
+    }
+
+
+    const updateSessionsOnDateLabel = (date: Date) => {
+        if (functionalDate.isToday(date)) {
+            setSessionsOnDateLabel("Today's Sessions");
+        }
+        else if (functionalDate.isYesterday(date)) {
+            setSessionsOnDateLabel("Yesterday's Sessions");
+        }
+        else if (functionalDate.isTomorrow(date)) {
+            setSessionsOnDateLabel("Tomorrow's Sessions");
+        }
+        else {
+            const dateLabel = functionalDate.date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            });
+            setSessionsOnDateLabel(`Sessions on ${dateLabel}`);
+        }
+    }
+
+
+    return (
+        <ScrollView>
+            <Tabs
+                tab={tab}
+                tabs={tabs}
+                setTab={setTab}
+            />
+            {tab === "Overview" &&
+                <TabOverview
+                    onSharePress={() => console.log("Share Pressed")}
+                    onSettingsPress={() => console.log("Settings Pressed")}
+                    sessionsToday={sessionsToday}
+                />
+            }
+            {tab === "Workout" &&
+                <TabWorkout
+                    onAssignPress={() => console.log("Assign Pressed")}
+                    onCreatePress={() => console.log("Create Pressed")}
+                    search={search}
+                    setSearch={setSearch}
+                    viewType={sessionsViewType}
+                    setViewType={setSessionsViewType}
+                    sessionsOnDate={sessionsOnDate}
+                    sessionsOnDateLabel={sessionsOnDateLabel}
+                    functionalDate={functionalDate}
+                    markedDatesAndSessions={markedDatesAndSessions}
+                />
+            }
+        </ScrollView>
+    )
+}

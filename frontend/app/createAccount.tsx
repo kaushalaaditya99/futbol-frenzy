@@ -1,32 +1,24 @@
-import ButtonField from "@/components/ButtonField";
-import EmojiRadioButtonField from "@/components/EmojiRadioButtonField";
-import TextInputField from "@/components/TextInputField";
+import SimpleButton from "@/components/ui/button/SimpleButton";
+import InputText from "@/components/ui/input/InputText";
+import RadioCard from "@/components/ui/input/RadioCard";
+import ThemedText from "@/components/ui/ThemedText";
+import { colors, fontSize, margin, padding } from "@/theme";
+import { router } from "expo-router";
 import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import {ParamListBase, useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 export default function CreateAccount() {
-    const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-    
-    const navigate = (dest: string) => {
-        navigation.navigate(dest);
-    }
-    
     return (
         <View
             style={{
-                backgroundColor: "#FFF",
-				display: "flex",
-				rowGap: 12,
-				paddingVertical: 24,
-				paddingHorizontal: 36,
+                backgroundColor: colors.schemes.light.background,
+				rowGap: padding.sm,
+				paddingVertical: margin.sm,
+				paddingHorizontal: margin.lg,
 				flex: 1
             }}
         >
-            {/* Header */}
             <View>
-                <Text
+                <ThemedText
                     style={{
                         fontSize: 32,
                         fontWeight: 600,
@@ -35,44 +27,30 @@ export default function CreateAccount() {
                     }}
                 >
                     Create Account
-                </Text>
-                <Text
+                </ThemedText>
+                <ThemedText
                     style={{
                         fontSize: 16,
                         fontWeight: 400,
                         textAlign: "center",
-                        color: "gray"
+                        color: colors.schemes.light.onSurfaceVariant
                     }}
                 >
                     Join DrillUp and level up your game.
-                </Text>
+                </ThemedText>
             </View>
-            {/* Google, Apple */}
             <View
                 style={{
                     rowGap: 12
                 }}
             >
-                <ButtonField
-                    title="Sign Up with Google"
-                    style={{
-                        backgroundColor: "white",
-                    }}
-                    textStyle={{
-                        color: "black"
-                    }}
+                <SimpleButton
+                    label="Sign Up with Google"
                 />
-                <ButtonField
-                    title="Sign Up with Apple"
-                    style={{
-                        backgroundColor: "white",
-                    }}
-                    textStyle={{
-                        color: "black"
-                    }}
+                <SimpleButton
+                    label="Sign Up with Apple"
                 />
             </View>
-            {/* Separator */}
             <View
 				style={{
 					display: "flex",
@@ -81,56 +59,55 @@ export default function CreateAccount() {
 					justifyContent: "space-between"
 				}}
 			>
-				<View style={{height: 1, maxHeight: 1, width: "33%", backgroundColor: "gray"}}></View>
-				<Text
+				<View style={{height: 1, maxHeight: 1, width: "33%", backgroundColor: colors.schemes.light.onSurfaceVariant}}></View>
+				<ThemedText
 					style={{
 						width: "33%",
-						fontSize: 12,
+						fontSize: fontSize.sm,
 						fontWeight: 600,
-						color: "gray",
+						color: colors.schemes.light.onSurfaceVariant,
 						textAlign: "center"
 					}}
 				>
 					OR WITH EMAIL
-				</Text>
-				<View style={{height: 1, maxHeight: 1, width: "33%", backgroundColor: "gray"}}></View>
+				</ThemedText>
+				<View style={{height: 1, maxHeight: 1, width: "33%", backgroundColor: colors.schemes.light.onSurfaceVariant}}></View>
 			</View>
             {/* Form */}
             <View
                 style={{
-                    display: "flex",
                     flex: 1,
-                    rowGap: 12
+                    rowGap: padding.lg
                 }}
             >
                 <View
                     style={{
                         display: "flex",
-                        columnGap: 12,
                         flexDirection: "row",
+                        columnGap: padding.lg,
                         width: "100%"
                     }}
                 >
-                    <TextInputField
+                    <InputText
                         label="First Name"
-                        containerStyle={{
+                        inputStyle={{
                             flex: 0.5
                         }}
                     />
-                    <TextInputField
+                    <InputText
                         label="Last Name"
-                        containerStyle={{
+                        inputStyle={{
                             flex: 0.5
                         }}
                     />
                 </View>
-                <TextInputField
+                <InputText
                     label="Email Address"
                 />
-                <TextInputField
+                <InputText
                     label="Password"
                 />
-                <TextInputField
+                <InputText
                     label="Confirm Password"
                 />
                 {/* Role */}
@@ -138,58 +115,59 @@ export default function CreateAccount() {
                     style={{
                         display: "flex",
                         flexDirection: "row",
-                        columnGap: 12
+                        columnGap: padding.lg
                     }}
                 >
-                    <EmojiRadioButtonField
-                        value={true}
+                    <RadioCard
+                        value="Coach"
+                        onChange={(value) => console.log(value)}
                         emoji="🧑‍🏫"
                         label="Coach"
                         description="Create and assign drills"
                     />
-                    <EmojiRadioButtonField
-                        value={false}
+                    <RadioCard
+                        value="Student"
+                        onChange={(value) => console.log(value)}
                         emoji="⚽"
                         label="Player"
                         description="Practice and submit drills"
                     />
                 </View>
-                {/* Create Account Button (and "Log In") */}
                 <View
                     style={{
                         display: "flex",
                         alignItems: "center",
-                        rowGap: 4
+                        rowGap: padding.sm
                     }}
                 >
-                    <ButtonField
-                        title="Create Account"
+                    <SimpleButton
+                        label="Create Account"
                     />
                     <View
                         style={{
                             display: "flex",
                             flexDirection: "row",
-                            columnGap: 4
+                            columnGap: padding.sm
                         }}
                     >
-                        <Text
+                        <ThemedText
                             style={{
-                                fontSize: 12,
+                                fontSize: fontSize.sm,
                                 alignSelf: "flex-start"
                             }}
                         >
                             Already have an account?
-                        </Text>
-                        <Text
+                        </ThemedText>
+                        <ThemedText
+                            onPress={() => router.push("/(tabs)")}
                             style={{
-                                fontSize: 12,
+                                fontSize: fontSize.sm,
                                 fontWeight: 600,
                                 alignSelf: "flex-start"
                             }}
-                            onPress={() => navigate("index")}
                         >
                             Log In
-                        </Text>
+                        </ThemedText>
                     </View>
                 </View>
             </View>

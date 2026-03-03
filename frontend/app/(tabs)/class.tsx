@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, margin } from "@/theme";
-import HeaderWithBack from "@/components/HeaderWithBack";
 import { router } from "expo-router";
-import ClassTeacherView from "@/components/Class/TeacherView/ClassTeacherView";
-import ClassStudentView from "@/components/Class/StudentView/ClassStudentView";
+import HeaderWithBack from "@/components/ui/HeaderWithBack";
+import CoachView from "@/components/pages/class/coach/CoachView";
+import StudentView from "@/components/pages/class/student/StudentView";
 
 export default function Class() {
     const [isTeacher, setIsTeacher] = useState(true);
@@ -30,7 +30,7 @@ export default function Class() {
                 }}
             />
             {
-                isTeacher ? <ClassTeacherView/> : <ClassStudentView/>
+                isTeacher ? <CoachView/> : <StudentView/>
             }
         </SafeAreaView>
     )

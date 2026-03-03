@@ -1,4 +1,4 @@
-import ThemedText from '@/components/ThemedText';
+import ThemedText from '@/components/ui/ThemedText';
 import { colors, fontSize, letterSpacing } from '@/theme';
 import { Tabs } from 'expo-router';
 import { Bell, Calendar, ClipboardList, Cog, Home, Zap } from 'lucide-react-native';

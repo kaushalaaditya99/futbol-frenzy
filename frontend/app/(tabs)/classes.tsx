@@ -1,18 +1,19 @@
-import SearchBar from "@/components/Classes/SearchBar";
-import Header from "@/components/Header";
-import SideBar from "@/components/SideBar/SideBar";
-import useSideBar from "@/components/SideBar/useSideBar";
-import ThemedText from "@/components/ThemedText";
-import { joinClass, Class, getClasses } from "@/services/classes";
-import { colors } from "@/theme";
+import { Class, getClasses } from "@/services/classes";
+import { colors, margin, padding } from "@/theme";
 import { Fragment, useEffect, useState } from "react";
-import { Dimensions, Pressable, ScrollView, View } from "react-native";
+import { Dimensions, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CardClass from "@/components/Classes/CardClass";
-import MissingClass from "@/components/Classes/MissingClass";
-import CreateClassButton from "@/components/Classes/CreateClassButton";
-import JoinClassButton from "@/components/Classes/JoinClassButton";
+import RowCardClass from "@/components/pages/classes/RowCardClass";
+import MissingClass from "@/components/pages/classes/MissingClass";
+import CreateClassButton from "@/components/pages/classes/coach/CreateClassButton";
+import JoinClassButton from "@/components/pages/classes/student/JoinClassButton";
 import { router } from "expo-router";
+import useSideBar from "@/components/ui/user/sideBar/useSideBar";
+import SideBar from "@/components/ui/user/sideBar/SideBar";
+import SideBarDim from "@/components/ui/user/sideBar/SideBarDim";
+import Header from "@/components/ui/user/Header";
+import ThemedText from "@/components/ui/ThemedText";
+import SearchBar from "@/components/ui/SearchBar";
 
 export default function Classes() {
     const [classes, setClasses] = useState<Array<Class>>([]);
@@ -86,17 +87,8 @@ export default function Classes() {
                 }}
             >
                 {sideBar.showSideBar &&
-                    <Pressable
-                        onPress={() => sideBar.setShowSideBar(false)}
-                        style={{
-                            position: "absolute",
-                            zIndex: 100,
-                            height: Dimensions.get('window').height,
-                            minHeight: Dimensions.get('window').height,
-                            width: Dimensions.get('window').width,
-                            minWidth: Dimensions.get('window').width,
-                            backgroundColor: "#000000D0"
-                        }}
+                    <SideBarDim
+                        setShowSideBar={sideBar.setShowSideBar}
                     />
                 }
                 <Header
@@ -104,14 +96,14 @@ export default function Classes() {
                 />
                 <ScrollView
                     style={{
-                        paddingVertical: 24,
-                        paddingHorizontal: 24,
+                        paddingVertical: margin.sm,
+                        paddingHorizontal: margin.sm,
                         backgroundColor: colors.schemes.light.surface,
                     }}
                 >
                     <View
                         style={{
-                            rowGap: 12
+                            rowGap: padding.sm
                         }}
                     >
                         <View
@@ -134,7 +126,7 @@ export default function Classes() {
                             <View
                                 style={{
                                     flexDirection: "row",
-                                    columnGap: 8
+                                    columnGap: padding.md
                                 }}
                             >
                                 <CreateClassButton
@@ -148,19 +140,19 @@ export default function Classes() {
                         <SearchBar
                             search={search}
                             setSearch={setSearch}
-                            onSearch={() => null}
+                            enableSort={true}
                             sortDirection={sortDirection}
                             setSortDirection={setSortDirection}
                         />
                     </View>
                     <View
                         style={{
-                            rowGap: 12
+                            rowGap: padding.lg
                         }}
                     >
                         {filteredClasses.map((class_, i) => (
                             <Fragment key={i}>
-                                <CardClass
+                                <RowCardClass
                                     {...class_}
                                 />
                             </Fragment>

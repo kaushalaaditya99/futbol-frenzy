@@ -1,14 +1,13 @@
+import SimpleButton from '@/components/ui/button/SimpleButton';
+import InputText from '@/components/ui/input/InputText';
+import ThemedText from '@/components/ui/ThemedText';
 import {ParamListBase, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import { Redirect } from "expo-router";
+import { Redirect, router } from "expo-router";
+import { View } from 'lucide-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Index() {
-	const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-
-	const navigate = (dest: string) => {
-		navigation.navigate(dest);
-	}
-
 	return (
 		<Redirect
 			href="/(tabs)"
@@ -45,15 +44,15 @@ export default function Index() {
 		// 				marginBottom: 24
 		// 			}}
 		// 		>
-		// 			<Text
+		// 			<ThemedText
 		// 				style={{
 		// 					fontSize: 60,
 		// 				}}
 		// 			>
 		// 				⚽
-		// 			</Text>
+		// 			</ThemedText>
 		// 		</View>
-		// 		<Text
+		// 		<ThemedText
 		// 			style={{
 		// 				fontSize: 32,
 		// 				fontWeight: 600,
@@ -62,8 +61,8 @@ export default function Index() {
 		// 			}}
 		// 		>
 		// 			DrillUp
-		// 		</Text>
-		// 		<Text
+		// 		</ThemedText>
+		// 		<ThemedText
 		// 			style={{
 		// 				fontSize: 16,
 		// 				fontWeight: 400,
@@ -72,7 +71,7 @@ export default function Index() {
 		// 			}}
 		// 		>
 		// 			Practice smarter. Play better.
-		// 		</Text>
+		// 		</ThemedText>
 		// 	</View>
 		// 	{/* Form 1 */}
 		// 	<View
@@ -83,7 +82,7 @@ export default function Index() {
 		// 		}}
 		// 	>
 		// 		{/* Email */}
-		// 		<TextInputField
+		// 		<InputText
 		// 			label="Email"
 		// 		/>
 		// 		{/* Password (and "Forgot") */}
@@ -93,23 +92,23 @@ export default function Index() {
 		// 				rowGap: 4,
 		// 			}}
 		// 		>
-		// 			<TextInputField
+		// 			<InputText
 		// 				label="Password"
 		// 			/>
-		// 			<Text
+		// 			<ThemedText
 		// 				style={{
 		// 					color: "#000000",
 		// 					fontSize: 12,
 		// 					fontWeight: 600,
 		// 					textAlign: "right"
 		// 				}}
-		// 				onPress={() => navigate("resetPassword")}
+		// 				onPress={() => router.push("/resetPassword")}
 		// 			>
 		// 				Forgot Password?
-		// 			</Text>
+		// 			</ThemedText>
 		// 		</View>
-		// 		<ButtonField
-		// 			title="Log In"
+		// 		<SimpleButton
+		// 			label="Log In"
 		// 		/>
 		// 	</View>
 		// 	{/* Separator */}
@@ -122,7 +121,7 @@ export default function Index() {
 		// 		}}
 		// 	>
 		// 		<View style={{height: 1, maxHeight: 1, width: "33%", backgroundColor: "gray"}}></View>
-		// 		<Text
+		// 		<ThemedText
 		// 			style={{
 		// 				width: "33%",
 		// 				fontSize: 12,
@@ -132,7 +131,7 @@ export default function Index() {
 		// 			}}
 		// 		>
 		// 			OR CONTINUE WITH
-		// 		</Text>
+		// 		</ThemedText>
 		// 		<View style={{height: 1, maxHeight: 1, width: "33%", backgroundColor: "gray"}}></View>
 		// 	</View>
 		// 	{/* Form 2 */}
@@ -153,9 +152,9 @@ export default function Index() {
 		// 				maxHeight: 44,
 		// 			}}
 		// 		>
-		// 			<ButtonField
-		// 				title="Google"
-		// 				style={{
+		// 			<SimpleButton
+		// 				label="Google"
+		// 				innerMostStyle={{
 		// 					flex: 0.5,
 		// 					backgroundColor: "white",
 		// 				}}
@@ -163,9 +162,9 @@ export default function Index() {
 		// 					color: "black"
 		// 				}}
 		// 			/>
-		// 			<ButtonField
-		// 				title="Apple"
-		// 				style={{
+		// 			<SimpleButton
+		// 				label="Apple"
+		// 				innerMostStyle={{
 		// 					flex: 0.5,
 		// 					backgroundColor: "white",
 		// 				}}
@@ -174,9 +173,9 @@ export default function Index() {
 		// 				}}
 		// 			/>
 		// 		</View>
-		// 		<ButtonField
-		// 			title="Continue with Facebook"
-		// 			style={{
+		// 		<SimpleButton
+		// 			label="Continue with Facebook"
+		// 			innerMostStyle={{
 		// 				backgroundColor: "white",
 		// 			}}
 		// 			textStyle={{
@@ -190,7 +189,7 @@ export default function Index() {
 		// 				columnGap: 4
 		// 			}}
 		// 		>
-		// 			<Text
+		// 			<ThemedText
 		// 				style={{
 		// 					fontSize: 12,
 		// 					color: "#000",
@@ -198,18 +197,18 @@ export default function Index() {
 		// 				}}
 		// 			>
 		// 				Don't have an account?
-		// 			</Text>
-		// 			<Text
+		// 			</ThemedText>
+		// 			<ThemedText
 		// 				style={{
 		// 					fontSize: 12,
 		// 					color: "#000",
 		// 					fontWeight: 600,
 		// 					alignSelf: "flex-start"
 		// 				}}
-		// 				onPress={() => navigate("createAccount")}
+		// 				onPress={() => router.push("/createAccount")}
 		// 			>
 		// 				Sign Up
-		// 			</Text>
+		// 			</ThemedText>
 		// 		</View>
 		// 	</View>
 		// </SafeAreaView>
