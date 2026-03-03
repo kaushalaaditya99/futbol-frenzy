@@ -51,15 +51,15 @@ export default function TabOverview(props: TabOverviewProps) {
                 }}
             >
                 <CardMetric
-                    key={"Number\nStudents"}
+                    label={"Number\nStudents"}
                     value="10"
                 />
                 <CardMetric
-                    key={"Sessions\nToday"}
+                    label={"Sessions\nToday"}
                     value="5"
                 />
                 <CardMetric
-                    key={"Sessions\nUngraded"}
+                    label={"Sessions\nUngraded"}
                     value="5"
                 />
             </View>

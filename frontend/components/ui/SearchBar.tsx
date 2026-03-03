@@ -1,5 +1,5 @@
 import { borderRadius, colors, margin, padding, shadow } from "@/theme";
-import { ArrowDown, ArrowDownUp, ArrowUp, Search } from "lucide-react-native";
+import { ArrowDown, ArrowDownUp, ArrowUp, MoveDown, MoveUp, Search } from "lucide-react-native";
 import { ReactNode } from "react";
 import { Pressable, TextInput, TextStyle, View, ViewStyle } from "react-native";
 
@@ -32,7 +32,6 @@ export default function SearchBar(props: SearchBarProps) {
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                marginBottom: margin.sm,
                 borderWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
                 borderStyle: "solid",
@@ -59,7 +58,7 @@ export default function SearchBar(props: SearchBarProps) {
             {props.childrenLeftOfSort}
             {props.enableSort &&
                 <Pressable
-                    onPress={() => props.sortDirection && updateSortDirection(props.sortDirection)}
+                    onPress={() => props.sortDirection !== undefined && updateSortDirection(props.sortDirection)}
                     style={{
                         paddingVertical: padding.md,
                         paddingHorizontal: padding.lg,
@@ -76,13 +75,13 @@ export default function SearchBar(props: SearchBarProps) {
                         />
                     }
                     {props.sortDirection === 1 &&
-                        <ArrowUp
+                        <MoveUp
                             size={18}
                             color={"#307351"}
                         />
                     }
                     {props.sortDirection === 2 &&
-                        <ArrowDown
+                        <MoveDown
                             size={18}
                             color={"#D7263D"}
                         />

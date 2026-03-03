@@ -1,7 +1,7 @@
-import ThemedText from "@/components/ThemedText";
 import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import { ReactNode } from "react";
 import { Pressable, TextStyle, ViewStyle } from "react-native";
+import ThemedText from "../../ThemedText";
 
 interface SideBarLinkProps {
     icon: ReactNode; 

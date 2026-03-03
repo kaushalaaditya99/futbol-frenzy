@@ -1,11 +1,12 @@
 import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
-import { ArrowLeftFromLine, Settings, View } from "lucide-react-native";
+import { ArrowLeftFromLine, Settings } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProfilePicture from "../ProfilePicture";
 import ThemedText from "../../ThemedText";
 import { SideBarLink } from "./SideBarLink";
 import { router } from "expo-router";
+import { View } from "react-native";
 
 interface SideBarProps {
     targetWidth: number;

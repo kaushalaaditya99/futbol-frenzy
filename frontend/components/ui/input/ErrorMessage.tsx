@@ -11,9 +11,6 @@ export default function ErrorMessage(props: ErrorMessageProps) {
     return (
         <View
             style={{
-                marginHorizontal: 24,
-                marginVertical: 6,
-                marginBottom: 24,
                 paddingVertical: 8,
                 paddingHorizontal: 12,
                 flexDirection: "row",

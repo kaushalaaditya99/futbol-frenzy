@@ -20,6 +20,7 @@ export default function InlineButton(props: ButtonProps) {
                 ...props.innerStyle
             }}
             innerMostStyle={{
+                width: undefined,
                 paddingVertical: padding.sm,
                 paddingHorizontal: padding.lg,
                 ...props.innerMostStyle

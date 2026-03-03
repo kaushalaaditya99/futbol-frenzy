@@ -13,7 +13,7 @@ export default function ButtonCreateSession(props: ButtonCreateSessionProps) {
         <InlineButton
             onPress={props.onPress}
             borderRadius={8}
-            {...buttonTheme.black}
+            {...buttonTheme.white}
         >
             <Plus
                 size={14}

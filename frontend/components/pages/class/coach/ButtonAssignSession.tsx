@@ -13,7 +13,7 @@ export default function ButtonAssignSession(props: ButtonAssignSessionProps) {
         <InlineButton
             onPress={props.onPress}
             borderRadius={8}
-            {...buttonTheme.black}
+            {...buttonTheme.white}
         >
             <ClipboardPaste
                 size={14}

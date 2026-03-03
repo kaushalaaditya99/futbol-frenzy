@@ -2,10 +2,10 @@ import useFunctionalDate from "@/hooks/useFunctionalDate";
 import { getSessions, Session } from "@/services/sessions";
 import { useEffect, useState } from "react";
 import { MarkedDates } from "react-native-calendars/src/types";
-import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
 import Tabs from "./Tabs";
 import TabOverview from "./TabOverview";
 import TabWorkout from "./WorkoutTab/TabWorkout";
+import { ScrollView } from "react-native";
 
 export default function CoachView() {
     const [teacherID, setTeacherID] = useState(0);
@@ -100,8 +100,8 @@ export default function CoachView() {
         else {
             const dateLabel = functionalDate.date.toLocaleDateString("en-US", {
                 year: "numeric",
-                month: "short",
-                day: "numeric",
+                month: "long",
+                day: "2-digit",
             });
             setSessionsOnDateLabel(`Sessions on ${dateLabel}`);
         }

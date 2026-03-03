@@ -22,7 +22,7 @@ export default function ProfilePicture(props: ProfilePictureProps) {
             }}
         >
             <ImageBackground
-                source={require('../assets/images/Pedri-11.jpg')}
+                source={require('../../../assets/images/Pedri-11.jpg')}
                 style={{
                     width: props.width || 36,
                     height: props.height || 36,

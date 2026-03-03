@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import ThemedText from "../ui/ThemedText";
 
 interface CardMetricProps {
-    key: string;
+    label: string;
     value: string;
     valueIcon?: ReactNode;
 }
@@ -53,7 +53,7 @@ export default function CardMetric(props: CardMetricProps) {
                     color: colors.schemes.light.onSurfaceVariant,
                 }}
             >
-                {props.key}
+                {props.label}
             </ThemedText>
         </View>
     )

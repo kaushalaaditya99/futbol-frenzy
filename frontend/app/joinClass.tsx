@@ -9,6 +9,7 @@ import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import Button from "@/components/ui/button/Button";
 import ErrorMessage from "@/components/ui/input/ErrorMessage";
+import { buttonTheme } from "@/components/ui/button/buttonTheme";
 
 export default function JoinClass() {
     const [failed, setFailed] = useState(false);
@@ -114,6 +115,7 @@ export default function JoinClass() {
                             columnGap: 12,
                             width: "100%"
                         }}
+                        {...buttonTheme.blue}
                         onPress={onJoinClass}
                     >
                         <ArrowRightToLine

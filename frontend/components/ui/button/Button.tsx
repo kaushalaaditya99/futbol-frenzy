@@ -59,6 +59,7 @@ export default function Button(props: ButtonProps) {
             >
                 <View
                     style={{
+                        width: "100%",
                         paddingVertical: padding.lg,
                         paddingHorizontal: padding.lg,
                         display: "flex",

@@ -4,14 +4,12 @@ import { Dimensions } from "react-native";
 import { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 export default function useSideBar() {
+    const width = useSharedValue(0);
+    const sideBarTargetWidth = Dimensions.get("window").width * 0.75; 
     const [showSideBar, setShowSideBar] = useState(false);
     const animatedExpandFromLeft = useAnimatedStyle(() => ({
         minWidth: width.value,
     }));
-
-
-    const width = useSharedValue(0);
-    const sideBarTargetWidth = Dimensions.get("window").width * 0.75; 
     
 
     useEffect(() => {

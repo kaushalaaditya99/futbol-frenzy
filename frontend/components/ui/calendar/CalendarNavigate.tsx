@@ -9,7 +9,6 @@ interface CalendarNavigateProps {
     functionalDate: ReturnType<typeof useFunctionalDate>;
     long?: boolean;
     dateLabelLong?: boolean;
-    onOpenCalendar?: () => void;
     containerStyle?: ViewStyle;
     leftButtonContainerStyle?: ViewStyle;
     rightButtonContainerStyle?: ViewStyle;
@@ -80,6 +79,7 @@ export default function CalendarNavigate(props: CalendarNavigateProps) {
                     borderRightWidth: 1,
                     borderColor: colors.schemes.light.outlineVariant,
                     borderTopLeftRadius: borderRadius.base,
+                    borderBottomLeftRadius: borderRadius.base,
                     backgroundColor: colors.schemes.light.surfaceContainerLowest,
                     ...props.leftButtonContainerStyle
                 }}
@@ -91,7 +91,7 @@ export default function CalendarNavigate(props: CalendarNavigateProps) {
                 />
             </Pressable>
             <Pressable
-                onPress={props.onOpenCalendar}
+                onPress={() => props.functionalDate.setShowCalendar(true)}
                 style={{
                     paddingVertical: padding.sm,
                     paddingHorizontal: padding.md,
@@ -144,9 +144,8 @@ export default function CalendarNavigate(props: CalendarNavigateProps) {
                     paddingVertical: padding.md,
                     paddingHorizontal: padding.lg,
                     borderLeftWidth: 1,
-                    borderBottomWidth: 0,
                     borderTopRightRadius: borderRadius.base,
-                    borderBottomRightRadius: 0,
+                    borderBottomRightRadius: borderRadius.base,
                     borderColor: colors.schemes.light.outlineVariant,
                     backgroundColor: colors.schemes.light.surfaceContainerLowest,
                     ...props.rightButtonContainerStyle

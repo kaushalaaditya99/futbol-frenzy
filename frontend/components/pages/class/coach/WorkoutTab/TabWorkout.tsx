@@ -54,7 +54,7 @@ export default function TabWorkout(props: TabWorkoutProps) {
             <View
                 style={{
                     paddingVertical: margin.sm,
-                    paddingBottom: props.viewType === "List" ? 0 : undefined,
+                    paddingBottom: props.viewType === "Small" ? 0 : undefined,
                     paddingHorizontal: margin.sm,
                     rowGap: padding.lg,
                 }}
@@ -107,6 +107,7 @@ export default function TabWorkout(props: TabWorkoutProps) {
             <View
                 style={Object.assign({},
                     {
+                        marginTop: padding.lg,
                         paddingHorizontal: margin.sm,
                         display: "flex",
                         flexDirection: "column",
@@ -116,7 +117,6 @@ export default function TabWorkout(props: TabWorkoutProps) {
                         borderTopWidth: 1,
                         borderColor: colors.schemes.light.outlineVariant,
                         paddingVertical: margin["2xs"],
-
                     }
                 ) as any}
             >

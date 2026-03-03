@@ -1,8 +1,7 @@
 import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "@/theme";
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 import ThemedText from "../ThemedText";
 import { abbreviatedDays } from "./abbreviatedDays";
-import { View } from "lucide-react-native";
 
 interface WeekButtonGroupProps {
     dateOffset: number;

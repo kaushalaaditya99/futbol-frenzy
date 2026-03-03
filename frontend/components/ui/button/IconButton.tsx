@@ -20,6 +20,7 @@ export default function IconButton(props: ButtonProps) {
                 ...props.innerStyle
             }}
             innerMostStyle={{
+                width: undefined,
                 height: 28,
                 aspectRatio: 1,
                 ...props.innerMostStyle

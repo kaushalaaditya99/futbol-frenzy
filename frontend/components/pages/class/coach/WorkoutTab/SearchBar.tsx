@@ -36,6 +36,8 @@ export default function SessionSearchBar(props: SessionSearchBarProps) {
                     ]}
                     containerStyle={{
                         height: "100%",
+                        borderWidth: 0,
+                        borderLeftWidth: 1,
                         borderRadius: 0,
                         shadowColor: "transparent"
                     }}
@@ -43,8 +45,10 @@ export default function SessionSearchBar(props: SessionSearchBarProps) {
                         paddingVertical: padding.sm,
                         paddingHorizontal: padding.md,
                         display: "flex",
+                        flex: undefined,
                         justifyContent: "center",
-                        alignItems: "center"
+                        alignItems: "center",
+                        borderWidth: 0
                     }}
                     selectedOptionStyle={{
                         borderRadius: 6

@@ -27,6 +27,7 @@ export default function SmallCalendar(props: SmallCalendarProps) {
                 dateOffset={props.functionalDate.dateOffset}
                 setDateOffset={props.functionalDate.setDateOffset}
                 buttonStyle={(day, i) => ({
+                    borderTopWidth: 0,
                     borderTopLeftRadius: 0,
                     borderTopRightRadius: 0,
                 })}

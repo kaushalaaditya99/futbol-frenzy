@@ -121,7 +121,7 @@ export default function Home() {
                                 }}
                             >
                                 <CardMetric
-                                    key="Days Streak"
+                                    label="Days Streak"
                                     value="7"
                                     valueIcon={
                                         <Flame 
@@ -132,11 +132,11 @@ export default function Home() {
                                     }
                                 />
                                 <CardMetric
-                                    key="This Week"
+                                    label="This Week"
                                     value="12"
                                 />
                                 <CardMetric
-                                    key="Due Today"
+                                    label="Due Today"
                                     value="3"
                                 />
                             </View>
@@ -169,20 +169,10 @@ export default function Home() {
                                         functionalDate={functionalDate}
                                     />
                                 </View>
-                                <View
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        columnGap: padding.sm
-                                    }}
-                                >
-                                    <WeekButtonGroup
-                                        dateOffset={functionalDate.dateOffset}
-                                        setDateOffset={functionalDate.setDateOffset}
-                                    />
-                                </View>
+                                <WeekButtonGroup
+                                    dateOffset={functionalDate.dateOffset}
+                                    setDateOffset={functionalDate.setDateOffset}
+                                />
                                 <View
                                     style={{
                                         display: "flex",

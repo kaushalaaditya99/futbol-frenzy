@@ -103,7 +103,7 @@ export default function Classes() {
                 >
                     <View
                         style={{
-                            rowGap: padding.sm
+                            rowGap: padding.lg
                         }}
                     >
                         <View
@@ -147,6 +147,7 @@ export default function Classes() {
                     </View>
                     <View
                         style={{
+                            marginTop: padding.lg,
                             rowGap: padding.lg
                         }}
                     >

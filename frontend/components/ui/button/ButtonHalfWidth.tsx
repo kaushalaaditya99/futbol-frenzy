@@ -12,6 +12,9 @@ export default function ButtonHalfWidth(props: ButtonProps) {
                 flex: 1,
                 columnGap: 6
             }}
+            innerMostStyle={{
+                width: "100%"
+            }}
         />
     )
 }

@@ -34,6 +34,7 @@ export default function InlineRadioGroup(props: InlineRadioGroupProps) {
                     onPress={() => props.onChange(value)}
                     style={Object.assign({},
                         {
+                            "flex": 1,
                             "paddingVertical": padding.lg,
                             "paddingHorizontal": padding.lg,
                             ...props.optionStyle,
