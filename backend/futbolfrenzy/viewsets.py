@@ -19,6 +19,15 @@ class DrillViewSet(viewsets.ModelViewSet):
     serializer_class = DrillSerializer
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+        queryset = Drill.objects.all()
+        coach_id = self.request.query_params.get('coachID')
+
+        if coach_id is not None:
+            queryset = queryset.filter(coachID=coach_id)
+
+        return queryset
+
 class WorkoutViewSet(viewsets.ModelViewSet):
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
