@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function Index() {
 	return (
 		<Redirect
-			href="/(tabs)/class"
+			href="/(tabs)"
 		/>
 		// <SafeAreaView
 		// 	style={{

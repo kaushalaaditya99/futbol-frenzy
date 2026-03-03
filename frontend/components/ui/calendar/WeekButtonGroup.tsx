@@ -25,10 +25,10 @@ export default function WeekButtonGroup(props: WeekButtonGroupProps) {
                     onPress={() => props.setDateOffset(i)}
                     style={{
                         flex: 1,
-                        paddingVertical: 2,
+                        paddingVertical: padding.md,
                         borderWidth: 1,
                         borderColor: i === props.dateOffset ? colors.coreColors.primary : colors.schemes.light.outlineVariant,
-                        borderRadius: borderRadius.base,
+                        borderRadius: borderRadius.md,
                         backgroundColor: i === props.dateOffset ? colors.coreColors.primary : colors.schemes.light.surfaceContainerLowest,
                         ...shadow.sm
                     }}
