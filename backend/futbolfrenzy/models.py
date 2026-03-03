@@ -18,3 +18,17 @@ class Drill(models.Model):
 
     def __str__(self):
         return self.drillName
+    
+class Workout(models.Model):
+    workoutName = models.CharField(max_length = 255) 
+    workoutType = models.CharField(max_length = 255)
+    coachID = coachID = models.ForeignKey(User, on_delete=models.CASCADE)
+    dueDate = models.DateTimeField(null=True, blank=True)
+    imageBackgroundColor = models.CharField(max_length = 7)
+    imageText = models.CharField(max_length = 255)
+    imageTextColor = models.CharField(max_length = 255)
+    drills = models.ManyToManyField(Drill, related_name="drills")
+    publicWorkout = models.BooleanField(default = False)
+
+    def __str__(self):
+        return self.workoutName

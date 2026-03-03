@@ -5,6 +5,7 @@ from . import viewsets
 
 api_router = DefaultRouter()
 api_router.register(r'drills', viewsets.DrillViewSet)
+api_router.register(r'workouts', viewsets.WorkoutViewSet)
 
 urlpatterns = [
     path('home/', views.home, name='futbolfrenzy-home'),
