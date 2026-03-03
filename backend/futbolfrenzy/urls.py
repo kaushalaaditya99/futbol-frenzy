@@ -4,8 +4,15 @@ from . import views
 from . import viewsets
 
 api_router = DefaultRouter()
+api_router.register(r'notifications', viewsets.NotificationViewSet)
+api_router.register(r'settings', viewsets.SettingsViewSet)
 api_router.register(r'drills', viewsets.DrillViewSet)
 api_router.register(r'workouts', viewsets.WorkoutViewSet)
+api_router.register(r'assignments', viewsets.AssignmentViewSet)
+api_router.register(r'submissions', viewsets.SubmissionViewSet)
+api_router.register(r'submitteddrills', viewsets.SubmittedDrillViewSet)
+api_router.register(r'classes', viewsets.SoccerClassViewSet)
+api_router.register(r'classmembers', viewsets.ClassMemberViewSet)
 
 urlpatterns = [
     path('home/', views.home, name='futbolfrenzy-home'),

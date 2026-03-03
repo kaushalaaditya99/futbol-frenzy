@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Settings, Notification, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
+from .models import Notification, Settings, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 
 # Register your models here.
-admin.site.register(Settings)
 admin.site.register(Notification)
+admin.site.register(Settings)
 admin.site.register(Drill)
 admin.site.register(Workout)
 admin.site.register(Assignment)
