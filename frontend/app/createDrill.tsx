@@ -16,6 +16,7 @@ import { Camera, FileUp, FolderOpen, Play, Plus, Upload } from "lucide-react-nat
 import UploadVideo from "@/components/pages/UploadVideo";
 import Button from "@/components/ui/button/Button";
 import InputErrorMessage from "@/components/ui/input/InputErrorMessage";
+import InputInlineRadioGroup from "@/components/ui/input/InputInlineRadioGroup";
 
 export default function CreateDrill() {
     const levelOptions = [
@@ -28,7 +29,7 @@ export default function CreateDrill() {
     const [errors, setErrors] = useState<Errors>();
 
     const [name, setName] = useState("");
-    const [time, setTime] = useState("");
+    const [accessControl, setAccessControl] = useState("private");
     const [level, setLevel] = useState("beginner");
     const [instructions, setInstructions] = useState("");
     const [videoURI, setVideoURI] = useState("");
@@ -245,6 +246,12 @@ export default function CreateDrill() {
                         onChange={setLevel}
                         errorMessage={errors?.name?.errorMessage}
                         onChangeText={setName}
+                    />
+                    <InputInlineRadioGroup
+                        label="Access Control"
+                        value={accessControl}
+                        options={[["public", "Public"], ["private", "Private"]]}
+                        onChange={setAccessControl}
                     />
                 </View>
                 <View

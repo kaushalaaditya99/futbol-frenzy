@@ -3,7 +3,7 @@ import { Pressable, TextStyle, View, ViewStyle } from "react-native";
 import { ReactNode } from "react";
 import ThemedText from "../ThemedText";
 
-interface InlineRadioGroupProps {
+export interface InlineRadioGroupProps {
     value: string;
     options: Array<[string, ReactNode]>;
     onChange: (value: string) => void;
