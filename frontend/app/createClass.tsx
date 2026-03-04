@@ -1,8 +1,8 @@
-import { Modal, Pressable, View } from "react-native";
+import { View } from "react-native";
 import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
-import { CircleX, Plus, X } from "lucide-react-native";
+import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import ColorPicker, { Panel1, Swatches, Preview, OpacitySlider, HueSlider, Panel2, Panel3, Panel4, Panel5, ColorFormatsObject } from 'reanimated-color-picker';
+import ColorPicker, { Panel1, HueSlider, ColorFormatsObject } from 'reanimated-color-picker';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import RowCardClass from "@/components/pages/classes/RowCardClass";
@@ -14,7 +14,6 @@ import InputWrapper from "@/components/ui/input/InputWrapper";
 import InputLabel from "@/components/ui/input/InputLabel";
 import Button from "@/components/ui/button/Button";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
-import InlineRadioButton from "@/components/ui/input/InlineRadioGroup";
 import InlineRadioGroup from "@/components/ui/input/InlineRadioGroup";
 
 interface Errors {

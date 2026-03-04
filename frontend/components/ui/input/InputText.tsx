@@ -2,11 +2,15 @@ import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "
 import { StyleSheet, StyleProp, TextInput, TextStyle, ViewStyle } from "react-native";
 import InputLabel from "./InputLabel";
 import InputWrapper from "./InputWrapper";
+import ErrorMessage from "./ErrorMessage";
+import InputErrorMessage from "./InputErrorMessage";
 
-export interface InputTextFieldProps {
+export interface InputTextProps {
     label?: string;
     value?: string;
     placeholder?: string;
+    multiline?: boolean;
+    numberOfLines?: number;
     errorMessage?: string;
     onChangeText?: (text: string) => void;
     labelStyle?: TextStyle;
@@ -14,7 +18,7 @@ export interface InputTextFieldProps {
     wrapperStyle?: StyleProp<ViewStyle>;
 }
 
-export default function InputText(props: InputTextFieldProps) {
+export default function InputText(props: InputTextProps) {
     const flatInputStyle = StyleSheet.flatten(props.inputStyle);
 
     return (
@@ -32,6 +36,8 @@ export default function InputText(props: InputTextFieldProps) {
                 value={props.value}
                 onChangeText={props.onChangeText}
                 placeholder={props.placeholder}
+                multiline={props.multiline}
+                numberOfLines={props.numberOfLines}
                 style={{
                     width: "100%",
                     minWidth: "100%",
@@ -50,16 +56,8 @@ export default function InputText(props: InputTextFieldProps) {
                 }}
             />
             {props.errorMessage &&
-                <InputLabel
-                    label={props.errorMessage}
-                    labelStyle={{
-                        marginTop: padding.sm,
-                        fontSize: fontSize.md,
-                        fontWeight: 400,
-                        letterSpacing: letterSpacing.lg,
-                        color: colors.schemes.light.error,
-                        ...props.labelStyle,
-                    }}
+                <InputErrorMessage
+                    errorMessage={props.errorMessage}
                 />
             }
         </InputWrapper>

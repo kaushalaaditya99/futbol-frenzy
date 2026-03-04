@@ -13,7 +13,7 @@ export default function InputWrapper(props: InputWrapperProps) {
         <View
             style={{
                 display: "flex",
-                rowGap: 2,
+                rowGap: 4,
                 ...flatWrapperStyle
             }}
         >

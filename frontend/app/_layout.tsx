@@ -42,6 +42,20 @@ export default function RootLayout() {
           headerShown: false
         }}
       />
+      <Stack.Screen 
+        name="createDrill"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen 
+        name="drill"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
     </Stack>
   );
 }

@@ -1,12 +1,18 @@
+import ThemedText from "../ThemedText";
 import Button, { ButtonProps } from "./Button";
 
-export default function ButtonHalfWidth(props: ButtonProps) {
+interface ButtonHalfWidthProps extends ButtonProps {
+    buttonHeight?: number;
+}
+
+export default function ButtonHalfWidth(props: ButtonHalfWidthProps) {
     return (
         <Button
             {...props}
             outerStyle={{
                 flex: 1,
                 alignSelf: undefined,
+                height: props.buttonHeight || undefined
             }}
             innerStyle={{
                 flex: 1,

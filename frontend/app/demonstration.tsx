@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { Drill, getSession, Session, submitSessionForGrading } from "@/services/sessions";
 import { Asset } from 'expo-asset';
 import ProgressBar from "@/components/pages/demonstration/ProgressBar";
-import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { Analysis, getAnalysis } from "@/services/analysis";
 import { BlurView } from 'expo-blur';
@@ -17,6 +16,7 @@ import ThemedText from "@/components/ui/ThemedText";
 import Button from "@/components/ui/button/Button";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import ButtonHalfWidth from "@/components/ui/button/ButtonHalfWidth";
+import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, useMediaLibraryPermissions } from "expo-image-picker";
 
 // Example
 // This is just a workaround so you can see the functionality.
@@ -46,8 +46,8 @@ export default function Demonstration() {
         player.loop = true;
     });
     
-    const [cameraPermission, requestCameraPermission] = ImagePicker.useCameraPermissions();
-    const [mediaLibraryPermission, requestMediaLibraryPermission] = ImagePicker.useMediaLibraryPermissions();
+    const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+    const [mediaLibraryPermission, requestMediaLibraryPermission] = useMediaLibraryPermissions();
     
     const [submissions, setSubmissions] = useState<Submissions>({});
     const [submittedDrills, setSubmittedDrills] = useState<Array<number>>([]);
@@ -162,7 +162,7 @@ export default function Demonstration() {
             }
         }
 
-        const video = await ImagePicker.launchCameraAsync({mediaTypes: ["videos"]});
+        const video = await launchCameraAsync({mediaTypes: ["videos"]});
         if (!video.canceled) {
             const uri = video.assets[0].uri;
             storeVideoInSubmissions(drillIndex, uri);
@@ -179,7 +179,7 @@ export default function Demonstration() {
             }
         }
 
-        const video = await ImagePicker.launchImageLibraryAsync({mediaTypes: ["videos"]});
+        const video = await launchImageLibraryAsync({mediaTypes: ["videos"]});
         if (!video.canceled) {
             const uri = video.assets[0].uri;
             storeVideoInSubmissions(drillIndex, uri);
@@ -447,6 +447,7 @@ export default function Demonstration() {
                                 }}
                             >
                                 <ButtonHalfWidth
+                                    buttonHeight={60}
                                     {...buttonTheme.black}
                                     onPress={() => uploadVideoFromCamera(drillIndex)}
                                 >
@@ -468,6 +469,7 @@ export default function Demonstration() {
                                 </ButtonHalfWidth>
                                 <ButtonHalfWidth
                                     {...buttonTheme.black}
+                                    buttonHeight={60}
                                     onPress={() => uploadVideoFromLibrary(drillIndex)}
                                 >
                                     <FolderOpen
@@ -489,7 +491,7 @@ export default function Demonstration() {
                             </View>
                             {!submissions[drillIndex]?.uri &&
                                 <Pressable
-                                    onPress={() => uploadVideoFromCamera(drillIndex)} 
+                                    onPress={() => uploadVideoFromLibrary(drillIndex)}
                                     style={{ 
                                         width: "auto", 
                                         height: 180,
@@ -519,6 +521,7 @@ export default function Demonstration() {
                                             fontWeight: 500,
                                             marginBottom: 2,
                                             letterSpacing: 0.1,
+                                            textAlign: "center",
                                             color: colors.schemes.light.onSurfaceVariant
                                         }}
                                     >
@@ -529,6 +532,7 @@ export default function Demonstration() {
                                             fontSize: 12,
                                             fontWeight: 500,
                                             letterSpacing: 0.1,
+                                            textAlign: "center",
                                             color: colors.schemes.light.onSurfaceVariant,
                                             opacity: 0.5
                                         }}

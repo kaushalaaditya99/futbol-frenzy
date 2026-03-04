@@ -2,6 +2,7 @@ import { borderRadius, colors, margin, padding, shadow } from "@/theme";
 import { ArrowDown, ArrowDownUp, ArrowUp, MoveDown, MoveUp, Search } from "lucide-react-native";
 import { ReactNode } from "react";
 import { Pressable, TextInput, TextStyle, View, ViewStyle } from "react-native";
+import SearchBarSort from "./SearchBarSort";
 
 export interface SearchBarProps {
     search: string;
@@ -56,37 +57,14 @@ export default function SearchBar(props: SearchBarProps) {
                 placeholder={props.placeholder}
             />
             {props.childrenLeftOfSort}
-            {props.enableSort &&
-                <Pressable
-                    onPress={() => props.sortDirection !== undefined && updateSortDirection(props.sortDirection)}
-                    style={{
-                        paddingVertical: padding.md,
-                        paddingHorizontal: padding.lg,
-                        borderLeftWidth: 1,
-                        borderColor: colors.schemes.light.outlineVariant,
-                        backgroundColor: colors.schemes.light.surfaceContainerLow,
+            {(props.enableSort && props.sortDirection !== undefined) &&
+                <SearchBarSort
+                    sortDirection={props.sortDirection}
+                    updateSortDirection={updateSortDirection}
+                    sortButtonStyle={{
                         ...props.sortButtonStyle
                     }}
-                >
-                    {props.sortDirection === 0 &&
-                        <ArrowDownUp
-                            size={18}
-                            color={colors.schemes.light.onSurfaceVariant}
-                        />
-                    }
-                    {props.sortDirection === 1 &&
-                        <MoveUp
-                            size={18}
-                            color={"#307351"}
-                        />
-                    }
-                    {props.sortDirection === 2 &&
-                        <MoveDown
-                            size={18}
-                            color={"#D7263D"}
-                        />
-                    }
-                </Pressable>
+                />
             }
             {props.childrenRightOfSort}
             <Pressable

@@ -21,7 +21,7 @@ export default function CreateClassButton(props: CreateClassButtonProps) {
             />
             <ThemedText
                 style={{
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: 500,
                     color: "white"
                 }}

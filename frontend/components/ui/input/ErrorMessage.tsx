@@ -3,6 +3,15 @@ import { CircleX } from "lucide-react-native";
 import { View } from "react-native";
 import ThemedText from "../ThemedText";
 
+export interface Error {
+    valid: boolean; 
+    errorMessage: string;
+};
+
+export interface Errors {
+    [inputName: string]: Error;
+};
+
 interface ErrorMessageProps {
     message: string;
 }
@@ -39,13 +48,13 @@ export default function ErrorMessage(props: ErrorMessageProps) {
                 <ThemedText
                     style={{
                         flexShrink: 1,
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: 400,
                         letterSpacing: 0.25,
                         color: colors.schemes.light.onErrorContainer
                     }}
                 >
-                    A class with this code was not found. Please try again.
+                    {props.message}
                 </ThemedText>
             </View>
         </View>

@@ -3,15 +3,21 @@ import { useEffect, useState } from "react";
 export type Key = string | ((object: any) => string);
 
 export default function useSearchBar<Object>(objects: Array<Object>, searchKey: Key, sortKey: Key) {
+    const [sort, setSort] = useState<0|1|2>(0);
     const [search, setSearch] = useState("");
-    const [sortDirection, setSortDirection] = useState<0|1|2>(0);
     const [filtered, setFiltered] = useState<Array<Object>>([]);
     
 
     useEffect(() => {
-        const fObjects = searchAndSortObjects(search, searchKey, sortDirection, sortKey, objects);
+        const fObjects = searchAndSortObjects(search, searchKey, sort, sortKey, objects);
         setFiltered(fObjects);
-    }, [search, sortDirection, objects]);
+    }, [search, searchKey, sort, sortKey, objects]);
+
+
+    const getNextDirection = (direction: number) => {
+        const nextDirection = (direction + 1) % 3 as 0|1|2;
+        return nextDirection;
+    }
 
 
     const getSearchSortValue = (object: any, key: Key): string => {
@@ -58,9 +64,13 @@ export default function useSearchBar<Object>(objects: Array<Object>, searchKey: 
     return {
         search,
         setSearch,
-        sortDirection,
-        setSortDirection,
+        sortDirection: sort,
+        setSortDirection: setSort,
         filtered,
-        setFiltered
+        setFiltered,
+        searchAndSortObjects,
+        searchObjects,
+        sortObjects,
+        getNextDirection
     }
 }
