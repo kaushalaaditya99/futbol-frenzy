@@ -10,19 +10,50 @@ export default function RootLayout() {
       <Stack.Screen 
         name="index"
         options={{
-          headerTitle: ""
+          headerTitle: "",
+          headerShown: false
         }}  
       />
       <Stack.Screen 
         name="resetPassword"
         options={{
-          headerTitle: ""
+          headerTitle: "",
+          headerShown: false
         }}  
       />
       <Stack.Screen 
         name="createAccount"
         options={{
-          headerTitle: ""
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen 
+        name="demonstration"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen 
+        name="createClass"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen 
+        name="createDrill"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen 
+        name="drill"
+        options={{
+          headerTitle: "",
+          headerShown: false
         }}
       />
     </Stack>

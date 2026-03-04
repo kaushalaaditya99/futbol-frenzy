@@ -1,0 +1,65 @@
+import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "@/theme";
+import { StyleSheet, StyleProp, TextInput, TextStyle, ViewStyle } from "react-native";
+import InputLabel from "./InputLabel";
+import InputWrapper from "./InputWrapper";
+import ErrorMessage from "./ErrorMessage";
+import InputErrorMessage from "./InputErrorMessage";
+
+export interface InputTextProps {
+    label?: string;
+    value?: string;
+    placeholder?: string;
+    multiline?: boolean;
+    numberOfLines?: number;
+    errorMessage?: string;
+    onChangeText?: (text: string) => void;
+    labelStyle?: TextStyle;
+    inputStyle?: StyleProp<TextStyle>;
+    wrapperStyle?: StyleProp<ViewStyle>;
+}
+
+export default function InputText(props: InputTextProps) {
+    const flatInputStyle = StyleSheet.flatten(props.inputStyle);
+
+    return (
+        <InputWrapper
+            wrapperStyle={props.wrapperStyle}
+        >
+            <InputLabel
+                label={props.label}
+                labelStyle={{
+                    color: props.errorMessage ? colors.schemes.light.error : colors.schemes.light.onSurface,
+                    ...props.labelStyle,
+                }}
+            />
+            <TextInput
+                value={props.value}
+                onChangeText={props.onChangeText}
+                placeholder={props.placeholder}
+                multiline={props.multiline}
+                numberOfLines={props.numberOfLines}
+                style={{
+                    width: "100%",
+                    minWidth: "100%",
+                    paddingVertical: padding.md,
+                    paddingHorizontal: padding.lg,
+                    fontSize: fontSize.md,
+                    fontFamily: "Arimo-Regular",
+                    color: props.errorMessage ? colors.schemes.light.onErrorContainer : colors.schemes.light.onBackground,
+                    borderWidth: 1,
+                    borderStyle: props.errorMessage ? "dashed" : "solid",
+                    borderColor: props.errorMessage ? colors.schemes.light.error : colors.schemes.light.outlineVariant,
+                    borderRadius: borderRadius.sm,
+                    backgroundColor: "white",
+                    ...shadow.sm,
+                    ...flatInputStyle
+                }}
+            />
+            {props.errorMessage &&
+                <InputErrorMessage
+                    errorMessage={props.errorMessage}
+                />
+            }
+        </InputWrapper>
+    )
+}

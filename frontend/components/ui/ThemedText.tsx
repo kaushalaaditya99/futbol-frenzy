@@ -1,0 +1,32 @@
+import { ReactNode } from "react";
+import { Text, TextStyle } from 'react-native';
+import useLocalFonts from "@/hooks/useFonts";
+
+interface ThemedTextProps {
+    children?: ReactNode;
+    style?: TextStyle; 
+    fontFamily?: "Arimo"|"Inter";
+    numberLines?: number;
+    onPress?: () => void;
+}
+
+export default function ThemedText(props: ThemedTextProps) {
+    const fonts = useLocalFonts();
+    const fontFamily = fonts.fonts[props.fontFamily || "Arimo"][(props.style?.fontWeight as 400|500|600|700|800|900) || 400];
+
+    if (!fonts.fontsLoaded)
+        return null;
+
+    return (
+        <Text
+            onPress={props.onPress}
+            numberOfLines={props.numberLines}
+            style={{
+                fontFamily: fontFamily,
+                ...props.style,
+            }}
+        >
+            {props.children}
+        </Text>
+    )
+}

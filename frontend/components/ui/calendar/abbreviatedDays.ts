@@ -1,0 +1,1 @@
+export const abbreviatedDays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];

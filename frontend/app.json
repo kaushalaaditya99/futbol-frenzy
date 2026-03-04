@@ -15,9 +15,14 @@
         "./assets/fonts/Doto/Doto-Medium.ttf",
         "./assets/fonts/Doto/Doto-Bold.ttf",
         "./assets/fonts/Doto/Doto-SemiBold.ttf",
-        "./assets/fonts/Doto/Doto-Bold.ttf",
         "./assets/fonts/Doto/Doto-ExtraBold.ttf",
-        "./assets/fonts/Doto/Doto-Black.ttf"
+        "./assets/fonts/Doto/Doto-Black.ttf",
+        "./assets/fonts/Arimo/Arimo-Regular.ttf",
+        "./assets/fonts/Arimo/Arimo-Medium.ttf",
+        "./assets/fonts/Arimo/Arimo-Bold.ttf",
+        "./assets/fonts/Arimo/Arimo-SemiBold.ttf",
+        "./assets/fonts/Silkscreen/Silkscreen-Bold.ttf",
+        "./assets/fonts/Silkscreen/Silkscreen-Regular.ttf"        
       ]
     },
     "android": {
@@ -30,6 +35,40 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "fonts": [
+        {
+          "fontFamily": "Silkscreen",
+          "fontDefinitions": [
+            {
+              "path": "./assets/fonts/Silkscreen/Silkscreen-Regular.ttf",
+              "weight": 400
+            },
+            {
+              "path": "./assets/fonts/Silkscreen/Silkscreen-Bold.ttf",
+              "weight": 700
+            }
+          ]
+        },
+        {
+          "fontFamily": "Arimo",
+          "fontDefinitions": [
+            {
+              "path": "./assets/fonts/Arimo/Arimo-Regular.ttf",
+              "weight": 400
+            },
+            {
+              "path": "./assets/fonts/Arimo/Arimo-Medium.ttf",
+              "weight": 500
+            },
+            {
+              "path": "./assets/fonts/Arimo/Arimo-SemiBold.ttf",
+              "weight": 600
+            },
+            {
+              "path": "./assets/fonts/Arimo/Arimo-Bold.ttf",
+              "weight": 700
+            }
+          ]
+        },
         {
           "fontFamily": "Doto",
           "fontDefinitions": [
@@ -50,16 +89,12 @@
               "weight": 700
             },
             {
-              "path": "./assets/fonts/Doto/Doto-Bold.ttf",
+              "path": "./assets/fonts/Doto/Doto-ExtraBold.ttf",
               "weight": 800
             },
             {
-              "path": "./assets/fonts/Doto/Doto-ExtraBold.ttf",
-              "weight": 900
-            },
-            {
               "path": "./assets/fonts/Doto/Doto-Black.ttf",
-              "weight": 1000
+              "weight": 900
             }
           ]
         }

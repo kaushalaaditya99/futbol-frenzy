@@ -424,36 +424,62 @@ export const colors = {
 };
 
 interface Sizing {
+    "4xs": number;
+    "3xs": number;
+    "2xs": number;
     xs: number;
     sm: number;
     md: number;
+    base: number;
     lg: number;
     xl: number;
+    "2xl": number;
+    "3xl": number;
+    "4xl": number;
 };
 
-export const margin: Sizing = {
+export const ZERO_SIZING: Sizing = {
+    "4xs": 0,
+    "3xs": 0,
+    "2xs": 0,
+    xs: 0,
+    sm: 0,
+    md: 0,
+    base: 0,
+    lg: 0,
+    xl: 0,
+    "2xl":0,
+    "3xl":0,
+    "4xl":0
+};
+
+export const margin: Sizing = Object.assign({}, ZERO_SIZING, {
+    "3xs": 8,
+    "2xs": 12,
     xs: 20,
     sm: 24,
     md: 28,
     lg: 36,
     xl: 48
-};
+});
 
-export const spacing: Sizing = {
+export const spacing: Sizing = Object.assign({}, ZERO_SIZING, {
     xs: 16,
     sm: 20,
     md: 24,
     lg: 28,
     xl: 32
-};
+});
 
-export const padding: Sizing = {
+export const padding: Sizing = Object.assign({}, ZERO_SIZING, {
     xs: 2,
     sm: 4,
     md: 8,
     lg: 12,
-    xl: 16
-};
+    xl: 16,
+    "2xl": 24,
+    "4xl": 32
+});
 
 export const shadow = {
     sm: {
@@ -473,5 +499,55 @@ export const shadow = {
             width: 0,
             height: 2
         }
+    },
+    lg: {
+        shadowColor: colors.schemes.light.shadow,
+        shadowOpacity: 0.075,
+        shadowRadius: 3,
+        shadowOffset: {
+            width: 0,
+            height: 4
+        }
     }
+}
+
+export const borderRadius: Sizing = Object.assign({}, ZERO_SIZING, {
+    sm: 6,
+    md: 8,
+    base: 10,
+    lg: 12,
+    xl: 20
+});
+
+export const fontSize: Sizing = Object.assign({}, ZERO_SIZING, {
+    xs: 10,
+    sm: 12,
+    md: 14,
+    base: 16,
+    lg: 18,
+    xl: 24,
+    "2xl": 32,
+    "3xl": 40,
+    "4xl": 60
+});
+
+export const letterSpacing: Sizing = Object.assign({}, ZERO_SIZING, {
+    "2xs": -0.5,
+    xs: -0.25,
+    sm: -0.1,
+    base: 0,
+    lg: 0.1,
+    xl: 0.25,
+    "2xl": 0.5
+});
+
+export const theme = {
+    fontSize,
+    letterSpacing,
+    borderRadius,
+    shadow,
+    padding,
+    spacing,
+    margin,
+    colors
 }
