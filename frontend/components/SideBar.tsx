@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { View, ImageBackground, Pressable } from "react-native"
-import ThemedText from "./ThemedText";
+import ThemedText from "@/components/ui/ThemedText";
 import { colors, margin, padding } from "@/theme";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
