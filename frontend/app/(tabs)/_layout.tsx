@@ -1,5 +1,6 @@
 import ThemedText from '@/components/ui/ThemedText';
 import { colors, fontSize, letterSpacing } from '@/theme';
+import { NotificationsProvider, useNotifications } from '@/contexts/NotificationsContext';
 import { Tabs } from 'expo-router';
 import { Bell, Calendar, ClipboardList, Cog, Home, Zap } from 'lucide-react-native';
 import { useState } from 'react';
@@ -7,8 +8,8 @@ import { Text, View } from 'react-native';
 
 const ICON_SIZE = 20;
 
-export default function Layout() {
-    const [numNotifications, setNumNotifications] = useState(3);
+function TabsLayout() {
+    const { unreadCount } = useNotifications();
 
     return (
         <Tabs
@@ -111,21 +112,21 @@ export default function Layout() {
                                 size={ICON_SIZE}
                                 color={color}
                             />
-                            <View
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    width: 14,
-                                    height: 14,
-                                    position: "absolute",
-                                    top: -5,
-                                    left: 9,
-                                    backgroundColor: colors.coreColors.primary,
-                                    borderRadius: 100
-                                }}
-                            >
-                                {numNotifications !== 0 &&
+                            {unreadCount !== 0 &&
+                                <View
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        width: 14,
+                                        height: 14,
+                                        position: "absolute",
+                                        top: -5,
+                                        left: 9,
+                                        backgroundColor: colors.coreColors.primary,
+                                        borderRadius: 100
+                                    }}
+                                >
                                     <ThemedText
                                         style={{
                                             fontSize: 9,
@@ -133,10 +134,10 @@ export default function Layout() {
                                             color: colors.schemes.light.onPrimary
                                         }}
                                     >
-                                        {numNotifications}
+                                        {unreadCount}
                                     </ThemedText>
-                                }
-                            </View>
+                                </View>
+                            }
                         </View>
                     ),
                     tabBarLabel: ({color, focused}) => (
@@ -168,4 +169,12 @@ export default function Layout() {
             />
     </Tabs>
   );
+}
+
+export default function Layout() {
+    return (
+        <NotificationsProvider>
+            <TabsLayout />
+        </NotificationsProvider>
+    );
 }
