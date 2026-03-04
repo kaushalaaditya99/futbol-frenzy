@@ -22,7 +22,7 @@ class DrillSerializer(serializers.ModelSerializer):
         model = Drill
         fields = ['id', 'drillName', 'drillType', 'coachID', 'url',
                   'time', 'difficultyLevel', 'instructions', 'imageBackgroundColor',
-                  'imageText', 'imageTextColor', 'publicDrill']
+                  'imageText', 'imageTextColor', 'publicDrill', 'videoDrill']
         read_only_fields = ['id']
 
 
@@ -52,7 +52,7 @@ class SubmittedDrillSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubmittedDrill
         fields = ['id', 'submissionID', 'drillID', 
-                  'videoURL','grade', 'touchCount']
+                  'videoURL','grade', 'touchCount', 'videoSubmission']
         read_only_fields = ['id']
 
 class SoccerClassSerializer(serializers.ModelSerializer):

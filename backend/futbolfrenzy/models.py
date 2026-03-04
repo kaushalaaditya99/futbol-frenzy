@@ -50,6 +50,9 @@ class Drill(models.Model):
     imageTextColor = models.CharField(max_length = 255)
     publicDrill = models.BooleanField(default = False)
 
+    videoDrill = models.FileField(upload_to='uploads/', default='tempvid/example.gif')
+
+
     def __str__(self):
         return self.drillName
     
@@ -97,6 +100,9 @@ class SubmittedDrill(models.Model):
     videoURL = models.URLField(max_length=200)
     grade = models.IntegerField(null=True, blank=True)
     touchCount = models.IntegerField(null=True, blank=True)
+
+    videoSubmission = models.FileField(upload_to='uploads/', default='tempvid/example.gif')
+
 
 # A soccer class that coaches host and students can be apart of
 class SoccerClass(models.Model):
