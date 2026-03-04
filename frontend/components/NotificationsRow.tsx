@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { Text, View, Pressable } from "react-native";
+import { CircleCheck, Calendar1, MessageCircleMore, AlarmClock } from "lucide-react-native";
 
 export interface Notification {
     id: string;
@@ -10,9 +11,10 @@ export interface Notification {
     iconBackground: string;
 }
 
-export default function NotificationItem({ notification }: { notification: Notification }) {
+export default function NotificationItem({ notification, onPress }: { notification: Notification; onPress: () => void }) {
     return (
-        <View
+        <Pressable
+            onPress={onPress}
             style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -33,10 +35,10 @@ export default function NotificationItem({ notification }: { notification: Notif
                 }}
             >
                 <Text style={{ fontSize: 20 }}>
-                    {notification.icon === "graded" && "✅"}
-                    {notification.icon === "session" && "📅"}
-                    {notification.icon === "chat" && "💬"}
-                    {notification.icon === "reminder" && "⏰"}
+                    {notification.icon === "graded"   && <CircleCheck        size={25} color="#2a9d4e" />}
+                    {notification.icon === "session"  && <Calendar1          size={22} color="#1a6fdb" />}
+                    {notification.icon === "chat"     && <MessageCircleMore  size={22} color="#555" />}
+                    {notification.icon === "reminder" && <AlarmClock         size={22} color="#b5860d" />}
                 </Text>
             </View>
 
@@ -62,6 +64,6 @@ export default function NotificationItem({ notification }: { notification: Notif
                     }}
                 />
             )}
-        </View>
+        </Pressable>
     );
 }

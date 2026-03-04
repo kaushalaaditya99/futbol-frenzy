@@ -1,62 +1,7 @@
 import { Pressable, Text, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import NotificationRow from "@/components/NotificationsRow";
-import { Notification } from "@/components/NotificationsRow";
-import { useState } from "react";
-
-
-const mockNotifications: Notification[] = [
-    {
-        id: "1",
-        title: "Drill Graded!",
-        description: "You scored 8/10 on Cone Dribbling. Tape to see feedback",
-        timestamp: new Date(),
-        read: false,
-        icon: "graded",
-        iconBackground: "#c3f7c8"
-    },
-    {
-        id: "2",
-        title: "New Session Assigned",
-        description: "Coach Martinez assigned Session #20 with 3 drills. Due Feb 25.",
-        timestamp: new Date(Date.now() - 3 * 3600000),
-        read: false,
-        icon: "session",
-        iconBackground: "#6db1ff",
-    },
-    {
-        id: "3",
-        title: "Coach Left a Comment",
-        description: "Coach Martinez commented on your Wall Pass drill submission",
-        timestamp: new Date(Date.now() - 24 * 3600000), // 1 day ago
-        read: true,
-        icon: "chat",
-        iconBackground: "#edf5ff",
-    },
-    {
-        id: "4",
-        title: "Session Due Tomorrow",
-        description: "You have 2 incomplete drills in Session #19. Don't forget!",
-        timestamp: new Date(Date.now() - 26 * 3600000),          
-        read: true,
-        icon: "reminder",
-        iconBackground: "#FFF3CD",
-    },
-]
-
-function formatTime(date: Date): string {
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMin = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor (diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMin < 60) return `${diffMin} min ago`;
-    if (diffHours < 24) return `${diffHours} hours ago`;
-    if (diffDays <= 2) return `${diffDays} days ago`
-
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" }); 
-}
+import NotificationRow, { Notification } from "@/components/NotificationsRow";
+import { useNotifications } from "@/contexts/NotificationsContext";
 
 function getDateGroup(date: Date): string {
     const now = new Date();
@@ -70,11 +15,7 @@ function getDateGroup(date: Date): string {
 }
 
 export default function Notifications() {
-    const [notifications, setNotifications] = useState(mockNotifications);
-
-    function markAllRead() {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    }
+    const { notifications, markRead, markAllRead } = useNotifications();
 
     // Group notifications by day label
     const groups: { [key: string]: Notification[] } = {};
@@ -119,7 +60,7 @@ export default function Notifications() {
 
                         {items.map((item, index) => (
                             <View key={item.id}>
-                                <NotificationRow notification={item} />
+                                <NotificationRow notification={item} onPress={() => markRead(item.id)} />
                                 {index < items.length - 1 && (
                                     <View style={{
                                         height: 1,
