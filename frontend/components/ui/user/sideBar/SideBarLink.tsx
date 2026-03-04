@@ -14,6 +14,7 @@ interface SideBarLinkProps {
 export function SideBarLink(props: SideBarLinkProps) {
     return (
         <Pressable
+            onPress={props.onPress}
             style={{
                 flexDirection: "row",
                 alignItems: "center",

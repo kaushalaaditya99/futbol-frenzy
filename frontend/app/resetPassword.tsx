@@ -1,93 +1,122 @@
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, RefreshCw } from 'lucide-react-native';
 import InputText from "@/components/ui/input/InputText";
 import SimpleButton from "@/components/ui/button/SimpleButton";
 import ThemedText from "@/components/ui/ThemedText";
-import { colors, fontSize, margin, padding } from "@/theme";
+import { colors, fontSize, margin, padding, theme } from "@/theme";
 import { router } from "expo-router";
+import ButtonBack from "@/components/ui/button/ButtonBack";
 
 export default function ResetPassword() {
     return (
         <SafeAreaView
             style={{
+                flex: 1,
                 backgroundColor: colors.schemes.light.background,
-				display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-				rowGap: margin.lg,
-				paddingVertical: margin.sm,
-				paddingHorizontal: margin.lg,
-				flex: 1
             }}
         >
             <View
                 style={{
+                    marginTop: theme.margin.sm,
+                    marginHorizontal: theme.margin.sm
+                }}
+            >
+                <ButtonBack
+                    onBack={() => router.back()}
+                />
+            </View>
+            <View
+                style={{
                     display: "flex",
+                    flex: 1,
                     alignItems: "center",
                     justifyContent: "center",
-                    width: 100,
-                    height: 100,
-                    borderRadius: 100,
-                    backgroundColor: "lightgray"
+                    rowGap: margin.lg,
+                    paddingVertical: margin.sm,
+                    paddingHorizontal: margin.lg,
                 }}
             >
-                <Text
-                    style={{
-                        fontSize: 60
-                    }}
-                >
-                    🔒
-                </Text>
-            </View>
-            <View
-                style={{
-                    rowGap: padding.sm
-                }}
-            >
-                <ThemedText
-                    style={{
-                        fontSize: 32,
-                        fontWeight: 600,
-                        textAlign: "center",
-                        marginBottom: 4
-                    }}
-                >
-                    Reset Password
-                </ThemedText>
-                <ThemedText
-                    style={{
-                        fontSize: 16,
-                        fontWeight: 400,
-                        textAlign: "center",
-                        color: "gray"
-                    }}
-                >
-                    Enter your email address and we'll send you a link to reset your password.
-                </ThemedText>
-            </View>
-            <View
-                style={{
-                    display: "flex",
-                    rowGap: padding.lg
-                }}
-            >
-                <InputText
-                    label="Email Address"
-                />
                 <View
                     style={{
-                        display: "flex",
+                        padding: padding.sm,
+                        borderRadius: 100,
+                        backgroundColor: "white",
+                        borderWidth: 1,
+                        borderColor: theme.colors.schemes.light.outlineVariant,
+                        ...theme.shadow.sm
+                    }}
+                >
+                    <View
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 100,
+                            height: 100,
+                            borderRadius: 100,
+                            borderWidth: 1,
+                            borderColor: theme.colors.schemes.light.outlineVariant,
+                            backgroundColor: "white"
+                        }}
+                    >
+                        <RefreshCw
+                            size={48}
+                            color={colors.coreColors.primary}
+                        />
+                    </View>
+                </View>
+                <View
+                    style={{
+                        flexDirection: "column",
+                        alignItems: "center",
                         rowGap: padding.sm
                     }}
                 >
-                    <SimpleButton
-                        label="Send Reset Link"
-                    />
-                    <Pressable
-                        onPress={() => router.replace("/")}
+                    <ThemedText
+                        style={{
+                            fontSize: 32,
+                            fontWeight: 600,
+                            letterSpacing: theme.letterSpacing.xs,
+                            textAlign: "center",
+                            marginBottom: 4
+                        }}
                     >
-                        <View
+                        Reset Password
+                    </ThemedText>
+                    <ThemedText
+                        style={{
+                            maxWidth: 300,
+                            fontSize: 16,
+                            fontWeight: 400,
+                            letterSpacing: theme.letterSpacing.lg,
+                            textAlign: "center",
+                            color: theme.colors.schemes.light.onSurfaceVariant
+                        }}
+                    >
+                        Enter your email address and we'll send you a link to reset your password.
+                    </ThemedText>
+                </View>
+                <View
+                    style={{
+                        display: "flex",
+                        rowGap: padding.lg
+                    }}
+                >
+                    <InputText
+                        label="Email Address"
+                    />
+                    <View
+                        style={{
+                            display: "flex",
+                            rowGap: padding.lg
+                        }}
+                    >
+                        <SimpleButton
+                            label="Send Reset Link"
+                        />
+                        <Pressable
+                            onPress={() => router.replace("/")}
                             style={{
                                 display: "flex",
                                 flexDirection: "row",
@@ -102,13 +131,14 @@ export default function ResetPassword() {
                             />
                             <ThemedText
                                 style={{
-                                    fontSize: fontSize.md
+                                    fontSize: fontSize.md,
+                                    fontWeight: 500
                                 }}
                             >
                                 Back to Login
                             </ThemedText>
-                        </View>
-                    </Pressable>
+                        </Pressable>
+                    </View>
                 </View>
             </View>
         </SafeAreaView>

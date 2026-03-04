@@ -17,6 +17,7 @@ import SearchBar from "@/components/ui/SearchBar";
 import useSearchBar from "@/hooks/useSearchBar";
 
 export default function Classes() {
+    const [isTeacher, setIsTeacher] = useState(true);
     const [classes, setClasses] = useState<Array<Class>>([]);
     const sideBar = useSideBar();
     const searchBar = useSearchBar(classes, "name", "name");
@@ -103,9 +104,11 @@ export default function Classes() {
                                     columnGap: padding.md
                                 }}
                             >
-                                <CreateClassButton
-                                    onPress={() => router.push("/createClass")}
-                                />
+                                {isTeacher &&
+                                    <CreateClassButton
+                                        onPress={() => router.push("/createClass")}
+                                    />
+                                }
                                 <JoinClassButton
                                     onPress={() => router.push("/joinClass")}
                                 />

@@ -9,6 +9,12 @@ import StudentView from "@/components/pages/class/student/StudentView";
 export default function Class() {
     const [isTeacher, setIsTeacher] = useState(true);
     
+    const loadIsTeacher = () => {
+        // is this user a teacher
+        setIsTeacher(false);
+    }
+    
+
     return (
         <SafeAreaView
             edges={["top"]}

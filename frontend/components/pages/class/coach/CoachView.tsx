@@ -11,6 +11,9 @@ import TabStudent from "./TabStudent/TabStudent";
 import { getStudents, Student } from "@/services/students";
 import TabProgress from "./TabProgress/TabProgress";
 
+
+const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
+
 export default function CoachView() {
     const [classID, setClassID] = useState(0);
     const [teacherID, setTeacherID] = useState(0);
@@ -23,7 +26,9 @@ export default function CoachView() {
 
     const [sessions, setSessions] = useState<Array<Session>>([]);
     const [sessionsViewType, setSessionsViewType] = useState("Big");
+
     const [sessionsToday, setSessionsToday] = useState<Array<Session>>([]);
+
     const [sessionsOnDate, setSessionsOnDate] =  useState<Array<Session>>([]);
     const [sessionsOnDateLabel, setSessionsOnDateLabel] = useState("");
     const sessionsOnDateSearchBar = useSearchBar<Session>(sessionsOnDate, "name", "name");
@@ -31,8 +36,8 @@ export default function CoachView() {
     const [students, setStudents] = useState<Array<Student>>([]);
     const studentSearchBar = useSearchBar<Student>(
         students, 
-        (student: Student) => `${student.fName} ${student.lName}`, 
-        (student: Student) => `${student.fName} ${student.lName}`
+        getStudentFullName, 
+        getStudentFullName
     );
 
     const [showShareClass, setShowShareClass] = useState(false);

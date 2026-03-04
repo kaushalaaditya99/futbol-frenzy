@@ -3,17 +3,21 @@ import ThemedText from "../ThemedText";
 import Button, { ButtonProps } from "./Button";
 import { buttonTheme } from "./buttonTheme";
 import { TextStyle, ViewStyle } from "react-native";
+import InlineButton from "./InlineButton";
+import ButtonHalfWidth from "./ButtonHalfWidth";
 
-interface SimpleButtonProps extends Omit<ButtonProps, "children"> {
+interface SimpleHalfWidthButtonProps extends Omit<ButtonProps, "children"> {
     label: string;
     textStyle?: TextStyle;
 }
 
-export default function SimpleButton(props: SimpleButtonProps) {
+export default function SimpleHalfWidthButton(props: SimpleHalfWidthButtonProps) {
     return (
-        <Button
+        <ButtonHalfWidth
             {...buttonTheme.black}
-            {...props}
+            outerStyle={props.outerStyle}
+            innerStyle={props.innerStyle}
+            innerMostStyle={props.innerMostStyle}
         >
             <ThemedText
                 style={{
@@ -26,6 +30,6 @@ export default function SimpleButton(props: SimpleButtonProps) {
             >
                 {props.label}
             </ThemedText>
-        </Button>
+        </ButtonHalfWidth>
     )
 }

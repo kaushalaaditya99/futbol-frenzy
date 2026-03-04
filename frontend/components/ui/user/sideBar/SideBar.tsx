@@ -100,7 +100,7 @@ export default function SideBar(props: SideBarProps) {
                             />
                         }
                         label="Log Out"
-                        onPress={logOut}
+                        onPress={() => router.replace("..")}
                         containerStyle={{
                             borderTopWidth: 1,
                             borderColor: colors.schemes.light.outlineVariant
