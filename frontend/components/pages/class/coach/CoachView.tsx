@@ -147,6 +147,9 @@ export default function CoachView() {
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
                     sessionsToday={sessionsToday}
+                    students={students}
+                    className="U12 Boys A-Team"
+                    classCode="XK7M2P"
                 />
             }
             {tab === "Workout" &&

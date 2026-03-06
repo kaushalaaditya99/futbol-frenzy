@@ -2,6 +2,7 @@ import { Pressable, Text, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NotificationRow, { Notification } from "@/components/NotificationsRow";
 import { useNotifications } from "@/contexts/NotificationsContext";
+import { colors } from "@/theme";
 
 function getDateGroup(date: Date): string {
     const now = new Date();
@@ -26,7 +27,7 @@ export default function Notifications() {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.surface }}>
             {/* Header */}
             <View style={{
                 flexDirection: "row",
@@ -35,11 +36,11 @@ export default function Notifications() {
                 paddingHorizontal: 20,
                 paddingVertical: 16,
                 borderBottomWidth: 1,
-                borderBottomColor: "#F0F0F0",
+                borderBottomColor: colors.schemes.light.outlineVariant,
             }}>
                 <Text style={{ fontSize: 22, fontWeight: "700" }}>Notifications</Text>
                 <Pressable onPress={markAllRead}>
-                    <Text style={{ fontSize: 15, color: "#007AFF" }}>Mark all read</Text>
+                    <Text style={{ fontSize: 15, color: colors.coreColors.primary }}>Mark all read</Text>
                 </Pressable>
             </View>
 
@@ -48,9 +49,11 @@ export default function Notifications() {
                 {Object.entries(groups).map(([label, items]) => (
                     <View key={label}>
                         <Text style={{
-                            fontSize: 13,
-                            fontWeight: "600",
-                            color: "gray",
+                            fontSize: 11,
+                            fontWeight: "700",
+                            color: colors.schemes.light.outline,
+                            textTransform: "uppercase",
+                            letterSpacing: 1,
                             paddingHorizontal: 20,
                             paddingTop: 16,
                             paddingBottom: 4,
@@ -64,7 +67,7 @@ export default function Notifications() {
                                 {index < items.length - 1 && (
                                     <View style={{
                                         height: 1,
-                                        backgroundColor: "#F0F0F0",
+                                        backgroundColor: colors.schemes.light.outlineVariant,
                                         marginLeft: 76,
                                     }} />
                                 )}

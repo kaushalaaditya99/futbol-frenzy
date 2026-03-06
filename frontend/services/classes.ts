@@ -6,6 +6,8 @@ export interface Class {
     imageText: string;
     imageTextColor?: string;
     imageBackgroundColor?: string;
+    description?: string;
+    classCode?: string;
 }
 
 export async function getClasses(id: number, role: string): Promise<Array<Class>> {
@@ -15,14 +17,16 @@ export async function getClasses(id: number, role: string): Promise<Array<Class>
             name: "U12 Boys A-Team",
             numStudents: 18,
             teacherName: "Martinez",
-            imageText: "⚽"
+            imageText: "⚽",
+            classCode: "XK7M2P"
         },
         {
             id: 1,
             name: "Chelsea FC",
             numStudents: 18,
             teacherName: "John",
-            imageText: "🏃"
+            imageText: "🏃",
+            classCode: "BN4Q8R"
         }
     ]
 }
@@ -35,3 +39,4 @@ export async function joinClass(classCode: string, studentID: number): Promise<b
 export async function createClass(teacherID: number, className: string, imageBackgroundColor: string, imageTextColor: string, imageAbbrev: string) {
     return true;
 }
+

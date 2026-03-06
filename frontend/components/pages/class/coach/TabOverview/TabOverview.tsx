@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import RowCardSession from "@/components/pages/home/RowCardSession";
 import ViewAllButton from "@/components/pages/home/ViewAllButton";
 import { Session } from "@/services/sessions";
+import { Student } from "@/services/students";
 import ButtonShare from "../ButtonShare";
 import ButtonSettings from "../ButtonSettings";
 import ThemedText from "@/components/ui/ThemedText";
@@ -18,6 +19,9 @@ interface TabOverviewProps {
     setShowSettings: (settings: boolean) => void;
     setShowShareClass: (shareClass: boolean) => void;
     sessionsToday: Array<Session>;
+    students: Array<Student>;
+    className?: string;
+    classCode?: string;
 }
 
 export default function TabOverview(props: TabOverviewProps) {
@@ -30,6 +34,9 @@ export default function TabOverview(props: TabOverviewProps) {
             {props.showSettings &&
                 <Settings
                     onClose={() => props.setShowSettings(false)}
+                    className={props.className}
+                    classCode={props.classCode}
+                    students={props.students}
                 />
             }
             {props.showShareClass &&
