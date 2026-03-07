@@ -71,7 +71,7 @@ class Workout(models.Model):
 # An assignment contains a workout that is due at some time
 class Assignment(models.Model):
     # id
-    workoutID = models.ForeignKey(User, on_delete=models.CASCADE)
+    workoutID = models.ForeignKey(Workout, on_delete=models.CASCADE)
     dueDate = models.DateTimeField(null=True, blank=True)
     imageBackgroundColor = models.CharField(max_length = 7)
     imageText = models.CharField(max_length = 255)
@@ -103,7 +103,7 @@ class SoccerClass(models.Model):
     # id
     className = models.CharField(max_length = 255) 
     coachID = models.ForeignKey(User, on_delete=models.CASCADE)
-    assignments = models.ManyToManyField(Assignment, related_name="drills")
+    assignments = models.ManyToManyField(Assignment, related_name="assignments")
 
 # Relationship table between students and classes
 class ClassMember(models.Model):

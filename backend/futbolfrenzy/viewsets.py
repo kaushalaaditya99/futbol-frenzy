@@ -38,6 +38,26 @@ class AssignmentViewSet(viewsets.ModelViewSet):
     serializer_class = AssignmentSerializer
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        student_id = self.request.query_params.get("studentID")
+        class_id = self.request.query_params.get("classID")
+
+        # assignments for a specific student
+        if student_id:
+            queryset = queryset.filter(
+                assignments__classmember__studentID=student_id
+            ).distinct()
+
+        # assignments for a specific class
+        if class_id:
+            queryset = queryset.filter(
+                assignments__id=class_id
+            ).distinct()
+
+        return queryset
+
 class SubmissionViewSet(viewsets.ModelViewSet):
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
