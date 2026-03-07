@@ -62,7 +62,7 @@ class Workout(models.Model):
     imageBackgroundColor = models.CharField(max_length = 7)
     imageText = models.CharField(max_length = 255)
     imageTextColor = models.CharField(max_length = 255)
-    drills = models.ManyToManyField(Drill, related_name="drills")
+    drills = models.ManyToManyField(Drill, related_name="workouts")
     publicWorkout = models.BooleanField(default = False)
 
     def __str__(self):
@@ -71,7 +71,7 @@ class Workout(models.Model):
 # An assignment contains a workout that is due at some time
 class Assignment(models.Model):
     # id
-    workoutID = models.ForeignKey(User, on_delete=models.CASCADE)
+    workoutID = models.ForeignKey(Workout, on_delete=models.CASCADE)
     dueDate = models.DateTimeField(null=True, blank=True)
     imageBackgroundColor = models.CharField(max_length = 7)
     imageText = models.CharField(max_length = 255)
@@ -103,10 +103,10 @@ class SoccerClass(models.Model):
     # id
     className = models.CharField(max_length = 255) 
     coachID = models.ForeignKey(User, on_delete=models.CASCADE)
-    assignments = models.ManyToManyField(Assignment, related_name="drills")
+    assignments = models.ManyToManyField(Assignment, related_name="soccer_classes")
 
 # Relationship table between students and classes
 class ClassMember(models.Model):
     # id
     studentID = models.ForeignKey(User, on_delete=models.CASCADE)
-    classID = models.ForeignKey(SoccerClass, on_delete=models.CASCADE)
+    classID = models.ForeignKey(SoccerClass, on_delete=models.CASCADE, related_name="members")
