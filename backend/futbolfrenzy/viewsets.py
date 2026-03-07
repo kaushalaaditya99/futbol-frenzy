@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from .models import Notification, Settings, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 from futbolfrenzy.serializers import NotificationSerializer, SettingsSerializer, DrillSerializer, WorkoutSerializer, AssignmentSerializer, SubmissionSerializer, SubmittedDrillSerializer, SoccerClassSerializer, ClassMemberSerializer
+from rest_framework.filters import OrderingFilter
 # viewsets for databases
 
 class NotificationViewSet(viewsets.ModelViewSet):
@@ -38,6 +39,13 @@ class AssignmentViewSet(viewsets.ModelViewSet):
     serializer_class = AssignmentSerializer
     permission_classes = [AllowAny]
 
+    filter_backends = [OrderingFilter]
+
+    # fields that you can sort by (use -dueDate for descending)
+    ordering_fields = ['dueDate']
+    # default sorting
+    ordering = ['dueDate']   
+
     def get_queryset(self):
         queryset = super().get_queryset()
 
@@ -72,6 +80,13 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
     queryset = SoccerClass.objects.all()
     serializer_class = SoccerClassSerializer
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        student_id = self.request.query_params.get("studentID")
+        if student_id:
+            queryset = queryset.filter(classmember__studentID=student_id).distinct()
+        return queryset
 
 class ClassMemberViewSet(viewsets.ModelViewSet):
     queryset = ClassMember.objects.all()
