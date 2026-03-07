@@ -71,6 +71,25 @@ class SubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = SubmissionSerializer
     permission_classes = [AllowAny]
 
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['dateSubmitted', 'grade', 'dateGraded']
+    ordering = ['-dateSubmitted'] # default order
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        student_id = self.request.query_params.get("studentID")
+        assignment_id = self.request.query_params.get("assignmentID")
+
+        # submissions for a specific student
+        if student_id:
+            queryset = queryset.filter(studentID=student_id)
+
+        # submissions for a specific assignment (probably coach use for grading)
+        if assignment_id:
+            queryset = queryset.filter(assignmentID=assignment_id)
+
+        return queryset
+
 class SubmittedDrillViewSet(viewsets.ModelViewSet):
     queryset = SubmittedDrill.objects.all()
     serializer_class = SubmittedDrillSerializer
@@ -81,6 +100,7 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
     serializer_class = SoccerClassSerializer
     permission_classes = [AllowAny]
 
+    # classes for a specific student
     def get_queryset(self):
         queryset = super().get_queryset()
         student_id = self.request.query_params.get("studentID")
