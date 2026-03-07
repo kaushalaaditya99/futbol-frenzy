@@ -16,6 +16,7 @@ export interface InputTextProps {
     labelStyle?: TextStyle;
     inputStyle?: StyleProp<TextStyle>;
     wrapperStyle?: StyleProp<ViewStyle>;
+    secureTextEntry?: boolean;
 }
 
 export default function InputText(props: InputTextProps) {
@@ -38,6 +39,7 @@ export default function InputText(props: InputTextProps) {
                 placeholder={props.placeholder}
                 multiline={props.multiline}
                 numberOfLines={props.numberOfLines}
+                secureTextEntry={props.secureTextEntry}
                 style={{
                     width: "100%",
                     minWidth: "100%",
