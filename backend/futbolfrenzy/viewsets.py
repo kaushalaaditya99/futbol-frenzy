@@ -3,8 +3,15 @@ from rest_framework.permissions import AllowAny
 from .models import Notification, Settings, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 from futbolfrenzy.serializers import NotificationSerializer, SettingsSerializer, DrillSerializer, WorkoutSerializer, AssignmentSerializer, SubmissionSerializer, SubmittedDrillSerializer, SoccerClassSerializer, ClassMemberSerializer
 from rest_framework.filters import OrderingFilter
-# viewsets for databases
 
+# helpers to check group of a user (Student vs. Coach)
+def user_is_student(user):
+    return user.groups.filter(name="Student").exists()
+
+def user_is_coach(user):
+    return user.groups.filter(name="Coach").exists()
+
+# VIEWSETS
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
@@ -34,7 +41,7 @@ class SettingsViewSet(viewsets.ModelViewSet):
         # settings for a specific user
         if user_id:
             queryset = queryset.filter(userID=user_id)
-            
+
         return queryset
 
 class DrillViewSet(viewsets.ModelViewSet):
@@ -163,8 +170,21 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
     serializer_class = SoccerClassSerializer
     permission_classes = [AllowAny]
 
-    # classes for a specific student
     def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        if user_is_student(user):
+            queryset = queryset.filter(members__studentID=user.id).distinct()
+        elif user_is_coach(user):
+            queryset = queryset.filter(coachID=user.id)
+        else:
+            queryset = SoccerClass.objects.none()
+        return queryset
+
+    """
+    def get_queryset(self):
+        user = self.request.user
         queryset = super().get_queryset()
 
         coach_id = self.request.query_params.get("coachID")
@@ -178,6 +198,7 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
         if student_id:
             queryset = queryset.filter(classmember__studentID=student_id).distinct()
         return queryset
+        """
 
 class ClassMemberViewSet(viewsets.ModelViewSet):
     queryset = ClassMember.objects.all()

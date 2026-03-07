@@ -21,6 +21,7 @@ from routers import router
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
     # The paths defined in futbolfrenzy.urls
     # are included here. Since the route in this
     # path is an empty string, there'd be no prefix.

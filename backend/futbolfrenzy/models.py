@@ -109,4 +109,4 @@ class SoccerClass(models.Model):
 class ClassMember(models.Model):
     # id
     studentID = models.ForeignKey(User, on_delete=models.CASCADE)
-    classID = models.ForeignKey(SoccerClass, on_delete=models.CASCADE)
+    classID = models.ForeignKey(SoccerClass, on_delete=models.CASCADE, related_name="members")
