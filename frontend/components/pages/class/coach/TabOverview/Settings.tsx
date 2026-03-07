@@ -7,6 +7,7 @@ import InputText from "@/components/ui/input/InputText";
 import { Student } from "@/services/students";
 import * as Clipboard from "expo-clipboard";
 import { ChevronRight, Trash2, Archive } from "lucide-react-native";
+import ManageStudents from "./ManageStudents";
 
 interface SettingsProps {
     onClose: () => void;
@@ -311,6 +312,8 @@ export default function Settings(props: SettingsProps) {
 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+    const [showManageStudents, setShowManageStudents] = useState(false);
+
     const handleCopyCode = async () => {
         await Clipboard.setStringAsync(classCode);
         Alert.alert("Copied!", "Class code copied to clipboard.");
@@ -493,7 +496,7 @@ export default function Settings(props: SettingsProps) {
                         {/* Students */}
                         <SectionLabel label="Students" />
                         <Pressable
-                            onPress={() => {}}
+                            onPress={() => setShowManageStudents(true)}
                             style={{
                                 flexDirection: "row",
                                 alignItems: "center",
@@ -681,6 +684,13 @@ export default function Settings(props: SettingsProps) {
                 onDelete={handleDelete}
                 className={className}
                 studentCount={students.length}
+            />
+
+            {/* Manage Students Modal */}
+            <ManageStudents
+                visible={showManageStudents}
+                onClose={() => setShowManageStudents(false)}
+                students={students}
             />
         </Modal>
     );
