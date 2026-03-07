@@ -34,6 +34,21 @@ class WorkoutViewSet(viewsets.ModelViewSet):
     serializer_class = WorkoutSerializer
     permission_classes = [AllowAny]
 
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['dueDate']
+    ordering = ['dueDate'] # default
+
+    def get_queryset(self):
+
+        queryset = super().get_queryset()
+        coach_id = self.request.query_params.get("coachID")
+
+        # workouts made by a specific coach
+        if coach_id:
+            queryset = queryset.filter(coachID=coach_id)
+
+        return queryset
+
 class AssignmentViewSet(viewsets.ModelViewSet):
     queryset = Assignment.objects.all()
     serializer_class = AssignmentSerializer
