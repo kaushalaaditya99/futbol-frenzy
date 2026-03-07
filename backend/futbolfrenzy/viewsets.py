@@ -10,10 +10,32 @@ class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+
+        user_id = self.request.query_params.get("userID")
+        queryset = super().get_queryset()
+
+        # notifications for a specific user 
+        if user_id:
+            queryset = queryset.filter(userID=user_id)
+
+        return queryset
+
 class SettingsViewSet(viewsets.ModelViewSet):
     queryset = Settings.objects.all()
     serializer_class = SettingsSerializer
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        user_id = self.request.query_params.get("userID")
+        queryset = super().get_queryset()
+
+        # settings for a specific user
+        if user_id:
+            queryset = queryset.filter(userID=user_id)
+            
+        return queryset
 
 class DrillViewSet(viewsets.ModelViewSet):
     queryset = Drill.objects.all()
@@ -21,10 +43,12 @@ class DrillViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
+
         queryset = Drill.objects.all()
         coach_id = self.request.query_params.get('coachID')
 
-        if coach_id is not None:
+        # drills by a specific coach
+        if coach_id:
             queryset = queryset.filter(coachID=coach_id)
 
         return queryset
