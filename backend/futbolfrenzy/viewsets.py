@@ -127,7 +127,15 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
     # classes for a specific student
     def get_queryset(self):
         queryset = super().get_queryset()
+
+        coach_id = self.request.query_params.get("coachID")
         student_id = self.request.query_params.get("studentID")
+
+        # classes made by a specific coach (coach view)
+        if coach_id:
+            queryset = queryset.filter(coachID=coach_id)
+
+        # classes that a specific student is in (student view)
         if student_id:
             queryset = queryset.filter(classmember__studentID=student_id).distinct()
         return queryset
