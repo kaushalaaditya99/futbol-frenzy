@@ -95,6 +95,30 @@ class SubmittedDrillViewSet(viewsets.ModelViewSet):
     serializer_class = SubmittedDrillSerializer
     permission_classes = [AllowAny]
 
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['grade', 'touchCount']
+    ordering = ['-grade'] #default
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        student_id = self.request.query_params.get("studentID")
+        assignment_id = self.request.query_params.get("assignmentID")
+        drill_id = self.request.query_params.get("drillID")
+
+        # drill submissions from a specific student (student use probably to view feedback and grades)
+        if student_id:
+            queryset = queryset.filter(submissionID__studentID=student_id)
+
+        # drill submissions for a specific assignment (coach use for grading probably)
+        if assignment_id:
+            queryset = queryset.filter(submissionID__assignmentID=assignment_id)
+
+        # drill submissions for a specific drill
+        if drill_id:
+            queryset = queryset.filter(drillID=drill_id)
+
+        return queryset
+
 class SoccerClassViewSet(viewsets.ModelViewSet):
     queryset = SoccerClass.objects.all()
     serializer_class = SoccerClassSerializer
