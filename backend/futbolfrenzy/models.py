@@ -62,7 +62,7 @@ class Workout(models.Model):
     imageBackgroundColor = models.CharField(max_length = 7)
     imageText = models.CharField(max_length = 255)
     imageTextColor = models.CharField(max_length = 255)
-    drills = models.ManyToManyField(Drill, related_name="drills")
+    drills = models.ManyToManyField(Drill, related_name="workouts")
     publicWorkout = models.BooleanField(default = False)
 
     def __str__(self):
@@ -103,7 +103,7 @@ class SoccerClass(models.Model):
     # id
     className = models.CharField(max_length = 255) 
     coachID = models.ForeignKey(User, on_delete=models.CASCADE)
-    assignments = models.ManyToManyField(Assignment, related_name="assignments")
+    assignments = models.ManyToManyField(Assignment, related_name="soccer_classes")
 
 # Relationship table between students and classes
 class ClassMember(models.Model):
