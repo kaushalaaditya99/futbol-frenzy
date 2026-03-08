@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from . import views
 from . import viewsets
+from .views import me
 
 api_router = DefaultRouter()
 api_router.register(r'notifications', viewsets.NotificationViewSet)
@@ -16,6 +17,7 @@ api_router.register(r'classmembers', viewsets.ClassMemberViewSet)
 
 urlpatterns = [
     path('home/', views.home, name='futbolfrenzy-home'),
+    path('api/users/me/', me, name='me'),
     # For this path, we're passing in a Router that
     # is registered with the DrillViewSet and EnrollmentViewSet.
     # The Router will define the paths that ultimately
