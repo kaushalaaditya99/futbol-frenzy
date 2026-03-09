@@ -1,7 +1,14 @@
 from rest_framework import serializers
 from .models import Notification, Settings, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
-
+from django.contrib.auth.models import User
 #class serializers to help django convert JSON data to python objects
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name']
+        read_only_fields = ['id']
+
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
