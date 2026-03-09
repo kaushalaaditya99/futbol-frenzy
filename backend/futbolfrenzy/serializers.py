@@ -1,17 +1,22 @@
 from rest_framework import serializers
 from .models import Notification, Settings, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 #class serializers to help django convert JSON data to python objects
 
 class UserSerializer(serializers.ModelSerializer):
+    group = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name', 'group']
         extra_kwargs = {
             'password': {'write_only': True}
         }
         read_only_fields = ['id']
+    #overwrite User Post function to fix validation issues
     def create(self, validated_data):
+
+        
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
@@ -19,6 +24,13 @@ class UserSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name']
         )
+
+        #log user with relevant group(does it need logic to validate presence of Student and Coach group?)
+        
+        #adds user to group, will create group if it doesnt exist
+        my_group, created = Group.objects.get_or_create(name=validated_data['group'])
+        user.groups.add(my_group)
+        
         return user
 
 

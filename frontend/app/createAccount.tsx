@@ -26,7 +26,7 @@ export default function CreateAccount() {
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('');
     const [email, setEmail] = useState('');
-
+    const [group, setGroup] = useState('Coach')
 
 	// login
   	const postAccount = async () => 
@@ -42,7 +42,7 @@ export default function CreateAccount() {
             const response = await fetch(`${API_URL}user/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password, email, first_name, last_name}),
+            body: JSON.stringify({ username, password, email, first_name, last_name, group}),
         });
 
         const data = await response.json();
@@ -163,16 +163,24 @@ export default function CreateAccount() {
                     >
                         <RadioCard
                             value="Coach"
-                            selected={true}
-                            onChange={(value) => console.log(value)}
+                            selected =
+                            {
+                                group ==
+                                "Coach"
+                            }
+                            onChange={value => setGroup(value)}
                             icon="🧑‍🏫"
                             label="Coach"
                             description="Create and assign drills"
                         />
                         <RadioCard
                             value="Student"
-                            selected={false}
-                            onChange={(value) => console.log(value)}
+                            selected =
+                            {
+                                group ==
+                                "Student"
+                            }
+                            onChange={value => setGroup(value)}
                             icon="⚽"
                             label="Player"
                             description="Practice and submit drills"
