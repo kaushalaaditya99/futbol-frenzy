@@ -5,6 +5,7 @@ from . import viewsets
 from .views import me
 
 api_router = DefaultRouter()
+api_router.register(r'user', viewsets.UserViewSet)
 api_router.register(r'notifications', viewsets.NotificationViewSet)
 api_router.register(r'settings', viewsets.SettingsViewSet)
 api_router.register(r'drills', viewsets.DrillViewSet)
