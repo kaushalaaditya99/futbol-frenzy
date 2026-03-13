@@ -7,6 +7,7 @@ import ThemedText from "../../ThemedText";
 import { SideBarLink } from "./SideBarLink";
 import { router } from "expo-router";
 import { View } from "react-native";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SideBarProps {
     targetWidth: number;
@@ -16,8 +17,10 @@ interface SideBarProps {
 }
 
 export default function SideBar(props: SideBarProps) {
-    const logOut = () => {
-        router.replace("/");
+    const { logout } = useAuth();
+
+    const logOut = async () => {
+        await logout();
     }
 
 
@@ -100,7 +103,7 @@ export default function SideBar(props: SideBarProps) {
                             />
                         }
                         label="Log Out"
-                        onPress={() => router.replace("..")}
+                        onPress={logOut}
                         containerStyle={{
                             borderTopWidth: 1,
                             borderColor: colors.schemes.light.outlineVariant

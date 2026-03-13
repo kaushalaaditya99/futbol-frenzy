@@ -20,6 +20,7 @@ import ThemedText from "@/components/ui/ThemedText";
 import CalendarNavigate from "@/components/ui/calendar/CalendarNavigate";
 import WeekButtonGroup from "@/components/ui/calendar/WeekButtonGroup";
 import CoachHome from "@/components/pages/home/CoachHome";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Home() {
     const [results, setResults] = useState<Array<Result>>([]);
@@ -29,7 +30,7 @@ export default function Home() {
     const sideBar = useSideBar();
     const functionalDate = useFunctionalDate();
 
-    const [isCoach, setIsCoach] = useState(true);
+    const { role } = useAuth();
 
     useEffect(() => {
         // We'd load the user's data in this function
@@ -59,7 +60,7 @@ export default function Home() {
         setSessions(sessions);
     }
 
-    if (isCoach) return <CoachHome />;
+    if (role === "Coach") return <CoachHome />;
 
     return (
         <>
