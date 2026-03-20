@@ -58,6 +58,13 @@ export default function RootLayout() {
           headerShown: false
         }}
       />
+      <Stack.Screen
+        name="createSession"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
     </Stack>
     </AuthProvider>
   );
