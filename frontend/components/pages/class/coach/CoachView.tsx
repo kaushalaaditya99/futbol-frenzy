@@ -156,7 +156,10 @@ export default function CoachView() {
             {tab === "Workout" &&
                 <TabWorkout
                     onAssignPress={() => console.log("Assign Pressed")}
-                    onCreatePress={() => router.push("/createSession")}
+                    onCreatePress={() => router.push({
+                        pathname: "/createSession",
+                        params: { date: functionalDate.date.toISOString() }
+                    })}
                     searchBar={sessionsOnDateSearchBar}
                     viewType={sessionsViewType}
                     setViewType={setSessionsViewType}
