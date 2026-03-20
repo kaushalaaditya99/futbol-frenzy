@@ -33,8 +33,7 @@ export default function Classes() {
         // A student or teacher?
         // Does this differentiation matter in the DB?
         const id = 0;
-        const role = "Student";
-        const classes = await getClasses(id, role);
+        const classes = await getClasses(id, role ?? "Student");
         setClasses(classes);
         searchBar.setFiltered(classes);
     }

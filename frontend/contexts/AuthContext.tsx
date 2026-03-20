@@ -21,7 +21,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const loadAuth = async () => {
             const savedToken = await AsyncStorage.getItem("authToken");
-            const savedRole = await AsyncStorage.getItem("userRole") as Role;
+            const savedRoleString = await AsyncStorage.getItem("userRole");
+            let savedRole: Role = null;
+            if (savedRoleString === "Coach" || savedRoleString === "Student") {
+                savedRole = savedRoleString;
+            } else if (savedRoleString !== null) {
+                await AsyncStorage.removeItem("userRole");
+            }
             if (savedToken) {
                 setToken(savedToken);
                 setRole(savedRole);
@@ -34,8 +40,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     function setAuth(newToken: string, newRole: Role) {
         setToken(newToken);
         setRole(newRole);
-        AsyncStorage.setItem("authToken", newToken);
-        if (newRole) AsyncStorage.setItem("userRole", newRole);
+        AsyncStorage.setItem("authToken", newToken).catch((e) =>
+            console.error("Failed to persist authToken:", e)
+        );
+        if (newRole !== null) {
+            AsyncStorage.setItem("userRole", newRole).catch((e) =>
+                console.error("Failed to persist userRole:", e)
+            );
+        } else {
+            AsyncStorage.removeItem("userRole").catch((e) =>
+                console.error("Failed to remove userRole:", e)
+            );
+        }
     }
 
     async function logout() {
