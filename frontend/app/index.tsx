@@ -61,8 +61,6 @@ export default function Index() {
 			if (response.ok && data.token) {
 				const role = await determineUserType(data.token);
 				setAuth(data.token, role);
-				console.log('Login successful! Role:', role);
-				router.push("/(tabs)");
 			} else {
 				console.error('Login failed:', data);
 				alert(`Login failed: ${data.error || JSON.stringify(data)}`);
