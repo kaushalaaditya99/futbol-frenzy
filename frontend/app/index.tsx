@@ -6,12 +6,12 @@ import Separator from '@/components/ui/Separator';
 import SeparatorText from '@/components/ui/SeparatorText';
 import ThemedText from '@/components/ui/ThemedText';
 import { fontSize, padding, theme } from '@/theme';
-import { Redirect, router } from "expo-router";
+import { router } from "expo-router";
 import { Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import resolveEndpoint from '@/services/resolveEndpoint';
 import React, { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '@/contexts/AuthContext';
 
 
 
@@ -20,77 +20,58 @@ const API_URL = resolveEndpoint("/api/");
 export default function Index() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [token, setToken] = useState('');
-	const [userType, setUserType] = useState('');
+	const { setAuth, token, loaded } = useAuth();
+
+	useEffect(() => {
+		if (loaded && token) {
+			router.replace("/(tabs)");
+		}
+	}, [loaded, token]);
+
+	// returns "Coach", "Student", or null
+	const determineUserType = async (authToken: string) => {
+		try {
+			const response = await fetch(`${API_URL}users/me/`, {
+				headers: { 'Authorization': `Token ${authToken}` },
+			});
+			if (!response.ok) {
+				console.error("Failed to fetch user:", response.status, response.statusText);
+				return null;
+			}
+			const data = await response.json();
+			console.log('users/me response:', JSON.stringify(data));
+			if (data.groups.includes('Coach')) return 'Coach' as const;
+			if (data.groups.includes('Student')) return 'Student' as const;
+			return null;
+		} catch (error) {
+			console.error('Error determining user type:', error);
+			return null;
+		}
+	};
 
 	// login
-  	const login = async () => {
-  	try {
-    	const response = await fetch(`${API_URL}api-token-auth/`, {
-      	method: 'POST',
-      	headers: { 'Content-Type': 'application/json' },
-      	body: JSON.stringify({ username, password }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok && data.token) {
-    	setToken(data.token);
-      	await AsyncStorage.setItem('authToken', data.token);
-      	console.log('Login successful! Token:', data.token);
-      	alert('Login successful!');
-      	determineUserType(data.token);
-		router.push("/(tabs)");
-    } else {
-      	// error on backend
-      	console.error('Login failed:', data);
-      	alert(`Login failed: ${data.error || JSON.stringify(data)}`);
-    }
-  	} catch (error) {
-    	// network error
-    	console.error('Network/Login error:', error);
-    	alert('Login error! See console for details.');
-  	}
-};
-
-  	// --- DETERMINE USER TYPE FUNCTION ---
-  	const determineUserType = async (authToken : string) => {
-    try {
-      	const response = await fetch(`${API_URL}users/me/`, {
-        headers: { 'Authorization': `Token ${authToken}` },
-      	});
-		if (!response.ok) {
-  console.error("Failed to fetch user:", response.status, response.statusText);
-  setUserType("Unknown");
-  return;
-}
-    	const data = await response.json();
-
-      	if (data.groups.includes('Student')) 
-			setUserType('Student');
-      	else if (data.groups.includes('Coach')) 
-			setUserType('Coach');
-      	else setUserType('Unknown');
-
-      console.log('User type:', userType);
-    } catch (error) {
-      	console.error('Error determining user type:', error);
-      	setUserType('Unknown');
-    }
-  };
-
-  	// load token 
-  	useEffect(() => {
-    const loadToken = async () => {
-    	const savedToken = await AsyncStorage.getItem('authToken');
-      	if (savedToken) {
-        	setToken(savedToken);
-        	determineUserType(savedToken);
-      	}
-    };
-    loadToken();
-  }, []);
-
+	const login = async () => {
+		try {
+			const response = await fetch(`${API_URL}api-token-auth/`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ username, password }),
+			});
+			const data = await response.json();
+			if (response.ok && data.token) {
+				const role = await determineUserType(data.token);
+				setAuth(data.token, role);
+				console.log('Login successful! Role:', role);
+				router.push("/(tabs)");
+			} else {
+				console.error('Login failed:', data);
+				alert(`Login failed: ${data.error || JSON.stringify(data)}`);
+			}
+		} catch (error) {
+			console.error('Network/Login error:', error);
+			alert('Login error! See console for details.');
+		}
+	};
 
 	return (
   	<SafeAreaView

@@ -15,9 +15,10 @@ import Header from "@/components/ui/user/Header";
 import ThemedText from "@/components/ui/ThemedText";
 import SearchBar from "@/components/ui/SearchBar";
 import useSearchBar from "@/hooks/useSearchBar";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Classes() {
-    const [isTeacher, setIsTeacher] = useState(true);
+    const { role } = useAuth();
     const [classes, setClasses] = useState<Array<Class>>([]);
     const sideBar = useSideBar();
     const searchBar = useSearchBar(classes, "name", "name");
@@ -104,7 +105,7 @@ export default function Classes() {
                                     columnGap: padding.md
                                 }}
                             >
-                                {isTeacher &&
+                                {role === "Coach" &&
                                     <CreateClassButton
                                         onPress={() => router.push("/createClass")}
                                     />

@@ -5,8 +5,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ProfilePicture from "../ProfilePicture";
 import ThemedText from "../../ThemedText";
 import { SideBarLink } from "./SideBarLink";
-import { router } from "expo-router";
 import { View } from "react-native";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigation, CommonActions } from "@react-navigation/native";
+import { router } from "expo-router";
 
 interface SideBarProps {
     targetWidth: number;
@@ -16,8 +18,14 @@ interface SideBarProps {
 }
 
 export default function SideBar(props: SideBarProps) {
-    const logOut = () => {
-        router.replace("/");
+    const { logout } = useAuth();
+    const navigation = useNavigation();
+
+    const logOut = async () => {
+        await logout();
+        navigation.getParent()?.dispatch(
+            CommonActions.reset({ index: 0, routes: [{ name: "index" }] })
+        );
     }
 
 
@@ -100,7 +108,7 @@ export default function SideBar(props: SideBarProps) {
                             />
                         }
                         label="Log Out"
-                        onPress={() => router.replace("..")}
+                        onPress={logOut}
                         containerStyle={{
                             borderTopWidth: 1,
                             borderColor: colors.schemes.light.outlineVariant
