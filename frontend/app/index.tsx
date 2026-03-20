@@ -11,7 +11,6 @@ import { Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import resolveEndpoint from '@/services/resolveEndpoint';
 import React, { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/contexts/AuthContext';
 
 
@@ -21,7 +20,13 @@ const API_URL = resolveEndpoint("/api/");
 export default function Index() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const { setAuth } = useAuth();
+	const { setAuth, token, loaded } = useAuth();
+
+	useEffect(() => {
+		if (loaded && token) {
+			router.replace("/(tabs)");
+		}
+	}, [loaded, token]);
 
 	// returns "Coach", "Student", or null
 	const determineUserType = async (authToken: string) => {
@@ -67,19 +72,6 @@ export default function Index() {
 			alert('Login error! See console for details.');
 		}
 	};
-
-	// restore session on app load
-	useEffect(() => {
-		const loadToken = async () => {
-			const savedToken = await AsyncStorage.getItem('authToken');
-			const savedRole = await AsyncStorage.getItem('userRole') as 'Coach' | 'Student' | null;
-			if (savedToken) {
-				setAuth(savedToken, savedRole);
-				router.replace("/(tabs)");
-			}
-		};
-		loadToken();
-	}, []);
 
 	return (
   	<SafeAreaView

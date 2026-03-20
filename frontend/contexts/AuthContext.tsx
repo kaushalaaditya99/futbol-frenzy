@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Role = "Coach" | "Student" | null;
@@ -6,6 +6,7 @@ type Role = "Coach" | "Student" | null;
 interface AuthContextType {
     token: string | null;
     role: Role;
+    loaded: boolean;
     setAuth: (token: string, role: Role) => void;
     logout: () => Promise<void>;
 }
@@ -15,6 +16,20 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [role, setRole] = useState<Role>(null);
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        const loadAuth = async () => {
+            const savedToken = await AsyncStorage.getItem("authToken");
+            const savedRole = await AsyncStorage.getItem("userRole") as Role;
+            if (savedToken) {
+                setToken(savedToken);
+                setRole(savedRole);
+            }
+            setLoaded(true);
+        };
+        loadAuth();
+    }, []);
 
     function setAuth(newToken: string, newRole: Role) {
         setToken(newToken);
@@ -31,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ token, role, setAuth, logout }}>
+        <AuthContext.Provider value={{ token, role, loaded, setAuth, logout }}>
             {children}
         </AuthContext.Provider>
     );
