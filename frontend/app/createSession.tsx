@@ -21,6 +21,7 @@ import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import { ArrowRight, CalendarDays, Clock, GripVertical, Plus, X } from "lucide-react-native";
 import { Drillv2, getDrills } from "@/services/drills";
 import DrillPickerSheet from "@/components/pages/createSession/DrillPickerSheet";
+import TimePicker from "@/components/pages/createSession/TimePicker";
 
 // ─── Draggable Drill Row ─────────────────────────────────────────────────────
 
@@ -180,8 +181,13 @@ export default function CreateSession() {
     const [dateText, setDateText] = useState(() => toFriendlyDate(
         (() => { const d = dateParam ? new Date(dateParam) : new Date(); return d; })()
     ));
-    const [timeText, setTimeText] = useState("11:59 PM");
     const [showCalendarPicker, setShowCalendarPicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
+
+    const displayTime = selectedDate.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 
     const [name, setName] = useState("");
     const [selectedDrills, setSelectedDrills] = useState<Drillv2[]>([]);
@@ -354,8 +360,9 @@ export default function CreateSession() {
                                 </Pressable>
                             </View>
 
-                            {/* Time — editable text input */}
-                            <View
+                            {/* Time — pressable opens native wheel picker */}
+                            <Pressable
+                                onPress={() => setShowTimePicker(true)}
                                 style={{
                                     flex: 1,
                                     flexDirection: "row",
@@ -374,19 +381,15 @@ export default function CreateSession() {
                                     size={16}
                                     color={colors.schemes.light.onSurfaceVariant}
                                 />
-                                <TextInput
-                                    value={timeText}
-                                    onChangeText={setTimeText}
-                                    placeholder="11:59 PM"
-                                    placeholderTextColor={colors.schemes.light.onSurfaceVariant}
+                                <ThemedText
                                     style={{
-                                        flex: 1,
                                         fontSize: fontSize.md,
-                                        fontFamily: "Arimo-Regular",
                                         color: colors.schemes.light.onBackground,
                                     }}
-                                />
-                            </View>
+                                >
+                                    {displayTime}
+                                </ThemedText>
+                            </Pressable>
                         </View>
                     </View>
                 </View>
@@ -620,6 +623,20 @@ export default function CreateSession() {
                 selectedDrillIds={new Set(selectedDrills.map((d) => d.id))}
                 onConfirm={handleConfirmDrills}
                 onClose={() => setShowDrillPicker(false)}
+            />
+            {/* ── Time Picker ── */}
+            <TimePicker
+                visible={showTimePicker}
+                value={selectedDate}
+                onConfirm={(date) => {
+                    setSelectedDate((prev) => {
+                        const next = new Date(prev);
+                        next.setHours(date.getHours(), date.getMinutes(), 0, 0);
+                        return next;
+                    });
+                    setShowTimePicker(false);
+                }}
+                onClose={() => setShowTimePicker(false)}
             />
         </SafeAreaView>
     );
