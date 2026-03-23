@@ -58,6 +58,27 @@ export default function RootLayout() {
           headerShown: false
         }}
       />
+      <Stack.Screen
+        name="createSession"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name="assignSession"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name="assignStudents"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
     </Stack>
     </AuthProvider>
   );

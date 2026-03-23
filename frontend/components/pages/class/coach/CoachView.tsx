@@ -10,6 +10,7 @@ import useSearchBar from "@/hooks/useSearchBar";
 import TabStudent from "./TabStudent/TabStudent";
 import { getStudents, Student } from "@/services/students";
 import TabProgress from "./TabProgress/TabProgress";
+import { router } from "expo-router";
 
 
 const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
@@ -154,8 +155,14 @@ export default function CoachView() {
             }
             {tab === "Workout" &&
                 <TabWorkout
-                    onAssignPress={() => console.log("Assign Pressed")}
-                    onCreatePress={() => console.log("Create Pressed")}
+                    onAssignPress={() => router.push({
+                        pathname: "/assignSession",
+                        params: { date: functionalDate.date.toISOString() }
+                    })}
+                    onCreatePress={() => router.push({
+                        pathname: "/createSession",
+                        params: { date: functionalDate.date.toISOString() }
+                    })}
                     searchBar={sessionsOnDateSearchBar}
                     viewType={sessionsViewType}
                     setViewType={setSessionsViewType}

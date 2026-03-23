@@ -140,7 +140,7 @@ export async function getSessions(id: number, role?: string): Promise<Array<Sess
 }
 
 export async function getSession(sessionID: number, sestudentID: number): Promise<Session> {
-    return fakeData[4];
+    return fakeData.find((s) => s.id === sessionID) ?? fakeData[4];
 }
 
 

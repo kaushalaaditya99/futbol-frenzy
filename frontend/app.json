@@ -22,7 +22,7 @@
         "./assets/fonts/Arimo/Arimo-Bold.ttf",
         "./assets/fonts/Arimo/Arimo-SemiBold.ttf",
         "./assets/fonts/Silkscreen/Silkscreen-Bold.ttf",
-        "./assets/fonts/Silkscreen/Silkscreen-Regular.ttf"        
+        "./assets/fonts/Silkscreen/Silkscreen-Regular.ttf"
       ]
     },
     "android": {
@@ -119,7 +119,8 @@
         }
       ],
       "expo-video",
-      "expo-font"
+      "expo-font",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,
