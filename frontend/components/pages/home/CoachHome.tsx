@@ -237,6 +237,7 @@ export default function CoachHome() {
                         </Pressable>
 
                         <Pressable
+                            onPress={() => router.push("/assignSession")}
                             style={{
                                 flex: 1,
                                 backgroundColor: colors.schemes.light.surfaceContainerLowest,
