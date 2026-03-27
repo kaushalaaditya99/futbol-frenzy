@@ -11,8 +11,15 @@ import DisclosureRange from "./DisclosureRange";
 import DisclosureMetric from "./DiscolsureMetric";
 import DisclosureCategory from "./DisclosureCategory";
 import DisclosureInstances from "./DisclosureInstances";
+import useSearchBar from "@/hooks/useSearchBar";
+import { Student } from "@/services/students";
 
-export default function TabProgress() {
+interface TabProgressProps {
+    searchBar: ReturnType<typeof useSearchBar<Student>>;
+    students: Array<Student>;
+}
+
+export default function TabProgress(props: TabProgressProps) {
     const lineData = [
         {value: 0},
         {value: 10},
@@ -36,6 +43,13 @@ export default function TabProgress() {
     ];
 
     const [showDisclosure, setShowDisclosure] = useState("");
+    const [view, setView] = useState("");
+    const [studentIDs, setStudentIDs] = useState<number[]>([]);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [metric, setMetric] = useState("");
+    const [category, setCategory] = useState("");
+    const [instances, setInstances] = useState("");
 
     const closeDisclosure = () => {
         setShowDisclosure("");
@@ -50,31 +64,68 @@ export default function TabProgress() {
         >
             {showDisclosure === "View" &&
                 <DisclosureView
+                    options={[
+                        ["aggregate", "Aggregate"],
+                        ["individual", "Individual"]
+                    ]}
+                    value={view}
+                    onChange={setView}
                     onClose={closeDisclosure}
                 />
             }
             {showDisclosure === "Students" &&
                 <DisclosureStudents
+                    value={studentIDs}
+                    onChange={(id: number) => {
+                        if (studentIDs.includes(id))
+                            setStudentIDs([...studentIDs, id]);
+                        else
+                            setStudentIDs(studentIDs.splice(studentIDs.indexOf(id), 0))
+                    }}
+                    onSelectAll={() => setStudentIDs(props.searchBar.filtered.map(s => s.id))}
+                    onDeselectAll={() => setStudentIDs([])}
+                    searchBar={props.searchBar}
                     onClose={closeDisclosure}
                 />
             }
             {showDisclosure === "Range" &&
                 <DisclosureRange
+                    startDate={startDate}
+                    endDate={endDate}
+                    onChangeEndDate={setEndDate}
+                    onChangeStartDate={setStartDate}
                     onClose={closeDisclosure}
                 />
             }
             {showDisclosure === "Metric" &&
                 <DisclosureMetric
+                    options={[
+                        ["accuracy", "Accuracy"],
+                        ["duration", "Duration"]
+                    ]}
+                    value={metric}
+                    onChange={setMetric}
                     onClose={closeDisclosure}
                 />
             }
             {showDisclosure === "Category" &&
                 <DisclosureCategory
+                    options={[
+                        ["drills", "Drills"],
+                        ["workouts", "Workouts"]
+                    ]}
+                    value={category}
+                    onChange={setCategory}
                     onClose={closeDisclosure}
                 />
             }
             {showDisclosure === "Instances" &&
                 <DisclosureInstances
+                    value={[]}
+                    options={[]}
+                    onChange={() => null}
+                    onSelectAll={() => null}
+                    onDeselectAll={() => null}
                     onClose={closeDisclosure}
                 />
             }
@@ -166,7 +217,7 @@ export default function TabProgress() {
                         verticalLinesColor={colors.schemes.light.outlineVariant}
                         xAxisColor={colors.schemes.light.outlineVariant}
                         color={"#1a1ac2"}
-                        color2={"#269c26"}
+                        color2={"#3877ff"}
                         dataPointsColor="black"
                         // curved={true}
                         // curveType={CurveType.QUADRATIC}

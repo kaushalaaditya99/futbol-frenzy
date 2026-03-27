@@ -16,6 +16,7 @@ export interface SearchBarProps {
     childrenRightOfSort?: ReactNode;
     textInputStyle?: TextStyle;
     sortButtonStyle?: ViewStyle;
+    sortButtonSVGStyle?: ViewStyle;
     searchButtonStyle?: ViewStyle;
     searchButtonSVGStyle?: ViewStyle;
     containerStyle?: ViewStyle;
@@ -64,6 +65,9 @@ export default function SearchBar(props: SearchBarProps) {
                     sortButtonStyle={{
                         ...props.sortButtonStyle
                     }}
+                    sortButtonSVGStyle={{
+                        ...props.sortButtonSVGStyle
+                    }}
                 />
             }
             {props.childrenRightOfSort}
@@ -81,7 +85,7 @@ export default function SearchBar(props: SearchBarProps) {
                 }}
             >
                 <Search
-                    size={18}
+                    size={props?.searchButtonSVGStyle?.width as any || 18}
                     color={colors.schemes.light.onSurfaceVariant}
                     style={props.searchButtonSVGStyle}
                 />

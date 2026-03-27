@@ -22,16 +22,6 @@ export default function TabStudent(props: TabStudentProps) {
                 backgroundColor: colors.schemes.light.background,
             }}
         >
-            {/* <ThemedText
-                style={{
-                    fontWeight: 500,
-                    fontSize: fontSize.lg,
-                    letterSpacing: letterSpacing.xs,
-                    color: colors.schemes.light.onBackground,
-                }}
-            >
-                Students
-            </ThemedText> */}
             <SearchBar
                 search={props.searchBar.search}
                 setSearch={props.searchBar.setSearch}
@@ -39,7 +29,7 @@ export default function TabStudent(props: TabStudentProps) {
                 sortDirection={props.searchBar.sortDirection}
                 setSortDirection={props.searchBar.setSortDirection}
             />
-            {props.students.map((student: any, i: number) => (
+            {props.searchBar.filtered.map((student: any, i: number) => (
                 <Fragment key={i}>
                     <RowCardStudent
                         {...student}

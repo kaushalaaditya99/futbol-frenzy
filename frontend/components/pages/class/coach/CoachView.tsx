@@ -179,7 +179,10 @@ export default function CoachView() {
                 />
             }
             {tab === "Progress" &&
-                <TabProgress/>
+                <TabProgress
+                    searchBar={studentSearchBar}
+                    students={studentSearchBar.filtered}
+                />
             }
         </ScrollView>
     )
