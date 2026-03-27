@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.drillup.app",
       "supportsTablet": true,
       "fonts": [
         "./assets/fonts/Doto/Doto-Regular.ttf",

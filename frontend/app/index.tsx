@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import resolveEndpoint from '@/services/resolveEndpoint';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import useGoogleAuth from '@/hooks/useGoogleauth';
 
 
 
@@ -21,6 +22,7 @@ export default function Index() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const { setAuth, token, loaded } = useAuth();
+	const promptGoogleAuth = useGoogleAuth();
 
 	useEffect(() => {
 		if (loaded && token) {
@@ -198,6 +200,7 @@ export default function Index() {
       	>
         	<SimpleHalfWidthButton
           	label="Google"
+			onPress={() => promptGoogleAuth()}
         	/>
         	<SimpleHalfWidthButton
           	label="Apple"
