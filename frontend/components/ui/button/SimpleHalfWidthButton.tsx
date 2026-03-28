@@ -18,6 +18,7 @@ export default function SimpleHalfWidthButton(props: SimpleHalfWidthButtonProps)
             outerStyle={props.outerStyle}
             innerStyle={props.innerStyle}
             innerMostStyle={props.innerMostStyle}
+            onPress={props.onPress}
         >
             <ThemedText
                 style={{

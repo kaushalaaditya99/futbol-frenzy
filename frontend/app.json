@@ -11,6 +11,15 @@
     "ios": {
       "bundleIdentifier": "com.drillup.app",
       "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.696867146373-r20qb1a55su6tbqs35mlos8s3dst657a"
+            ]
+          }
+        ]
+      },
       "fonts": [
         "./assets/fonts/Doto/Doto-Regular.ttf",
         "./assets/fonts/Doto/Doto-Medium.ttf",
@@ -27,6 +36,7 @@
       ]
     },
     "android": {
+      "package": "com.drillup.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

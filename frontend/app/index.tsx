@@ -21,14 +21,18 @@ const API_URL = resolveEndpoint("/api/");
 export default function Index() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const { setAuth, token, loaded } = useAuth();
+	const { setAuth, token, role, loaded } = useAuth();
 	const promptGoogleAuth = useGoogleAuth();
 
 	useEffect(() => {
 		if (loaded && token) {
-			router.replace("/(tabs)");
+			if (role) {
+				router.replace("/(tabs)");
+			} else {
+				router.replace("/selectRole");
+			}
 		}
-	}, [loaded, token]);
+	}, [loaded, token, role]);
 
 	// returns "Coach", "Student", or null
 	const determineUserType = async (authToken: string) => {

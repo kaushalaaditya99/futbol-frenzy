@@ -31,6 +31,13 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
+        name="selectRole"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
         name="demonstration"
         options={{
           headerTitle: "",
