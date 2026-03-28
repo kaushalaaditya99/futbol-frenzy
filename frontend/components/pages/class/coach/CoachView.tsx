@@ -11,6 +11,7 @@ import TabStudent from "./TabStudent/TabStudent";
 import { getStudents, Student } from "@/services/students";
 import TabProgress from "./TabProgress/TabProgress";
 import { router } from "expo-router";
+import { Drillv2 as Drill, getDrills } from "@/services/drills";
 
 
 const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
@@ -44,9 +45,12 @@ export default function CoachView() {
     const [showShareClass, setShowShareClass] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
 
+    const [drills, setDrills] = useState<Array<Drill>>([]);
+
     useEffect(() => {
         loadSessions(teacherID);
         loadStudents(classID);
+        loadDrills(teacherID);
     }, []);
 
 
@@ -80,6 +84,12 @@ export default function CoachView() {
     const loadSessions = async (teacherID: number) => {
         const sessions = await getSessions(teacherID);
         setSessions(sessions);
+    }
+
+
+    const loadDrills = async (teacherID: number) => {
+        const drills = await getDrills(teacherID);
+        setDrills(drills);
     }
 
 
@@ -180,8 +190,9 @@ export default function CoachView() {
             }
             {tab === "Progress" &&
                 <TabProgress
-                    searchBar={studentSearchBar}
-                    students={studentSearchBar.filtered}
+                    drills={drills}
+                    sessions={sessions}
+                    students={students}
                 />
             }
         </ScrollView>

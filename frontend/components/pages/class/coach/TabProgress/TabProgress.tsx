@@ -4,7 +4,7 @@ import CardMetric from "../../../CardMetric";
 import { MoveDown, MoveUp } from "lucide-react-native";
 import { LineChart } from "react-native-gifted-charts";
 import DisclosureButton from "./DisclosureButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DisclosureView from "./DisclosureView";
 import DisclosureStudents from "./DisclosureStudents";
 import DisclosureRange from "./DisclosureRange";
@@ -13,11 +13,17 @@ import DisclosureCategory from "./DisclosureCategory";
 import DisclosureInstances from "./DisclosureInstances";
 import useSearchBar from "@/hooks/useSearchBar";
 import { Student } from "@/services/students";
+import { Drillv2 as Drill } from "@/services/drills";
+import { Session } from "@/services/sessions";
+import ThemedText from "@/components/ui/ThemedText";
 
 interface TabProgressProps {
-    searchBar: ReturnType<typeof useSearchBar<Student>>;
+    drills: Array<Drill>;
+    sessions: Array<Session>;
     students: Array<Student>;
 }
+
+const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
 
 export default function TabProgress(props: TabProgressProps) {
     const lineData = [
@@ -43,14 +49,48 @@ export default function TabProgress(props: TabProgressProps) {
     ];
 
     const [showDisclosure, setShowDisclosure] = useState("");
-    const [view, setView] = useState("");
+    const [view, setView] = useState("aggregate");
     const [studentIDs, setStudentIDs] = useState<number[]>([]);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    const [metric, setMetric] = useState("");
-    const [category, setCategory] = useState("");
-    const [instances, setInstances] = useState("");
+    const [metric, setMetric] = useState("accuracy");
+    const [category, setCategory] = useState("drills");
+    const [instances, setInstances] = useState<number[]>([]);
 
+    const studentSearchBar = useSearchBar<Student>(
+        props.students, 
+        getStudentFullName, 
+        getStudentFullName
+    );
+
+    const drillSearchBar = useSearchBar<Drill>(
+        props.drills, 
+        (drill: Drill) => `${drill.name}`, 
+        (drill: Drill) => `${drill.name}`
+    );
+
+    const sessionSearchBar = useSearchBar<Session>(
+        props.sessions, 
+        (session: Session) => `${session.name}`, 
+        (session: Session) => `${session.name}`
+    );
+
+    useEffect(() => {
+        const day = new Date();
+        setEndDate(day.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }));
+
+        day.setDate(day.getDate() - 30);
+        setStartDate(day.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }));
+    }, []);
+    
     const closeDisclosure = () => {
         setShowDisclosure("");
     }
@@ -82,10 +122,11 @@ export default function TabProgress(props: TabProgressProps) {
                         else
                             setStudentIDs(studentIDs.splice(studentIDs.indexOf(id), 0))
                     }}
-                    onSelectAll={() => setStudentIDs(props.searchBar.filtered.map(s => s.id))}
+                    onSelectAll={() => setStudentIDs(studentSearchBar.filtered.map(s => s.id))}
                     onDeselectAll={() => setStudentIDs([])}
-                    searchBar={props.searchBar}
+                    searchBar={studentSearchBar}
                     onClose={closeDisclosure}
+                    className="U12 Boys A-Team"
                 />
             }
             {showDisclosure === "Range" &&
@@ -100,8 +141,8 @@ export default function TabProgress(props: TabProgressProps) {
             {showDisclosure === "Metric" &&
                 <DisclosureMetric
                     options={[
-                        ["accuracy", "Accuracy"],
-                        ["duration", "Duration"]
+                        ["accuracy", "Accuracy", "Lorem ipsum dolor sit amet, consectetur adipiscing elit."],
+                        ["duration", "Duration", "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."]
                     ]}
                     value={metric}
                     onChange={setMetric}
@@ -121,12 +162,17 @@ export default function TabProgress(props: TabProgressProps) {
             }
             {showDisclosure === "Instances" &&
                 <DisclosureInstances
-                    value={[]}
-                    options={[]}
-                    onChange={() => null}
-                    onSelectAll={() => null}
-                    onDeselectAll={() => null}
+                    value={instances}
+                    onChange={(id: number) => {
+                        if (instances.includes(id))
+                            setInstances([...instances, id]);
+                        else
+                            setInstances(instances.splice(instances.indexOf(id), 0));
+                    }}
+                    onSelectAll={() => setInstances((category === "drills" ? drillSearchBar : sessionSearchBar).filtered.map(s => s.id))}
+                    onDeselectAll={() => setInstances([])}
                     onClose={closeDisclosure}
+                    searchBar={category === "drills" ? drillSearchBar : sessionSearchBar}
                 />
             }
             <View
@@ -251,37 +297,37 @@ export default function TabProgress(props: TabProgressProps) {
                 >
                     <DisclosureButton
                         label="View"
-                        value="Aggregate"
+                        value={view.charAt(0).toUpperCase() + view.substring(1)}
                         level="top"
                         onDisclose={() => setShowDisclosure("View")}
                     />
                     <DisclosureButton
                         label="Students"
-                        value="All"
+                        value={studentIDs.length === props.students.length ? "All" : (studentIDs.length === 0 ? "None Selected" : `${studentIDs.length} Selected`)}
                         level="middle"
                         onDisclose={() => setShowDisclosure("Students")}
                     />
                     <DisclosureButton
                         label="Range"
-                        value="Last 30 Days"
+                        value={`${startDate} - ${endDate}`}
                         level="middle"
                         onDisclose={() => setShowDisclosure("Range")}
                     />
                     <DisclosureButton
                         label="Metric"
-                        value="Accuracy"
+                        value={metric.charAt(0).toUpperCase() + metric.substring(1)}
                         level="middle"
                         onDisclose={() => setShowDisclosure("Metric")}
                     />
                     <DisclosureButton
                         label="Category"
-                        value="Drills"
+                        value={category.charAt(0).toUpperCase() + category.substring(1)}
                         level="middle"
                         onDisclose={() => setShowDisclosure("Category")}
                     />
                     <DisclosureButton
-                        label="Drill Instances"
-                        value="All"
+                        label={`${category === "drill" ? "Drill" : "Session"} Instances`}
+                        value={category === "drill" ? (instances.length === props.drills.length ? "All" : (instances.length === 0 ? "None Selected" : `${instances.length} Selected`)) : ((instances.length === props.sessions.length ? "All" : (instances.length === 0 ? "None Selected" : `${instances.length} Selected`)))}
                         level="bottom"
                         onDisclose={() => setShowDisclosure("Instances")}
                     />

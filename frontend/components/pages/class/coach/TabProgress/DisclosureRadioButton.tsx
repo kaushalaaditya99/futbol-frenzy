@@ -1,12 +1,13 @@
 import ThemedText from "@/components/ui/ThemedText";
-import { colors, theme } from "@/theme";
+import { colors, shadow, theme } from "@/theme";
 import { CheckIcon } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 
 interface DisclosureRadioButtonProps {
     value: string;
-    options: [string, string][];
-    onChange: (value: string) => void; 
+    options: [string, string, string?][];
+    onChange: (value: string) => void;
+    description?: boolean;
 }
 
 export default function DisclosureRadioButton(props: DisclosureRadioButtonProps) {
@@ -15,7 +16,6 @@ export default function DisclosureRadioButton(props: DisclosureRadioButtonProps)
             style={{
                 width: "auto",
                 height: "auto",
-                paddingHorizontal: theme.padding.lg,
                 backgroundColor: "white",
                 borderRadius: theme.borderRadius.lg,
                 borderWidth: 1,
@@ -29,11 +29,12 @@ export default function DisclosureRadioButton(props: DisclosureRadioButtonProps)
                     style={{
                         paddingVertical: theme.padding["2xl"],
                         paddingHorizontal: theme.padding.xl,
+                        flexShrink: 1,
                         flexDirection: "row",
-                        alignItems: "center",
+                        alignItems: !props.description ? "center" : "flex-start",
                         columnGap: theme.spacing.sm,
                         borderBottomWidth: 1 - i,
-                        borderColor: colors.schemes.light.outlineVariant
+                        borderColor: colors.schemes.light.outlineVariant,
                     }}
                 >
                     <View
@@ -43,26 +44,52 @@ export default function DisclosureRadioButton(props: DisclosureRadioButtonProps)
                             alignItems: "center",
                             justifyContent: "center",
                             borderRadius: 1000,
-                            backgroundColor: props.value !== option[0] ? colors.schemes.light.surfaceContainer : "transparent"
+                            borderWidth: 1,
+                            borderColor: props.value !== option[0] ? colors.schemes.light.outlineVariant : colors.coreColors.primary,
+                            backgroundColor: props.value !== option[0] ? "white" : colors.coreColors.primary,
+                            
+                            ...shadow.sm
                         }}
                     >
                         {props.value === option[0] &&
                             <CheckIcon
-                                size={24}
+                                size={16}
                                 strokeWidth={2.5}
-                                color={theme.colors.coreColors.primary}
+                                color="white"
                             />
                         }
                     </View>
-                    <ThemedText
+                    <View
                         style={{
-                            fontSize: 16,
-                            fontWeight: props.value === option[0] ? 500 : 400,
-                            letterSpacing: theme.letterSpacing.lg
+                            flex: 1
                         }}
                     >
-                        {option[1]}
-                    </ThemedText>
+                        <ThemedText
+                            style={{
+                                width: "100%",
+                                flexShrink: 1,
+                                fontSize: 16,
+                                fontWeight: props.description ? 500 : 400,
+                                letterSpacing: theme.letterSpacing.lg
+                            }}
+                        >
+                            {option[1]}
+                        </ThemedText>
+                        {option[2] &&
+                           <ThemedText
+                                style={{
+                                    width: "100%",
+                                    flexShrink: 1,
+                                    fontSize: 14,
+                                    fontWeight: 400,
+                                    color: theme.colors.schemes.light.onSurfaceVariant,
+                                    letterSpacing: theme.letterSpacing["2xl"]
+                                }}
+                            >
+                                {option[2]}
+                            </ThemedText>
+                        }
+                    </View>
                 </Pressable>
             ))}
         </View>

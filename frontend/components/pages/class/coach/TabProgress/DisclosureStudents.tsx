@@ -17,6 +17,7 @@ interface DisclosureStudentsProps extends BottomScreenProps {
     onSelectAll: () => void;
     onDeselectAll: () => void;
     searchBar: ReturnType<typeof useSearchBar<Student>>;
+    className: string
 }
 
 export default function DisclosureStudents(props: DisclosureStudentsProps) {
@@ -32,18 +33,36 @@ export default function DisclosureStudents(props: DisclosureStudentsProps) {
             <View
                 style={{
                     rowGap: theme.padding.lg,
-                    // paddingTop: theme.padding["2xl"],
-                    // marginBottom: theme.padding.lg,
-                    // borderTopWidth: 1,
-                    // borderColor: colors.schemes.light.outlineVariant
+                    paddingTop: theme.padding.lg,
+                    borderTopWidth: 1,
+                    borderColor: colors.schemes.light.outlineVariant
                 }}
             >
+                <ThemedText
+                    style={{
+                        fontSize: 16,
+                        fontWeight: 500,
+                        letterSpacing: letterSpacing.lg
+                    }}
+                >
+                    {/* <ThemedText
+                        style={{
+                            fontSize: 16,
+                            fontWeight: 500,
+                            color: colors.coreColors.primary
+                        }}
+                    >
+                        {`${props.className} `}
+                    </ThemedText> */}
+                     Students
+                </ThemedText>
                 <SearchBar
                     search={props.searchBar.search}
                     setSearch={props.searchBar.setSearch}
                     enableSort={true}
                     sortDirection={props.searchBar.sortDirection}
                     setSortDirection={props.searchBar.setSortDirection}
+                    
                     textInputStyle={{
                         paddingVertical: 6,
                         // paddingHorizontal: 6

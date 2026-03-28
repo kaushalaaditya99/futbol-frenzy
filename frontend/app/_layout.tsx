@@ -10,6 +10,13 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen
+        name="ui"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
         name="index"
         options={{
           headerTitle: "",

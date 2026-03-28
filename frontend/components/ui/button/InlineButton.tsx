@@ -11,16 +11,27 @@ export default function InlineButton(props: ButtonProps) {
             backgroundColor={props.backgroundColor}
             borderRadius={props.borderRadius || 8}
             outerStyle={{
+                height: undefined,
                 width: undefined,
-                flexShrink: 1,
+                flexGrow: undefined,
+                flexShrink: undefined,
+                flex: undefined,
                 ...shadow.sm,
                 ...props.outerStyle
             }}
             innerStyle={{
+                height: undefined,
+                flexGrow: undefined,
+                flexShrink: undefined,
+                flex: undefined,
                 ...props.innerStyle
             }}
             innerMostStyle={{
+                height: undefined,
                 width: undefined,
+                flexGrow: undefined,
+                flexShrink: undefined,
+                flex: undefined,
                 paddingVertical: padding.sm,
                 paddingHorizontal: padding.lg,
                 ...props.innerMostStyle

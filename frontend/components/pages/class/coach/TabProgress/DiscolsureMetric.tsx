@@ -5,7 +5,7 @@ import DisclosureRadioButton from "./DisclosureRadioButton";
 
 interface DisclosureMetricProps extends BottomScreenProps {
     value: string;
-    options: [string, string][];
+    options: [string, string, string?][];
     onChange: (value: string) => void; 
 }
 
@@ -19,6 +19,7 @@ export default function DisclosureMetric(props: DisclosureMetricProps) {
                 value={props.value}
                 options={props.options}
                 onChange={props.onChange}
+                description={true}
             />
         </DisclosureModal>
     )

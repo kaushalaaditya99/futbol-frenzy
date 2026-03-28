@@ -13,8 +13,6 @@ import resolveEndpoint from '@/services/resolveEndpoint';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
-
-
 const API_URL = resolveEndpoint("/api/");
 
 export default function Index() {
@@ -81,7 +79,7 @@ export default function Index() {
       		justifyContent: "center",
       		paddingVertical: 24,
       		paddingHorizontal: 36,
-      	flex: 1
+      		flex: 1
     	}}
   	>
     	<View

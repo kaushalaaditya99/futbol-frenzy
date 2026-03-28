@@ -21,6 +21,7 @@ import CalendarNavigate from "@/components/ui/calendar/CalendarNavigate";
 import WeekButtonGroup from "@/components/ui/calendar/WeekButtonGroup";
 import CoachHome from "@/components/pages/home/CoachHome";
 import { useAuth } from "@/contexts/AuthContext";
+import { router } from "expo-router";
 
 export default function Home() {
     const [results, setResults] = useState<Array<Result>>([]);

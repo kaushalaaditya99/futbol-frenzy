@@ -17,7 +17,7 @@ export default function BottomScreen(props: BottomScreenProps) {
         <Modal
             visible={true}
             transparent={true}
-            animationType="slide"
+            animationType="none"
             backdropColor={"#00000020"}
         >
             <SafeAreaView
@@ -31,9 +31,9 @@ export default function BottomScreen(props: BottomScreenProps) {
                 <View
                     style={{
                         width: "100%",
-                        height: Dimensions.get("screen").height / 2,
-                        minHeight: Dimensions.get("screen").height / 2,
-                        maxHeight: Dimensions.get("screen").height / 2,
+                        height: Dimensions.get("screen").height * 0.66,
+                        minHeight: Dimensions.get("screen").height * 0.66,
+                        maxHeight: Dimensions.get("screen").height * 0.66,
                         padding: margin.sm,
                         backgroundColor: "white"
                     }}

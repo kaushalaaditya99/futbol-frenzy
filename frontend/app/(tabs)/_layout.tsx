@@ -167,7 +167,7 @@ function TabsLayout() {
                     href: null,
                 }}
             />
-    </Tabs>
+        </Tabs>
   );
 }
 

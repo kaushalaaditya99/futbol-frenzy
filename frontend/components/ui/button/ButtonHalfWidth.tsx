@@ -10,16 +10,13 @@ export default function ButtonHalfWidth(props: ButtonHalfWidthProps) {
         <Button
             {...props}
             outerStyle={{
-                flex: 1,
-                alignSelf: undefined,
-                height: props.buttonHeight || undefined
+                height: 48
             }}
             innerStyle={{
-                flex: 1,
-                columnGap: 6
+                columnGap: 6,
             }}
             innerMostStyle={{
-                width: "100%"
+                // width: "100%"
             }}
         />
     )

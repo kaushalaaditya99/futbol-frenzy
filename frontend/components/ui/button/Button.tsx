@@ -27,9 +27,13 @@ export default function Button(props: ButtonProps) {
             onPress={props.onPress}
             style={{
                 padding: 1,
+                flex: 1,
+                flexGrow: 1,
+                flexShrink: 1,
                 alignSelf: "flex-start",
                 borderRadius: outerBorderRadius,
                 backgroundColor: props.borderColor,
+                height: props.outerStyle?.height || 48,
                 ...shadow.md,
                 ...outerStyle,
             }}
@@ -48,6 +52,10 @@ export default function Button(props: ButtonProps) {
                     y: props.tintUpsideDown ? 0 : 1
                 }}
                 style={{
+                    flex: 1,
+                    flexGrow: 1,
+                    flexShrink: 1,
+                    height: "100%",
                     padding: 1,
                     display: "flex",
                     flexDirection: "row",
@@ -59,6 +67,7 @@ export default function Button(props: ButtonProps) {
             >
                 <View
                     style={{
+                        height: "100%",
                         width: "100%",
                         paddingVertical: padding.lg,
                         paddingHorizontal: padding.lg,
