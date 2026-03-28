@@ -4,6 +4,9 @@ django-cors-headers==4.9.0
 django-stubs==5.2.9
 django-stubs-ext==5.2.9
 djangorestframework==3.16.1
+google-auth==2.49.1
+python-dotenv==1.2.2
+requests==2.33.0
 sqlparse==0.5.5
 types-PyYAML==6.0.12.20250915
 typing_extensions==4.15.0
