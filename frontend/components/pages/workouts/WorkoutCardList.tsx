@@ -73,20 +73,9 @@ export default function WorkoutCardList(props: WorkoutCardListProps) {
                     backgroundColor: props.imageBackgroundColor,
                 }}
             >
-
             </View>
-            {/* <VideoView
-                player={videoPlayer}
-                style={{  
-                    height: "100%",
-                    aspectRatio: 1,
-                    backgroundColor: "lightgray",
-                    borderRadius: theme.borderRadius.sm,
-                }}
-                contentFit="cover"
-            /> */}
             <Pressable
-                onPress={() => router.push("/drill")}
+                onPress={() => router.push("/workout")}
                 style={{
                     flex: 1, 
                     paddingVertical: padding.sm,

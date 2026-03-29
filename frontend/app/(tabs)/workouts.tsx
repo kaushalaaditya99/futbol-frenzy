@@ -175,15 +175,6 @@ export default function Workouts() {
                             rowGap: theme.margin.sm
                         }}
                     >
-                        {/* <ThemedText
-                            style={{
-                                fontSize: theme.fontSize.base,
-                                fontWeight: 500,
-                                letterSpacing: -0.25
-                            }}
-                        >
-                            Found {searchBar.filtered.length} Workouts
-                        </ThemedText> */}
                         <View
                             style={{
                                 rowGap: theme.padding.lg

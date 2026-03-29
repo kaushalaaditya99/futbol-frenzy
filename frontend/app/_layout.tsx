@@ -66,6 +66,13 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
+        name="workout"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
         name="createSession"
         options={{
           headerTitle: "",
