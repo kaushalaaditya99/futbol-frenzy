@@ -11,6 +11,7 @@ export interface BottomScreenProps {
     children?: ReactNode;
     onClose?: () => void;
     scroll?: boolean;
+    fitContent?: boolean;
 }
 
 export default function BottomScreen(props: BottomScreenProps) {
@@ -36,9 +37,9 @@ export default function BottomScreen(props: BottomScreenProps) {
                         }}
                         style={{
                             width: "100%",
-                            height: Dimensions.get("screen").height * 0.66,
-                            minHeight: Dimensions.get("screen").height * 0.66,
-                            maxHeight: Dimensions.get("screen").height * 0.66,
+                            height: props.fitContent ? undefined : Dimensions.get("screen").height * 0.66,
+                            minHeight: props.fitContent ? undefined : Dimensions.get("screen").height * 0.66,
+                            maxHeight: props.fitContent ? undefined : Dimensions.get("screen").height * 0.66,
                             padding: margin.sm,
                             backgroundColor: "white"
                         }}
@@ -54,9 +55,9 @@ export default function BottomScreen(props: BottomScreenProps) {
                     <View
                         style={{
                             width: "100%",
-                            height: Dimensions.get("screen").height * 0.66,
-                            minHeight: Dimensions.get("screen").height * 0.66,
-                            maxHeight: Dimensions.get("screen").height * 0.66,
+                            height: props.fitContent ? undefined : Dimensions.get("screen").height * 0.66,
+                            minHeight: props.fitContent ? undefined : Dimensions.get("screen").height * 0.66,
+                            maxHeight: props.fitContent ? undefined : Dimensions.get("screen").height * 0.66,
                             padding: margin.sm,
                             backgroundColor: "white"
                         }}

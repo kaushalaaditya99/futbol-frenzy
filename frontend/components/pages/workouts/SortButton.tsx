@@ -13,10 +13,12 @@ export default function SortButton(props: SortButtonProps) {
         <View
             style={{
                 height: 36,
+                minHeight: 36,
+                maxHeight: 36,
                 flex: 1,
                 flexGrow: 1,
                 flexShrink: 1,
-                flexDirection: "row"
+                flexDirection: "row",
             }}
         >
             <InputDropdownV2

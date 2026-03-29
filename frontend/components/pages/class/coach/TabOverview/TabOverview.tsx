@@ -41,6 +41,7 @@ export default function TabOverview(props: TabOverviewProps) {
             }
             {props.showShareClass &&
                 <ShareClass
+                    classCode={props.classCode}
                     onClose={() => props.setShowShareClass(false)}
                 />
             }
