@@ -4,6 +4,7 @@ from .models import Notification, Settings, Drill, Workout, Assignment, Submissi
 from futbolfrenzy.serializers import UserSerializer, NotificationSerializer, SettingsSerializer, DrillSerializer, WorkoutSerializer, AssignmentSerializer, SubmissionSerializer, SubmittedDrillSerializer, SoccerClassSerializer, ClassMemberSerializer
 from rest_framework.filters import OrderingFilter
 from django.contrib.auth.models import User
+from .services import notify_user
 
 # helpers to check group of a user (Student vs. Coach)
 def user_is_student(user):
@@ -131,6 +132,21 @@ class AssignmentViewSet(viewsets.ModelViewSet):
             ).distinct()
 
         return queryset
+    
+        # notifies student when assigned an assignment
+        def perform_create(self, serializer):
+            instance = serializer.save()
+        
+            for member in instance.soccer_classes.first().members.all():
+                student = member.studentID
+                notify_student(
+                    student,
+                    title="New Session Assigned",
+                    description=f"Coach {instance.soccer_classes.first().coachID.username} assigned Session #{instance.id} with {instance.drills.count()} drills. Due {instance.dueDate}.",
+                    icon="session",
+                    iconBackground="#6db1ff",
+                    url=f"/sessions/{instance.id}"
+                )
 
 class SubmissionViewSet(viewsets.ModelViewSet):
     queryset = Submission.objects.all()
@@ -155,6 +171,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(assignmentID=assignment_id)
 
         return queryset
+    
 
 class SubmittedDrillViewSet(viewsets.ModelViewSet):
     queryset = SubmittedDrill.objects.all()
@@ -184,6 +201,22 @@ class SubmittedDrillViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(drillID=drill_id)
 
         return queryset
+    
+    # if coach grades on API, notifies student
+    def grade_update(self, serializer):
+        instance = serializer.save()
+    
+        if 'grade' in serializer.validated_data:
+            student = instance.submissionID.studentID
+            drill = instance.drillID
+            notify_user(
+                student,
+                title="Drill Graded!",
+                description=f"You scored {instance.grade}/100 on {drill.name}. Tap to see feedback",
+                icon="graded",
+                iconBackground="#c3f7c8",
+                url=f"/drills/{drill.id}/submission/{instance.submissionID.id}"
+            )
 
 class SoccerClassViewSet(viewsets.ModelViewSet):
     queryset = SoccerClass.objects.all()
