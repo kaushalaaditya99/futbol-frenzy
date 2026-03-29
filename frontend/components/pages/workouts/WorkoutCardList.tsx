@@ -90,7 +90,7 @@ export default function WorkoutCardList(props: WorkoutCardListProps) {
                         color: theme.colors.schemes.light.onSurfaceVariant
                     }}
                 >
-                    Default Name
+                    {props.uploadedBy}
                 </ThemedText>
                 <View
                     style={{

@@ -20,6 +20,7 @@ export interface Session {
     isDue: boolean;
     imageBackgroundColor: string;
     imageTextColor?: string;
+    uploadedBy: string;
     imageText: string;
     bookmarked: boolean;
     accessControl: string;
@@ -39,7 +40,8 @@ export const fakeData = [
         imageText: "🏃‍♂️",
         drills: [],
         accessControl: "public",
-        bookmarked: true,
+        bookmarked: false,
+        uploadedBy: "Coaching Academy"
     },
     {
         id: 1,
@@ -54,7 +56,8 @@ export const fakeData = [
         imageText: "⚽",
         drills: [],
         accessControl: "public",
-        bookmarked: true,
+        bookmarked: false,
+        uploadedBy: "Coaching Academy"
     },
     {
         id: 2,
@@ -69,7 +72,8 @@ export const fakeData = [
         imageText: "🥅",
         drills: [],
         accessControl: "public",
-        bookmarked: true,
+        bookmarked: false,
+        uploadedBy: "Coaching Academy"
     },
     {
         id: 10,
@@ -84,7 +88,8 @@ export const fakeData = [
         imageText: "",
         drills: [],
         accessControl: "public",
-        bookmarked: true,
+        bookmarked: false,
+        uploadedBy: "John Smith"
     },
     {
         id: 3,
@@ -99,6 +104,7 @@ export const fakeData = [
         imageText: "🙂",
         accessControl: "public",
         bookmarked: true,
+        uploadedBy: "Bob of the Sponge",
         drills: [
             {
                 id: 0,
