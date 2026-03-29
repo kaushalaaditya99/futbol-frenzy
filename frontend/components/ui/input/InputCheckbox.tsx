@@ -1,5 +1,6 @@
 import { colors, shadow } from "@/theme";
-import { CheckIcon, View } from "lucide-react-native";
+import { CheckIcon } from "lucide-react-native";
+import { View } from "react-native";
 
 interface InputCheckboxProps {
     checked: boolean;
@@ -14,13 +15,17 @@ export default function InputCheckbox(props: InputCheckboxProps) {
                 <View
                     style={{
                         width: length,
-                        aspectRatio: 1,
+                        height: length,
+                        maxWidth: length,
+                        maxHeight: length,
+                        // aspectRatio: 1,
                         justifyContent: "center",
                         alignItems: "center",
                         borderRadius: 4,
                         borderWidth: 1,
                         borderColor: colors.coreColors.primary,
                         backgroundColor: colors.coreColors.primary,
+                        ...shadow.sm
                     }}
                 >
                     <CheckIcon

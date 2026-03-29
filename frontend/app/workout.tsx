@@ -1,24 +1,39 @@
+import AssignWorkout from "@/components/pages/workouts/AssignWorkout";
+import BottomScreen from "@/components/ui/BottomScreen";
+import Button from "@/components/ui/button/Button";
+import { buttonTheme } from "@/components/ui/button/buttonTheme";
+import InlineButton from "@/components/ui/button/InlineButton";
 import HeaderWithBack from "@/components/ui/HeaderWithBack";
+import InputCheckbox from "@/components/ui/input/InputCheckbox";
 import ThemedText from "@/components/ui/ThemedText";
+import { Class, getClasses } from "@/services/classes";
 import { getSession, Session } from "@/services/sessions";
 import { padding, shadow, theme } from "@/theme";
 import { router } from "expo-router";
-import { BookmarkIcon, PlusCircle, PlusCircleIcon } from "lucide-react-native";
+import { BookmarkIcon, CalendarIcon, PlusCircle, PlusCircleIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Workout() {
+    const [classes, setClasses] = useState<Array<Class>>([]);
     const [workout, setWorkout] = useState<Session>();
     const [drillIndex, setDrillIndex] = useState(0);
+    const [showAssignWorkout, setShowAssignWorkout] = useState(false);
 
     useEffect(() => {
         loadWorkout();
+        loadClasses();
     }, []);
 
     const loadWorkout = async () => {
         const workout = await getSession(0, 0);
         setWorkout(workout);
+    }
+
+    const loadClasses = async () => {
+        const classes = await getClasses(0, "");
+        setClasses(classes);
     }
 
     return (
@@ -29,6 +44,12 @@ export default function Workout() {
                 backgroundColor: theme.colors.schemes.light.surface,
             }}
         >
+            {showAssignWorkout &&
+                <AssignWorkout
+                    classes={classes}
+                    onClose={() => setShowAssignWorkout(false)}
+                />
+            }
             <HeaderWithBack
                 header="Workout"
                 onBack={() => router.back()}
@@ -89,6 +110,7 @@ export default function Workout() {
                         >
                             <PlusCircleIcon
                                 size={20}
+                                onPress={() => setShowAssignWorkout(true)}
                                 stroke={theme.colors.schemes.light.onSurfaceVariant}
                             />
                             <BookmarkIcon
@@ -116,16 +138,6 @@ export default function Workout() {
                     rowGap: theme.margin.sm,
                 }}
             >
-                {/* <ThemedText
-                    style={{
-                        flexShrink: 1,
-                        fontSize: 18,
-                        fontWeight: 600,
-                        letterSpacing: theme.letterSpacing.xl,
-                    }}
-                >
-                    Drills
-                </ThemedText> */}
                 <View
                     style={{
                         flexDirection: "row",
@@ -217,9 +229,10 @@ export default function Workout() {
                                     <ThemedText
                                         style={{
                                             fontSize: 10,
-                                            fontWeight: 600,
+                                            fontWeight: 500,
                                             letterSpacing: theme.letterSpacing.xl * 2,
-                                            textAlign: "center"
+                                            textAlign: "center",
+                                            color: theme.colors.schemes.light.onSurfaceVariant
                                         }}
                                     >
                                         {tag?.toUpperCase()}

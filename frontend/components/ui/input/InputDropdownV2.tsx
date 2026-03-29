@@ -6,10 +6,10 @@ import { useEffect, useState } from 'react';
 import { Pressable, TextStyle, View, ViewStyle } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
-export interface InputDropdownV2Props {
-    value: string;
-    options: Array<[string, string]>;
-    onChange: (value: string) => void;
+export interface InputDropdownV2Props<T> {
+    value: T;
+    options: Array<[T, string]>;
+    onChange: (value: T) => void;
     placeholder?: string;
     containerStyle?: ViewStyle;
     buttonStyle?: ViewStyle;
@@ -19,7 +19,7 @@ export interface InputDropdownV2Props {
     labelPrefix?: string;
 }
 
-export default function InputDropdownV2(props: InputDropdownV2Props) {
+export default function InputDropdownV2<T>(props: InputDropdownV2Props<T>) {
     const [label, setLabel] = useState("");
 
     useEffect(() => {

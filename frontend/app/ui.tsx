@@ -3,10 +3,11 @@ import ButtonHalfWidth from "@/components/ui/button/ButtonHalfWidth";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import IconButton from "@/components/ui/button/IconButton";
 import InlineButton from "@/components/ui/button/InlineButton";
+import HeaderWithCloseSpacious from "@/components/ui/HeaderWithCloseSpacious";
 import ThemedText from "@/components/ui/ThemedText";
-import { theme } from "@/theme";
+import { margin, theme } from "@/theme";
 import { FrownIcon, PlusIcon, SmileIcon } from "lucide-react-native";
-import { View } from "react-native";
+import { Dimensions, View } from "react-native";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -25,7 +26,65 @@ export default function UI() {
                     rowGap: 100
                 }}
             > 
-                {/* <View
+                <View
+                    style={{
+                        width: "100%",
+                        height: Dimensions.get("screen").height * 0.66,
+                        minHeight: Dimensions.get("screen").height * 0.66,
+                        maxHeight: Dimensions.get("screen").height * 0.66,
+                        padding: margin.sm,
+                        backgroundColor: "white"
+                    }}
+                >
+                    <HeaderWithCloseSpacious
+                        header={"header"}
+                        onClose={() => null}
+                    />
+                    <Button
+                        outerStyle={{
+                            maxHeight: 48
+                        }}
+                        {...buttonTheme.white}
+                    >
+                        <ThemedText>
+                            OK
+                        </ThemedText>    
+                    </Button>
+                    <InlineButton
+                        outerStyle={{
+                            maxHeight: 48
+                        }}
+                        {...buttonTheme.white}
+                    >
+                        <ThemedText>
+                            OK
+                        </ThemedText>    
+                    </InlineButton>
+                    <Button
+                        // outerStyle={{
+                        //     maxHeight: 48
+                        // }}
+                        {...buttonTheme.white}
+                    >
+                        <ThemedText>
+                            OK
+                        </ThemedText>    
+                    </Button>
+                </View>
+                <View
+                    style={{
+                        rowGap: 10
+                    }}
+                >
+                    <Button
+                        {...buttonTheme.white}
+                    >
+                        <ThemedText>
+                            OK
+                        </ThemedText>    
+                    </Button>        
+                </View>
+                <View
                     style={{
                         flexDirection: "column"
                     }}
@@ -57,7 +116,7 @@ export default function UI() {
                         </ThemedText>
                     </ButtonHalfWidth>
                 </View>
-                <View
+                {/* <View
                     style={{
                         flexDirection: "row"
                     }}
@@ -173,7 +232,7 @@ export default function UI() {
                         </ThemedText>
                     </Button>
                 </View> */}
-                <View
+                {/* <View
                     style={{
                         flexDirection: "row"
                     }}
@@ -262,7 +321,7 @@ export default function UI() {
                     >
                         <SmileIcon/>
                     </InlineButton>
-                </View>
+                </View> */}
             </SafeAreaView>
         </ScrollView>
     )
