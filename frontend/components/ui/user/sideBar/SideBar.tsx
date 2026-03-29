@@ -1,5 +1,5 @@
 import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
-import { ArrowLeftFromLine, Settings } from "lucide-react-native";
+import { ArrowLeftFromLine, DumbbellIcon, Settings, ZapIcon } from "lucide-react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProfilePicture from "../ProfilePicture";
@@ -92,6 +92,30 @@ export default function SideBar(props: SideBarProps) {
                 >
                     <SideBarLink
                         icon={
+                            <ZapIcon
+                                size={18}
+                                color={colors.schemes.light.onSurfaceVariant}
+                            />
+                        }
+                        label="Drills"
+                        onPress={() => router.replace("/(tabs)/drills")}
+                    />
+                    <SideBarLink
+                        icon={
+                            <DumbbellIcon
+                                size={18}
+                                color={colors.schemes.light.onSurfaceVariant}
+                            />
+                        }
+                        label="Workouts"
+                        containerStyle={{
+                            borderTopWidth: 1,
+                            borderColor: colors.schemes.light.outlineVariant
+                        }}
+                        onPress={() => router.replace("/(tabs)/workouts")}
+                    />
+                    <SideBarLink
+                        icon={
                             <Settings
                                 size={18}
                                 color={colors.schemes.light.onSurfaceVariant}
@@ -99,6 +123,10 @@ export default function SideBar(props: SideBarProps) {
                         }
                         label="Settings"
                         onPress={() => router.replace("/(tabs)/settings")}
+                        containerStyle={{
+                            borderTopWidth: 1,
+                            borderColor: colors.schemes.light.outlineVariant
+                        }}
                     />
                     <SideBarLink
                         icon={

@@ -1,4 +1,4 @@
-import Dropdown, { DropdownProps } from "@/components/pages/drills/Dropdown";
+import InputDropdownV2, { InputDropdownV2Props } from "@/components/ui/input/InputDropdownV2";
 import { TextStyle, ViewStyle } from "react-native";
 import InputWrapper from "./InputWrapper";
 import InputLabel from "./InputLabel";
@@ -6,7 +6,7 @@ import { theme } from "@/theme";
 import ErrorMessage from "./ErrorMessage";
 import InputErrorMessage from "./InputErrorMessage";
 
-export interface InputDropdownProps extends DropdownProps {
+export interface InputDropdownProps extends InputDropdownV2Props {
     label?: string;
     errorMessage?: string;
     onChangeText?: (text: string) => void;
@@ -26,7 +26,7 @@ export default function InputDropdown(props: InputDropdownProps) {
                     ...props.labelStyle,
                 }}
             />
-            <Dropdown
+            <InputDropdownV2
                 buttonStyle={{
                     paddingVertical: theme.padding.md,
                     paddingHorizontal: theme.padding.lg,

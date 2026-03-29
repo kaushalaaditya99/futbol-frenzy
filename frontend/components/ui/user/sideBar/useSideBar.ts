@@ -25,10 +25,22 @@ export default function useSideBar() {
         }, [])
     );
 
+
+    const openSideBar = () => {
+        setShowSideBar(true);
+    }
+
+
+    const closeSideBar = () => {
+        setShowSideBar(false);
+    }
     
+
     return {
         showSideBar,
         setShowSideBar,
+        openSideBar,
+        closeSideBar,
         width,
         sideBarTargetWidth,
         animatedExpandFromLeft

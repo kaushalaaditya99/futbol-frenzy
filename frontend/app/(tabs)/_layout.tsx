@@ -75,30 +75,6 @@ function TabsLayout() {
                 }} 
             />
             <Tabs.Screen 
-                name="drills"
-                options={{ 
-                    title: "Drills",
-                    tabBarIcon: ({color, size }) => (
-                        <Zap
-                            size={ICON_SIZE}
-                            color={color}
-                        />
-                    ),
-                    tabBarLabel: ({color, focused}) => (
-                        <ThemedText
-                            style={{
-                                fontSize: fontSize.sm,
-                                letterSpacing: letterSpacing.lg,
-                                fontWeight: 500,
-                                color: color
-                            }}
-                        >
-                            Drills
-                        </ThemedText>
-                    )
-                }}
-            />
-            <Tabs.Screen 
                 name="notifications" 
                 options={{ 
                     title: "Notifications",
@@ -155,6 +131,20 @@ function TabsLayout() {
                 }} 
             />
             <Tabs.Screen 
+                name="drills"
+                options={{ 
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen 
+                name="workouts"
+                options={{ 
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen 
                 name="class" 
                 options={{ 
                     headerShown: false,
@@ -164,6 +154,7 @@ function TabsLayout() {
             <Tabs.Screen 
                 name="settings" 
                 options={{ 
+                    headerShown: false,
                     href: null,
                 }}
             />

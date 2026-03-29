@@ -5,7 +5,7 @@ import IconButton from "@/components/ui/button/IconButton";
 import InlineButton from "@/components/ui/button/InlineButton";
 import ThemedText from "@/components/ui/ThemedText";
 import { theme } from "@/theme";
-import { FrownIcon, SmileIcon } from "lucide-react-native";
+import { FrownIcon, PlusIcon, SmileIcon } from "lucide-react-native";
 import { View } from "react-native";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,7 +14,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UI() {
     return (
-        <ScrollView>
+        <ScrollView
+            style={{
+                backgroundColor: "blue"
+            }}
+        >
             <SafeAreaView
                 style={{
                     padding: 100,
@@ -188,6 +192,76 @@ export default function UI() {
                     <IconButton>
                         <FrownIcon/>
                     </IconButton>
+                </View>
+                <View>
+                    <InlineButton
+                        borderRadius={8}
+                        {...buttonTheme.white}
+                        outerStyle={{
+                            height: 36
+                        }}
+                    >
+                        <PlusIcon
+                            size={14}
+                            strokeWidth={2.5}
+                            color={theme.colors.schemes.light.onSurfaceVariant}
+                        />
+                        <ThemedText
+                            style={{
+                                fontSize: 14,
+                                fontWeight: 500,
+                                letterSpacing: theme.letterSpacing.lg,
+                                color: theme.colors.schemes.light.onSurface
+                            }}
+                        >
+                            Create Workout
+                        </ThemedText>
+                    </InlineButton>
+                    <InlineButton
+                        outerStyle={{
+                            height: 48,
+                            backgroundColor: "red"
+                        }}
+                    >
+                        <SmileIcon/>
+                    </InlineButton>
+                </View>
+                <View
+                    style={{
+                        flexDirection: "row"
+                    }}
+                >
+                    <InlineButton
+                        borderRadius={8}
+                        {...buttonTheme.white}
+                        outerStyle={{
+                            height: 36
+                        }}
+                    >
+                        <PlusIcon
+                            size={14}
+                            strokeWidth={2.5}
+                            color={theme.colors.schemes.light.onSurfaceVariant}
+                        />
+                        <ThemedText
+                            style={{
+                                fontSize: 14,
+                                fontWeight: 500,
+                                letterSpacing: theme.letterSpacing.lg,
+                                color: theme.colors.schemes.light.onSurface
+                            }}
+                        >
+                            Create Workout
+                        </ThemedText>
+                    </InlineButton>
+                    <InlineButton
+                        outerStyle={{
+                            height: 48,
+                            backgroundColor: "red"
+                        }}
+                    >
+                        <SmileIcon/>
+                    </InlineButton>
                 </View>
             </SafeAreaView>
         </ScrollView>

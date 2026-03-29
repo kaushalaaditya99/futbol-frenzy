@@ -1,7 +1,7 @@
 import CreateDrillButton from "@/components/pages/drills/CreateDrillButton";
 import DrillCardGrid from "@/components/pages/drills/DrillCardGrid";
 import DrillCardList from "@/components/pages/drills/DrillCardList";
-import Dropdown from "@/components/pages/drills/Dropdown";
+import InputDropdownV2 from "@/components/ui/input/InputDropdownV2";
 import Filter from "@/components/pages/drills/Filter";
 import useDrillSearchBar from "@/components/pages/drills/useDrillSearchBar";
 import ThemedText from "@/components/ui/ThemedText";
@@ -73,14 +73,17 @@ export default function Drills() {
                 />
                 <ScrollView
                     style={{
+                        height: "100%",
                         paddingVertical: theme.margin.sm,
-                        marginBottom: theme.margin.sm,
                         paddingHorizontal: theme.margin.sm,
-                        backgroundColor: theme.colors.schemes.light.surface,
+                        flex: 1,
+                        flexGrow: 1,
                     }}
                 >
                     <View
                         style={{
+                            paddingBottom: theme.margin.sm,
+                            flex: 1,
                             rowGap: theme.padding.md
                         }}
                     >
@@ -93,7 +96,7 @@ export default function Drills() {
                                 columnGap: theme.padding.md
                             }}
                         >
-                            <Dropdown
+                            <InputDropdownV2
                                 value={feed}
                                 onChange={setFeed}
                                 options={feedOptions as [string, string][]}

@@ -21,6 +21,8 @@ export interface Session {
     imageBackgroundColor: string;
     imageTextColor?: string;
     imageText: string;
+    bookmarked: boolean;
+    accessControl: string;
 }
 
 export const fakeData = [
@@ -35,7 +37,9 @@ export const fakeData = [
         isDue: false,
         imageBackgroundColor: "#1C1C1C",
         imageText: "🏃‍♂️",
-        drills: []
+        drills: [],
+        accessControl: "public",
+        bookmarked: true,
     },
     {
         id: 1,
@@ -48,7 +52,9 @@ export const fakeData = [
         isDue: false,
         imageBackgroundColor: "#000",
         imageText: "⚽",
-        drills: []
+        drills: [],
+        accessControl: "public",
+        bookmarked: true,
     },
     {
         id: 2,
@@ -61,7 +67,9 @@ export const fakeData = [
         isDue: true,
         imageBackgroundColor: "#e9e9e9",
         imageText: "🥅",
-        drills: []
+        drills: [],
+        accessControl: "public",
+        bookmarked: true,
     },
     {
         id: 10,
@@ -74,7 +82,9 @@ export const fakeData = [
         isDue: false,
         imageBackgroundColor: "black",
         imageText: "",
-        drills: []
+        drills: [],
+        accessControl: "public",
+        bookmarked: true,
     },
     {
         id: 3,
@@ -87,6 +97,8 @@ export const fakeData = [
         isDue: true,
         imageBackgroundColor: "#e9e9e9",
         imageText: "🙂",
+        accessControl: "public",
+        bookmarked: true,
         drills: [
             {
                 id: 0,

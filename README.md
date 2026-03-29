@@ -42,6 +42,6 @@ python manage.py createsuperuser
 ```
 Start the server using 
 ``` bash
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 ```
 Login at `http://127.0.0.1:8000/admin/` using the new credentials
