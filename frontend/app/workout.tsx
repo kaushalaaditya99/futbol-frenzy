@@ -15,6 +15,9 @@ import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// Sorry for the bad, messy, and uncommented code.
+// I am rushing
+
 export default function Workout() {
     const [classes, setClasses] = useState<Array<Class>>([]);
     const [workout, setWorkout] = useState<Session>();
