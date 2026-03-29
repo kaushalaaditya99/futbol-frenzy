@@ -1,6 +1,6 @@
 import ButtonBack from "@/components/ui/button/ButtonBack";
 import ThemedText from "@/components/ui/ThemedText";
-import { Drillv2 as Drill, getDrill } from "@/services/drills";
+import { Drillv2, getDrills } from "@/services/drills";
 import { padding, theme } from "@/theme";
 import { Asset } from "expo-asset";
 import { BlurView } from "expo-blur";
@@ -9,227 +9,161 @@ import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { Bookmark } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Dimensions, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-const localVideos = {
-    "@/assets/videos/video.mp4": require("@/assets/videos/video.mp4"),
-    "@/assets/videos/video2.mp4": require("@/assets/videos/video2.mp4"),
-    "@/assets/videos/video3.mp4": require("@/assets/videos/video3.mp4"),
-    "@/assets/videos/video4.mp4": require("@/assets/videos/video4.mp4"),
-    "@/assets/videos/video5.mp4": require("@/assets/videos/video5.mp4"),
-    "@/assets/videos/video6.mp4": require("@/assets/videos/video6.mp4"),
-    "@/assets/videos/video7.mp4": require("@/assets/videos/video7.mp4"),
-    "@/assets/videos/video8.mp4": require("@/assets/videos/video8.mp4"),
-    "@/assets/videos/video9.mp4": require("@/assets/videos/video9.mp4"),
-    "@/assets/videos/video10.mp4": require("@/assets/videos/video10.mp4"),
+
+const localVideos: Record<string, any> = {
+  "@/assets/videos/video.mp4": require("@/assets/videos/video.mp4"),
+  "@/assets/videos/video2.mp4": require("@/assets/videos/video2.mp4"),
+  "@/assets/videos/video3.mp4": require("@/assets/videos/video3.mp4"),
+  "@/assets/videos/video4.mp4": require("@/assets/videos/video4.mp4"),
+  "@/assets/videos/video5.mp4": require("@/assets/videos/video5.mp4"),
+  "@/assets/videos/video6.mp4": require("@/assets/videos/video6.mp4"),
+  "@/assets/videos/video7.mp4": require("@/assets/videos/video7.mp4"),
+  "@/assets/videos/video8.mp4": require("@/assets/videos/video8.mp4"),
+  "@/assets/videos/video9.mp4": require("@/assets/videos/video9.mp4"),
+  "@/assets/videos/video10.mp4": require("@/assets/videos/video10.mp4"),
 };
 
-export default function ShowDrill() {
-    // Used for Blur Effect
-    const insets = useSafeAreaInsets();
-    const [drill, setDrill] = useState<Drill>();
+export default function ShowDrills() {
+  const insets = useSafeAreaInsets();
+  const [drills, setDrills] = useState<Drillv2[]>([]);
+
+  useEffect(() => {
+    loadDrills();
+  }, []);
+
+  const loadDrills = async () => {
+    try {
+      const allDrills = await getDrills();
+      console.log("Fetched drills:", allDrills);
+      setDrills(allDrills);
+    } catch (err) {
+      console.error("Failed to load drills:", err);
+    }
+  };
+
+  const resolveURL = async (url: string) => {
+    try {
+      if (url.startsWith("@")) {
+        const resolved = await Asset.loadAsync(localVideos[url]);
+        return resolved[0].localUri;
+      }
+      return url;
+    } catch (err) {
+      console.warn("Failed to resolve video URL, using placeholder", url, err);
+      return null;
+    }
+  };
+
+  const renderDrill = ({ item }: { item: Drillv2 }) => {
     const drillPlayer = useVideoPlayer(null, (player) => {
-        player.muted = true;
-        player.audioMixingMode = "mixWithOthers";
-        player.loop = true;
+      player.muted = true;
+      player.audioMixingMode = "mixWithOthers";
+      player.loop = true;
     });
 
-
     useEffect(() => {
-        loadDrill();
-    }, []);
-
-
-    useEffect(() => {
-        if (!drill)
-            return;
-        loadVideo(drill.videoURL);
-    }, [drill]);
-
-
-    const loadDrill = async () => {
-        // I'm tired of faking data, I'm sorry.
-        setDrill(await getDrill(10232032, 102103223092));
-    }
-
-
-    const loadVideo = async (url: string) => {
-        const resolvedURL = await resolveURL(url);
-        drillPlayer.replaceAsync(resolvedURL);
-        drillPlayer.play();
-    }
-
-    
-    const resolveURL = async (url: string) => {
-        if (!!url && url.charAt(0) === "@") {
-            const resolvedURL = await Asset.loadAsync((localVideos as any)[url]);
-            return resolvedURL[0].localUri;
+      (async () => {
+        if (!item.videoURL) return;
+        try {
+          const videoUri = await resolveURL(item.videoURL);
+          if (videoUri) {
+            drillPlayer.replaceAsync(videoUri);
+            drillPlayer.play();
+          }
+        } catch (err) {
+          console.warn("Video failed, showing placeholder", err);
         }
-        return url;
-    }
-
+      })();
+    }, [item.videoURL]);
 
     return (
-        <View
+      <View
+        style={{
+          marginVertical: padding.sm,
+          backgroundColor: theme.colors.schemes.light.surface,
+          borderRadius: 12,
+          overflow: "hidden",
+          ...theme.shadow.md,
+        }}
+      >
+        <VideoView
+          player={drillPlayer}
+          style={{
+            width: "100%",
+            height: 200,
+            backgroundColor: "#ccc",
+          }}
+          contentFit="cover"
+        />
+        <View style={{ padding: padding.md }}>
+          <View
             style={{
-                flex: 1,
-                position: "relative",
-                backgroundColor: "blue"
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: padding.sm,
             }}
-        >
-            <StatusBar
-                style="light"  
+          >
+            <ThemedText style={{ fontSize: 18, fontWeight: "600" }}>{item.name}</ThemedText>
+            <Bookmark
+              size={24}
+              stroke={
+                item.bookmarked
+                  ? theme.colors.coreColors.primary
+                  : theme.colors.schemes.light.onSurfaceVariant
+              }
+              fill={item.bookmarked ? theme.colors.coreColors.primary : "transparent"}
             />
-            <BlurView
-                intensity={50}
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    minHeight: insets.top,
-                    paddingTop: insets.top,
-                    zIndex: 100,
-                    paddingVertical: theme.padding.xl,
-                    paddingHorizontal: theme.padding.md,
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    columnGap: 12,
-                    backgroundColor: "#ffffff75"
-                }}
-            >
-                <ButtonBack
-                    onBack={() => router.back()}
-                />
-            </BlurView>
-            <VideoView 
-                player={drillPlayer}
-                style={{ 
-                    width: Dimensions.get("screen").width * 1, 
-                    height: Dimensions.get("screen").height * 0.5,
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    backgroundColor: theme.colors.palettes.neutral[0]
-                }}
-                contentFit="cover"
-            />
-            <View
-                style={{
-                    width: "100%", 
-                    height: Dimensions.get("screen").height * 0.5,
-                    maxHeight: Dimensions.get("screen").height * 0.5,
-                    position: "absolute",
-                    top: Dimensions.get("screen").height * 0.5 + 0,
-                    left: 0,
-                    flex: 1,
-                    backgroundColor: theme.colors.schemes.light.surface,
-                    ...theme.shadow.lg
-                }}
-            >
-                <View
-                    style={{
-                        backgroundColor: theme.colors.schemes.light.background
-                    }}
-                >
-                    {drill &&
-                        <>
-                            <View>
-                                <View
-                                    style={{
-                                        marginBottom: theme.margin.sm,
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        borderBottomWidth: 1,
-                                        borderStyle: "dashed",
-                                        borderColor: theme.colors.schemes.light.outlineVariant,
-                                    }}
-                                >
-                                    {[drill.type, `${drill.time} min`, drill.level].map((tag, i) => (
-                                        <View
-                                            key={i}
-                                            style={{
-                                                flex: 1,
-                                                justifyContent: "center",
-                                                paddingVertical: theme.padding.md,
-                                                paddingHorizontal: theme.padding.lg,
-                                                borderLeftWidth: i === 0 ? 0 : 1,
-                                                borderColor: theme.colors.schemes.light.outlineVariant,
-                                                backgroundColor: theme.colors.schemes.light.surface,
-                                            }}
-                                        >
-                                            <ThemedText
-                                                style={{
-                                                    fontSize: 12,
-                                                    fontWeight: 600,
-                                                    letterSpacing: 0.25,
-                                                    textAlign: "center",
-                                                    color: theme.colors.schemes.light.onSurfaceVariant
-                                                }}
-                                            >
-                                                {tag.toUpperCase()}
-                                            </ThemedText>
-                                        </View>
-                                    ))}
-                                </View>
-                                <ThemedText
-                                    style={{
-                                        paddingHorizontal: theme.margin.sm,
-                                        paddingBottom: theme.padding.xs,
-                                        fontSize: 12,
-                                        fontWeight: 600,
-                                        letterSpacing: theme.letterSpacing.xl,
-                                        color: theme.colors.schemes.light.onSurfaceVariant
-                                    }}
-                                >
-                                    {(drill.uploadedByName || "").toUpperCase()}
-                                </ThemedText>
-                                <View
-                                    style={{
-                                        paddingHorizontal: theme.margin.sm,
-                                        paddingBottom: theme.padding.sm,
-                                        flexDirection: "row",
-                                        alignItems: "flex-start",
-                                        justifyContent: "space-between",
-                                        columnGap: 48
-                                    }}
-                                >
-                                    <ThemedText
-                                        style={{
-                                            flexShrink: 1,
-                                            fontSize: 20,
-                                            fontWeight: 600,
-                                            letterSpacing: theme.letterSpacing.sm,
-                                            marginBottom: 2
-                                        }}
-                                    >
-                                        {drill.name}
-                                    </ThemedText>
-                                    <Bookmark
-                                        size={20}
-                                        stroke={drill.bookmarked ? theme.colors.coreColors.primary : theme.colors.schemes.light.onSurfaceVariant}
-                                        fill={drill.bookmarked ? theme.colors.coreColors.primary : "transparent"}
-                                    />
-                                </View>
-                                <ThemedText
-                                    style={{
-                                        paddingHorizontal: theme.margin.sm,
-                                        marginBottom: theme.margin.sm,
-                                        fontSize: theme.fontSize.base,
-                                        lineHeight: 22,
-                                        letterSpacing: theme.letterSpacing.xl * 2,
-                                        color: theme.colors.schemes.light.onSurfaceVariant
-                                    }}
-                                >
-                                    {drill.instructions}
-                                </ThemedText>
-                            </View>
-                        </>
-                    }
-                </View>
-            </View>
+          </View>
+          <ThemedText
+            style={{
+              fontSize: 12,
+              color: theme.colors.schemes.light.onSurfaceVariant,
+            }}
+          >
+            {item.type.toUpperCase()} • {item.time} min • {item.level}
+          </ThemedText>
+          <ThemedText style={{ marginTop: padding.sm, fontSize: 14 }}>
+            {item.instructions}
+          </ThemedText>
         </View>
-    )
+      </View>
+    );
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.schemes.light.background }}>
+      <StatusBar style="light" />
+      <BlurView
+        intensity={50}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          paddingTop: insets.top,
+          paddingVertical: theme.padding.xl,
+          paddingHorizontal: theme.padding.md,
+          zIndex: 100,
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "#ffffff75",
+        }}
+      >
+        <ButtonBack onBack={() => router.back()} />
+      </BlurView>
+
+      <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1, marginTop: 80 }}>
+        <FlatList
+          data={drills}
+          renderItem={renderDrill}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ padding: padding.md }}
+        />
+      </SafeAreaView>
+    </View>
+  );
 }
