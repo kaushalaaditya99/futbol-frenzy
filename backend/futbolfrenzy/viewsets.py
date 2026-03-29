@@ -38,14 +38,15 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
 
-        user_id = self.request.query_params.get("userID")
-        queryset = super().get_queryset()
+        
+        #user_id = self.request.query_params.get("userID")
+        #queryset = super().get_queryset()
 
         # notifications for a specific user 
-        if user_id:
-            queryset = queryset.filter(userID=user_id)
-
-        return queryset
+        #if user_id:
+        #    queryset = queryset.filter(userID=user_id)
+        
+        return Notification.objects.filter(userID=self.request.user)
 
 class SettingsViewSet(viewsets.ModelViewSet):
     queryset = Settings.objects.all()

@@ -10,6 +10,7 @@ class Notification(models.Model):
     body = models.CharField(max_length = 255) 
     url = models.URLField(max_length=200)
     seen = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
 
 # Settings for each user
 class Settings(models.Model):
