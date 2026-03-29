@@ -1,6 +1,9 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { Notification } from "@/components/NotificationsRow";
+import { useAuth } from "@/contexts/AuthContext";
+import resolveEndpoint from "@/services/resolveEndpoint";
 
+// mock notifications
 const mockNotifications: Notification[] = [
     {
         id: "1",
@@ -40,32 +43,108 @@ const mockNotifications: Notification[] = [
     },
 ];
 
+const API_URL = resolveEndpoint("/api/");
+
 interface NotificationsContextType {
     notifications: Notification[];
     markRead: (id: string) => void;
     markAllRead: () => void;
     unreadCount: number;
+    refreshNotifications: () => void;
 }
 
 const NotificationsContext = createContext<NotificationsContextType | null>(null);
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
-    const [notifications, setNotifications] = useState(mockNotifications);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const { token } = useAuth();
 
-    function markRead(id: string) {
+    const fetchNotifications = async () => {
+        if (!token) return;
+
+        try {
+            const response = await fetch(`${API_URL}notifications/`, {
+                headers: {
+                    Authorization: `Token ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            const formatted: Notification[] = data.map((item: any) => ({
+                id: String(item.id),
+                title: item.title,
+                description: item.description, // flexible
+                timestamp: new Date(item.created_at),
+                read: item.read ?? item.seen,
+
+                icon: item.icon,
+                iconBackground: item.iconBackground,
+            }));
+
+            setNotifications(formatted);
+        } catch (error) {
+            console.error("Error fetching notifications:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications();
+    }, [token]);
+
+    const markRead = async (id: string) => {
         setNotifications(prev =>
             prev.map(n => n.id === id ? { ...n, read: true } : n)
         );
-    }
 
-    function markAllRead() {
+        try {
+            await fetch(`${API_URL}notifications/${id}/`, {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Token ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ read: true }),
+            });
+        } catch (error) {
+            console.error("Error marking notification as read:", error);
+        }
+    };
+
+    const markAllRead = async () => {
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    }
+
+        try {
+            await Promise.all(
+                notifications.map(n =>
+                    fetch(`${API_URL}notifications/${n.id}/`, {
+                        method: "PATCH",
+                        headers: {
+                            Authorization: `Token ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ read: true }),
+                    })
+                )
+            );
+        } catch (error) {
+            console.error("Error marking all as read:", error);
+        }
+    };
 
     const unreadCount = notifications.filter(n => !n.read).length;
 
     return (
-        <NotificationsContext.Provider value={{ notifications, markRead, markAllRead, unreadCount }}>
+        <NotificationsContext.Provider
+            value={{
+                notifications,
+                markRead,
+                markAllRead,
+                unreadCount,
+                refreshNotifications: fetchNotifications,
+            }}
+        >
             {children}
         </NotificationsContext.Provider>
     );
@@ -76,3 +155,4 @@ export function useNotifications() {
     if (!ctx) throw new Error("useNotifications must be used within NotificationsProvider");
     return ctx;
 }
+
