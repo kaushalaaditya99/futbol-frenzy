@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import { router } from "expo-router";
 import { padding, theme } from "@/theme";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, ActivityIndicator, Alert } from "react-native";
 import ThemedText from "@/components/ui/ThemedText";
 import InputText from "@/components/ui/input/InputText";
 import ErrorMessage, { Errors, Error } from "@/components/ui/input/ErrorMessage";
@@ -17,6 +17,8 @@ import UploadVideo from "@/components/pages/UploadVideo";
 import Button from "@/components/ui/button/Button";
 import InputErrorMessage from "@/components/ui/input/InputErrorMessage";
 import InputInlineRadioGroup from "@/components/ui/input/InputInlineRadioGroup";
+import { uploadAndCreateDrill } from "@/services/cloud";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CreateDrill() {
     const levelOptions = [
@@ -33,6 +35,7 @@ export default function CreateDrill() {
     const [level, setLevel] = useState("beginner");
     const [instructions, setInstructions] = useState("");
     const [videoURI, setVideoURI] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [cameraPermission, requestCameraPermission] = useCameraPermissions();
     const [mediaLibraryPermission, requestMediaLibraryPermission] = useMediaLibraryPermissions();
@@ -127,13 +130,39 @@ export default function CreateDrill() {
     }
 
 
-    const onCreateDrill = () => {
+    const onCreateDrill = async () => {
         const {errors, canSubmit} = checkForm();
         setErrors(errors);
 
         if (canSubmit) {
             // Create Drill Here
+            try {
+                setIsSubmitting(true);
+                // get coachID from async storage, set to 1 if not found
+                const storedUserID = await AsyncStorage.getItem("userID");
+                const coachID = storedUserID ? parseInt(storedUserID, 10) : 1;
+
+                await uploadAndCreateDrill({
+                    videoUri: videoURI,
+                    drillName: name,
+                    drillType: "drill",
+                    coachID: coachID,
+                    time: 0,
+                    difficultyLevel: level,
+                    instructions: instructions,
+                    imageBackgroundColor: theme.colors.schemes.light.primary || "#000000",
+                    imageText: name,
+                    imageTextColor: theme.colors.schemes.light.onPrimary || "#FFFFFF",
+                    publicDrill: accessControl === "public"
+                });
+            
             router.back();
+            } catch (error) {
+                console.error("Error uploading drill:", error);
+                Alert.alert("Upload Failed", "There was a problem uploading your video and creating the drill. Please try again.");
+            } finally {
+                setIsSubmitting(false);
+            }
             return;
         }
         setFailed(true);
@@ -148,8 +177,8 @@ export default function CreateDrill() {
             nameError = {valid: false, errorMessage: "Must enter a name."};
             canSubmit = false;
         }
-        else if (name.length > 10) {
-            nameError = {valid: false, errorMessage: "Must enter a name less than 10 characters."};
+        else if (name.length > 20) {
+            nameError = {valid: false, errorMessage: "Must enter a name less than 20 characters."};
             canSubmit = false;
         }
 
@@ -379,27 +408,33 @@ export default function CreateDrill() {
                     }}
                 >
                     <Button
-                        onPress={onCreateDrill}
-                        {...buttonTheme.blue}
+                        onPress={isSubmitting ? undefined : onCreateDrill}
+                        {...(isSubmitting ? buttonTheme.disabled : buttonTheme.blue)}
                         innerStyle={{
                             width: "100%"
                         }}
                     >
-                        <Plus
-                            size={18}
-                            strokeWidth={2.5}
-                            color="white"
-                        />
-                        <ThemedText
-                            style={{
-                                fontSize: 16,
-                                fontWeight: 600,
-                                letterSpacing: -0.25,
-                                color: "white"
-                            }}
-                        >
-                            Create Drill
-                        </ThemedText>
+                        {isSubmitting ? (
+                            <ActivityIndicator color="white" size="small" />
+                        ) : (
+                            <>
+                                <Plus
+                                    size={18}
+                                    strokeWidth={2.5}
+                                    color="white"
+                                />
+                                <ThemedText
+                                    style={{
+                                        fontSize: 16,
+                                        fontWeight: 600,
+                                        letterSpacing: -0.25,
+                                        color: "white"
+                                    }}
+                                >
+                                    Create Drill
+                                </ThemedText>
+                            </>
+                        )}
                     </Button>
                     {failed &&
                         <ErrorMessage

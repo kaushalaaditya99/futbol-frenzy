@@ -1,45 +1,98 @@
 import { Camera, FolderOpen, MoveLeft } from "lucide-react-native";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
-import ButtonField from "@/components/ButtonField";
 import { Fragment, useState } from "react";
-import { uploadVideo, getVideoUrl } from "@/services/cloud";
-import "expo-document-picker"
+import { uploadVideo, getVideoUrl, createSubmission, saveSubmittedDrillWithUrl } from "@/services/cloud";
+import "expo-document-picker";
 import * as DocumentPicker from "expo-document-picker";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
 
 export default function Demonstration() {
-     // usestate for the uploaded/retrieved video URL
-      const [videoSource, setVideoSource] = useState<string | null>(null);
-      const [isUploading, setIsUploading] = useState(false);
+    // State for video upload and submission
+    const [videoSource, setVideoSource] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string | null>(null);
+    const [localVideoUri, setLocalVideoUri] = useState<string | null>(null); // Store for re-upload if needed
 
-      // Use remote URL if available, otherwise fall back to local asset
-      const player = useVideoPlayer(
-          videoSource || require('../../assets/videos/video.mp4')
-      );
+    // For now, using placeholder values
+    const [drillID] = useState(1); // The drill being demonstrated
+    const [assignmentID] = useState(1); // The assignment this submission is for
 
-    // user taps the upload button, it opens the document picker, if a file is chosen, calls the backend
-    // flow in `services/cloud` to get a presigned URL and upload the
-    // selected video directly to S3.
+    // Use remote URL if available, otherwise fall back to local asset
+    const player = useVideoPlayer(
+        videoSource || require('../../assets/videos/video.mp4')
+    );
+
+    // Handle video upload to S3 (stores URL locally until submit)
     const pickAndUpload = async () => {
         try {
-            setIsUploading
+            setIsUploading(true);
             const result = await DocumentPicker.getDocumentAsync({
                 type: 'video/*',
             });
             if (!result.canceled && result.assets && result.assets.length > 0) {
                 const { uri } = result.assets[0];
+                setLocalVideoUri(uri); // Store local URI in case we need it
                 const { videoUrl } = await uploadVideo(uri);
                 console.log('uploaded URL', videoUrl);
-                // TODO: you could set state here to display the video or
-                // a confirmation message.
-                //setVideoSource(videoUrl);
+                setUploadedVideoUrl(videoUrl);
+                setVideoSource(videoUrl); // Show the uploaded video
             }
         } catch (e) {
             console.error('upload failed', e);
+            Alert.alert("Upload Failed", "Could not upload video. Please try again.");
+        } finally {
+            setIsUploading(false);
         }
     };
-    // Load a video from S3 by fileName (for testing retrieval, wont be like this in actual product)
+
+    // Submit the video to database
+    const handleSubmitForReview = async () => {
+        if (!uploadedVideoUrl) {
+            Alert.alert("No Video", "Please upload a video first.");
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+
+            // Get the current user's ID from AsyncStorage
+            const storedUserID = await AsyncStorage.getItem("userID");
+            const studentID = storedUserID ? parseInt(storedUserID, 10) : 1;
+
+            // Create a submission for assignment
+            const submission = await createSubmission({
+                studentID,
+                assignmentID,
+                imageBackgroundColor: "#000000",
+                imageText: "Submission",
+                imageTextColor: "#FFFFFF"
+            });
+
+            // Save submitted drill record with existing S3 URL
+            const result = await saveSubmittedDrillWithUrl({
+                submissionID: submission.id,
+                drillID: drillID,
+                s3VideoUrl: uploadedVideoUrl
+            });
+
+            console.log('Submission created:', result);
+            Alert.alert("Success", "Your submission has been uploaded for review!");
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                 console.error('Submission error response:', error.response?.data);
+            }
+            console.error('Submission failed', error);
+            Alert.alert("Submission Failed", "Could not submit your video. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Load a video from S3 by fileName (for testing retrieval)
     const loadVideoFromS3 = (fileName: string) => {
         const url = getVideoUrl(fileName);
         console.log("Loading video from S3:", url);
@@ -344,9 +397,11 @@ export default function Demonstration() {
                         </Pressable>
                     </View>
                     <Pressable
+                        onPress={handleSubmitForReview}
+                        disabled={isSubmitting || !uploadedVideoUrl}
                         style={{
                             flex: 1,
-                            backgroundColor: "black",
+                            backgroundColor: uploadedVideoUrl ? "black" : "gray",
                             borderWidth: 1,
                             borderColor: "black",
                             borderStyle: "solid",
@@ -356,19 +411,29 @@ export default function Demonstration() {
                             flexDirection: "row",
                             alignItems: "center",
                             justifyContent: "center",
-                            columnGap: 4
+                            columnGap: 4,
+                            opacity: isSubmitting ? 0.7 : 1
                         }}
                     >
-                        <Text
-                            style={{
-                                fontSize: 16,
-                                fontWeight: 600,
-                                color: "white"
-                            }}
-                        >
-                            Submit for Review
-                        </Text>
+                        {isSubmitting ? (
+                            <ActivityIndicator color="white" size="small" />
+                        ) : (
+                            <Text
+                                style={{
+                                    fontSize: 16,
+                                    fontWeight: 600,
+                                    color: "white"
+                                }}
+                            >
+                                {uploadedVideoUrl ? "Submit for Review" : "Upload Video First"}
+                            </Text>
+                        )}
                     </Pressable>
+                    {uploadedVideoUrl && (
+                        <Text style={{ fontSize: 12, color: "green", marginTop: 8, textAlign: "center" }}>
+                            Video uploaded and ready to submit
+                        </Text>
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>

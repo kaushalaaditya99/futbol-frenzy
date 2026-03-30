@@ -18,9 +18,11 @@ class SettingsSerializer(serializers.ModelSerializer):
 
 
 class DrillSerializer(serializers.ModelSerializer):
+    coachName = serializers.CharField(source='coachID.username', read_only=True)
+
     class Meta:
         model = Drill
-        fields = ['id', 'drillName', 'drillType', 'coachID', 'url',
+        fields = ['id', 'drillName', 'drillType', 'coachID', 'coachName', 'url',
                   'time', 'difficultyLevel', 'instructions', 'imageBackgroundColor',
                   'imageText', 'imageTextColor', 'publicDrill']
         read_only_fields = ['id']

@@ -2,12 +2,15 @@ from django.shortcuts import render
 from .models import Drill
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import Enrollment
+from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass
 import os
 import boto3
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import uuid
+from dotenv import load_dotenv
 
+load_dotenv()
 # Create your views here.
 
 def home(request):
@@ -35,6 +38,7 @@ s3_client = boto3.client(
 )
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def get_presigned_url(request):
     # generates a presigned URL so frontend can directly upload to S3
     file_name = request.data.get('file_name')
@@ -42,11 +46,14 @@ def get_presigned_url(request):
     if not file_name or not file_type:
         return Response({"error": "Missing file_name or file_type"}, status=400)
 
+    # Generate a unique key using user id and timestamp to prevent collisions
+    unique_key = f"user_{request.user.id}/{uuid.uuid4().hex}_{file_name}"
+
     try:
         # call .generate_presigned_post on client instance to get presigned URL
         presigned_url = s3_client.generate_presigned_post(
             Bucket='direct-object-upload-seniorproj-s3',
-            Key=file_name,
+            Key=unique_key,
             Fields={"Content-Type": file_type},
             Conditions=[
                 {"Content-Type": file_type}
@@ -56,7 +63,8 @@ def get_presigned_url(request):
         return Response({
             "uploadUrl": presigned_url['url'],
             "fields": presigned_url['fields'],
-            "videoUrl": f"https://direct-object-upload-seniorproj-s3.s3.amazonaws.com/{file_name}"
+            "fileKey": unique_key,
+            "videoUrl": f"https://direct-object-upload-seniorproj-s3.s3.amazonaws.com/{unique_key}"
         })
     except Exception as e:
         return Response({"error": str(e)}, status=500)
