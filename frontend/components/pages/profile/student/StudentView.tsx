@@ -11,7 +11,7 @@ import { Dimensions, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle, ClipPath, Defs, G, Image, Path, Pattern, Text, TextPath, TSpan } from "react-native-svg";
 import RowCardClass from "../../classes/RowCardClass";
-import { BookTextIcon, ChartLineIcon, DumbbellIcon, MoveDownIcon, MoveUpIcon, ZapIcon } from "lucide-react-native";
+import { BookTextIcon, ChartLineIcon, DumbbellIcon, MoveDownIcon, MoveUpIcon, StarIcon, ZapIcon } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { CurveType, LineChart } from "react-native-gifted-charts";
 import CardMetric from "../../CardMetric";
@@ -248,15 +248,57 @@ export default function StudentView() {
                         rowGap: theme.padding.sm
                     }}
                 >
-                    <ThemedText
+                    <View
                         style={{
-                            fontSize: theme.fontSize["xl"],
-                            fontWeight: 600,
-                            letterSpacing: theme.letterSpacing["2xs"]
+                            flexDirection: "row",
+                            alignItems: "center",
+                            columnGap: theme.padding.md,
                         }}
                     >
-                        John Smith
-                    </ThemedText>
+                        <ThemedText
+                            style={{
+                                fontSize: theme.fontSize["xl"],
+                                fontWeight: 600,
+                                letterSpacing: theme.letterSpacing["2xs"]
+                            }}
+                        >
+                            John Smith
+                        </ThemedText>
+                        <View
+                            style={{
+                                paddingVertical: theme.padding.sm,
+                                paddingHorizontal: theme.padding.md,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                columnGap: theme.padding.md,
+                                // fontSize: theme.fontSize["xs"],
+                                // fontWeight: 600,
+                                // letterSpacing: theme.letterSpacing["xl"],
+                                // color: "white",
+                                borderRadius: 6,
+                                borderWidth: 1,
+                                borderColor: theme.colors.schemes.light.outlineVariant,
+                                backgroundColor: "white",
+                                ...shadow.sm
+                            }}
+                        >
+                            <ThemedText
+                                style={{
+                                    fontSize: theme.fontSize["xs"],
+                                    fontWeight: 600,
+                                    letterSpacing: theme.letterSpacing["xl"],
+                                    color: theme.colors.coreColors.primary
+                            }}
+                            >
+                                STUDENT
+                            </ThemedText>
+                            <StarIcon
+                                size={8}
+                                color="orange"
+                                fill="orange"
+                            />
+                        </View>
+                    </View>
                     <ThemedText
                         style={{
                             fontSize: theme.fontSize["base"],
