@@ -87,13 +87,24 @@ class SubmittedDrillSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 class SoccerClassSerializer(serializers.ModelSerializer):
+    coach = serializers.SerializerMethodField()
+    students = serializers.SerializerMethodField()
+
     class Meta:
         model = SoccerClass
-        fields = ['id', 'className', 'coachID', 'assignments']
-        read_only_fields = ['id']
+        fields = ['id', 'className', 'classCode', 'coachID', 'assignments', 'students', 'coach', 'imageText', 'imageTextColor', 'imageBackgroundColor']
+        read_only_fields = ['id', 'students', 'coach']
+
+    def get_coach(self, obj):
+        return UserSerializer(obj.coachID).data
+
+    def get_students(self, obj):
+        students = User.objects.filter(classmember__classID=obj)
+        return UserSerializer(students, many=True).data
+
 
 class ClassMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassMember
         fields = ['id', 'studentID', 'classID']
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'classCode']

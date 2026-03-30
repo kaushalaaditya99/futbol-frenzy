@@ -37,8 +37,8 @@ export default function Home() {
         // as it is called when the component loads.
         // The studentID would likely be defined elsewhere,
         // but I hope I'm getting my point across.
-        // router.push("/profile");
-        router.push("/ui");
+        router.push("/(tabs)/classes");
+        // router.push("/ui")
         loadResults();
         loadSessions();
     }, []);

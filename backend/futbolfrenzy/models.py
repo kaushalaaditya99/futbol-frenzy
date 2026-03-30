@@ -105,8 +105,14 @@ class SubmittedDrill(models.Model):
 class SoccerClass(models.Model):
     # id
     className = models.CharField(max_length = 255) 
+    classCode = models.CharField(max_length=5, blank=True)
     coachID = models.ForeignKey(User, on_delete=models.CASCADE)
-    assignments = models.ManyToManyField(Assignment, related_name="soccer_classes")
+    assignments = models.ManyToManyField(Assignment, related_name="soccer_classes", blank=True)
+    imageText = models.CharField(max_length=5, blank=True)
+    imageTextColor = models.CharField(max_length=50, blank=True)
+    imageBackgroundColor = models.CharField(max_length=50, blank=True)
+    description = models.CharField(blank=True)
+
 
 # Relationship table between students and classes
 class ClassMember(models.Model):

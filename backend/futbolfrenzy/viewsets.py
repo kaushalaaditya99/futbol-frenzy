@@ -5,6 +5,10 @@ from futbolfrenzy.serializers import UserSerializer, NotificationSerializer, Set
 from rest_framework.filters import OrderingFilter
 from django.contrib.auth.models import User
 from .services import notify_user
+import random
+import string
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 # helpers to check group of a user (Student vs. Coach)
 def user_is_student(user):
@@ -23,7 +27,9 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             permission_classes = [AllowAny]
         else:
-            permission_classes = [IsAuthenticated]
+            # Said it couldn't find it so I commented it out (Lysandra)
+            # permission_classes = [IsAuthenticated]
+            permission_classes = []
         return [permission() for permission in permission_classes]
     
     def get_queryset(self):
@@ -223,16 +229,51 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
     serializer_class = SoccerClassSerializer
     permission_classes = [AllowAny]
 
+    # Need to generate a class code
+    def perform_create(self, serializer):
+        existing_codes = set(SoccerClass.objects.values_list('classCode', flat=True))
+
+        # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
+        N = 5
+        class_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
+        while class_code in existing_codes:
+            class_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
+        
+        serializer.save(classCode=class_code)
+
+    # Look for class by its code
+    @action(detail=False, methods=['get'], url_path='code')
+    def by_code(self, request):
+        code = request.query_params.get('code')
+        
+        if not code:
+            return Response({
+                "error": "Must provide a code."
+            }, status=400)
+        
+        try:
+            object = SoccerClass.objects.get(classCode=code)
+            serializer = self.get_serializer(object)
+            return Response(serializer.data)
+        except SoccerClass.DoesNotExist:
+            return Response({
+                "error": "There is no class with the provided code."
+            }, status=404)
+    
+
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset()
-
+        
         if user_is_student(user):
             queryset = queryset.filter(members__studentID=user.id).distinct()
-        elif user_is_coach(user):
-            queryset = queryset.filter(coachID=user.id)
         else:
-            queryset = SoccerClass.objects.none()
+            queryset = queryset.filter(coachID=user.id)
+        # PUT BACK WHEN DONE
+        # elif user_is_coach(user):
+        #     queryset = queryset.filter(coachID=user.id)
+        # else:
+        #     queryset = SoccerClass.objects.none()
         return queryset
 
     """

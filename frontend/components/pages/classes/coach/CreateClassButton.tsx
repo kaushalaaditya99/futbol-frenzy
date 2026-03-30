@@ -11,7 +11,6 @@ export default function CreateClassButton(props: CreateClassButtonProps) {
     return (
         <InlineButton
             onPress={props.onPress}
-            borderRadius={8}
             {...buttonTheme.black}
         >
             <Plus
@@ -21,7 +20,7 @@ export default function CreateClassButton(props: CreateClassButtonProps) {
             />
             <ThemedText
                 style={{
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: 500,
                     color: "white"
                 }}

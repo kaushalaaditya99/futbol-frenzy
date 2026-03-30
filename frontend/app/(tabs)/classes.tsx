@@ -1,13 +1,13 @@
 import { Class, getClasses } from "@/services/classes";
 import { colors, margin, padding } from "@/theme";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { Dimensions, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RowCardClass from "@/components/pages/classes/RowCardClass";
 import MissingClass from "@/components/pages/classes/MissingClass";
 import CreateClassButton from "@/components/pages/classes/coach/CreateClassButton";
 import JoinClassButton from "@/components/pages/classes/student/JoinClassButton";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import useSideBar from "@/components/ui/user/sideBar/useSideBar";
 import SideBar from "@/components/ui/user/sideBar/SideBar";
 import SideBarDim from "@/components/ui/user/sideBar/SideBarDim";
@@ -18,22 +18,28 @@ import useSearchBar from "@/hooks/useSearchBar";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Classes() {
-    const { role } = useAuth();
+    const { token, role } = useAuth();
     const [classes, setClasses] = useState<Array<Class>>([]);
     const sideBar = useSideBar();
-    const searchBar = useSearchBar(classes, "name", "name");
+    const searchBar = useSearchBar(classes, "className", "className");
+
 
     useEffect(() => {
         loadClasses();
-    }, []);
+    }, [token]);
 
 
+    useFocusEffect(
+        useCallback(() => {
+            loadClasses();
+        }, [token])
+    );
+
+    
     const loadClasses = async () => {
-        // To whom does this ID belong to?
-        // A student or teacher?
-        // Does this differentiation matter in the DB?
-        const id = 0;
-        const classes = await getClasses(id, role ?? "Student");
+        if (!token)
+            return;
+        const classes = await getClasses(token);
         setClasses(classes);
         searchBar.setFiltered(classes);
     }
@@ -104,7 +110,7 @@ export default function Classes() {
                                     columnGap: padding.md
                                 }}
                             >
-                                {role === "Coach" &&
+                                {role !== "Student" &&
                                     <CreateClassButton
                                         onPress={() => router.push("/createClass")}
                                     />

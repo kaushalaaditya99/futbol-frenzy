@@ -221,7 +221,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
                                             color: getIDs(classes, date, hour, minute, day).has(class_.id) ? "white" : theme.colors.schemes.light.onSurfaceVariant
                                         }}
                                     >
-                                        {class_.name}
+                                        {class_.className}
                                     </ThemedText>
                                 </Pressable>
                             ))}

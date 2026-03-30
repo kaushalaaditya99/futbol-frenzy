@@ -7,7 +7,7 @@ import SeparatorText from '@/components/ui/SeparatorText';
 import ThemedText from '@/components/ui/ThemedText';
 import { fontSize, padding, theme } from '@/theme';
 import { router } from "expo-router";
-import { Pressable, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import resolveEndpoint from '@/services/resolveEndpoint';
 import React, { useState, useEffect } from 'react';
@@ -83,7 +83,12 @@ export default function Index() {
 			}}
 		>
 			{(loaded && !token) && 
-				<>
+				<ScrollView
+					style={{
+						flex: 1,
+						// backgroundColor: "red"
+					}}
+				>
 					<View
 						style={{
 							display: "flex",
@@ -135,9 +140,12 @@ export default function Index() {
 					</View>
 					<View
 						style={{
-							display: "flex",
+							// display: "flex",
+							flex: 1,
 							rowGap: 12,
-							width: "100%"
+							marginBottom: 24,
+							// width: "100%",
+							// backgroundColor: "blue"
 						}}
 					>
 						{/* Username */}
@@ -172,16 +180,17 @@ export default function Index() {
 								Forgot Password?
 							</ThemedText>
 						</View>
-					<SimpleButton
-						onPress={login}
-						label="Log In"
-					/>
+						<SimpleButton
+							onPress={login}
+							label="Log In"
+						/>
 					</View>
 					<SeparatorText
 						text="OR CONTINUE WITH"
-						/>
+					/>
 					<View
 						style={{
+							marginTop: 24,
 							display: "flex",
 							rowGap: 12,
 						}}
@@ -237,7 +246,7 @@ export default function Index() {
 							</ThemedText>
 						</Pressable>
 					</View>
-				</>
+				</ScrollView>
 			}
 		</SafeAreaView>
 );

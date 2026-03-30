@@ -15,6 +15,7 @@ import InputLabel from "@/components/ui/input/InputLabel";
 import Button from "@/components/ui/button/Button";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import InlineRadioGroup from "@/components/ui/input/InlineRadioGroup";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Errors {
     [inputName: string]: {
@@ -26,18 +27,18 @@ interface Errors {
 export default function CreateClass() {
     const [failed, setFailed] = useState(false);
     const [errors, setErrors] = useState<Errors>();
-
-    const [teacherName, setCoachName] = useState("");
+    
+    // Form
     const [className, setClassName] = useState("");
-    const [imageAbbreviation, setImageAbbreviation] = useState("");
+    const [imageText, setImageAbbreviation] = useState("");
     const [imageBackgroundColor, setImageBackgroundColor] = useState("lightgray");
     const [imageTextColor, setImageTextColor] = useState("black");
+    
+    // Switch Between Foreground and Background
     const [ground, setGround] = useState("Background");
 
-
-    useEffect(() => {
-        load();
-    }, []);
+    // Authentication
+    const { token } = useAuth();
 
 
     useEffect(() => {
@@ -65,13 +66,6 @@ export default function CreateClass() {
     }, [className]);
 
 
-    const load = async () => {
-        // You'd need to call the actual function here to
-        // fetch any data you need for this process.
-        setCoachName("Kafka");
-    }
-
-
     const onColorChange = (color: ColorFormatsObject) => {
         if (ground === "Background")
             setImageBackgroundColor(color["hsl"]);
@@ -81,19 +75,24 @@ export default function CreateClass() {
 
 
     const onCreateClass = async () => {
-        const teacherID = 0;
+        if (!token) {
+            setFailed(true);
+            return;
+        }
+
         const successful = await createClass(
-            teacherID, 
+            token, 
             className, 
             imageBackgroundColor, 
             imageTextColor, 
-            imageAbbreviation
+            imageText
         );
         
         if (successful) {
             router.back();
             return;
         }
+        
         setFailed(true);
     }
 
@@ -230,7 +229,7 @@ export default function CreateClass() {
                     </View>
                     <InputText
                         label="Abbreviation"
-                        value={imageAbbreviation}
+                        value={imageText}
                         onChangeText={setImageAbbreviation}
                         inputStyle={{
                             paddingBottom: padding.lg
@@ -257,10 +256,16 @@ export default function CreateClass() {
                             />
                             <RowCardClass
                                 id={0}
-                                name={className || "Class Name"}
-                                numStudents={15}
-                                teacherName={teacherName}
-                                imageText={imageAbbreviation}
+                                className={className || "Class Name"}
+                                coach={{
+                                    id: -1,
+                                    first_name: "FName",
+                                    last_name: "LName",
+                                    email: "",
+                                    username: ""
+                                }}
+                                students={[]}
+                                imageText={imageText}
                                 imageTextColor={imageTextColor}
                                 imageBackgroundColor={imageBackgroundColor}
                             />

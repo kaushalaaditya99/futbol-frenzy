@@ -3,30 +3,36 @@ import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow 
 import { ArrowRightToLine } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
-import { joinClass } from "@/services/classes";
+import { createClass, getClasses, joinClass } from "@/services/classes";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import Button from "@/components/ui/button/Button";
 import ErrorMessage from "@/components/ui/input/ErrorMessage";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
+import { useAuth } from "@/contexts/AuthContext";
+import { getUser, getUserSettings } from "@/services/user";
 
 export default function JoinClass() {
     const [failed, setFailed] = useState(false);
     const [classCode, setClassCode] = useState("");
+    const { token } = useAuth();
     
     useEffect(() => {
         setFailed(false);
     }, [classCode]);
 
     const onJoinClass = async () => {
-        // The student's ID would be provided
-        // elsewhere, but walk with me.
-        const studentID = 0;
-        if (await joinClass(classCode, studentID)) {
-            router.back();
-            return
+        if (!token || !classCode) {
+            setFailed(true);
+            return;
         }
+
+        if (await joinClass(token, classCode)) {
+            router.back();
+            return;
+        }
+
         setFailed(true);
     }
 
