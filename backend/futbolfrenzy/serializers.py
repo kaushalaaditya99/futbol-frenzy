@@ -58,8 +58,9 @@ class UserSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'userID', 'title', 'body', 'url', 'seen']
-        read_only_fields = ['id']
+        fields = ["id", "userID", "title", "body", "url", "seen"]
+        read_only_fields = ["id"]
+
 
 class SettingsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,6 +73,7 @@ class SettingsSerializer(serializers.ModelSerializer):
             "profilePicture",
             "profileBackgroundColor",
             "position",
+            "isDarkMode",
         ]
         read_only_fields = ["id"]
 
