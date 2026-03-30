@@ -1,6 +1,6 @@
 import { Text, View, Switch, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SettingsRow from "@/components/SettingsRow";
 import { Divider } from "@/components/Common";
 import {
@@ -14,6 +14,10 @@ import {
   MessageSquare,
   Settings as SettingsIcon,
 } from "lucide-react-native";
+import { useAuth } from "@/contexts/AuthContext";
+import resolveEndpoint from "@/services/resolveEndpoint";
+
+const API_URL = resolveEndpoint("/api/");
 
 export default function Settings() {
   const [darkMode, setDarkMode] = useState(false);
@@ -23,6 +27,31 @@ export default function Settings() {
   const [email, setEmail] = useState("alexrivera@yahoo.com");
   const [tag1, setTag1] = useState("Player");
   const [tag2, setTag2] = useState("Midfielder");
+  const [id, setId] = useState("");
+  const { token, loaded } = useAuth();
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    if (!loaded || !token) return;
+
+    async function loadProfile() {
+      const resMe = await fetch(`${API_URL}users/me`, {
+        headers: { Authorization: `Token ${token}` },
+      });
+      const me = await resMe.json();
+
+      const resUser = await fetch(`${API_URL}user/${me.id}`, {
+        headers: { Authorization: `Token ${token}` },
+      });
+      const user = await resUser.json();
+      setFirstName(user.first_name);
+      setLastName(user.last_name);
+      setEmail(user.email);
+      setPfp(user.profilePicture);
+    }
+
+    loadProfile();
+  }, [loaded, token]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
