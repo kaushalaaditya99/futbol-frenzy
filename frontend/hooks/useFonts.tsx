@@ -46,6 +46,14 @@ export default function useLocalFonts() {
             700: "Inter_700Bold",
             800: "Inter_700Bold",
             900: "Inter_900Black"
+        },
+        "Silkscreen": {
+            400: "Silkscreen-Regular",
+            500: "Silkscreen-Bold",
+            600: "Silkscreen-Bold",
+            700: "Silkscreen-Bold",
+            800: "Silkscreen-Bold",
+            900: "Silkscreen-Bold"
         }
     }
 

@@ -1,16 +1,17 @@
 import { colors } from "@/theme";
-import { GestureResponderEvent, ImageBackground, Pressable } from "react-native";
+import { GestureResponderEvent, ImageBackground, Pressable, ViewStyle } from "react-native";
 
 interface ProfilePictureProps {
-    openSideBar?: () => void;
+    onClick?: () => void;
     width?: number;
     height?: number;
+    imageStyle?: ViewStyle;
 }
 
 export default function ProfilePicture(props: ProfilePictureProps) {
     const openSideBar = (e: GestureResponderEvent) => {
         e.stopPropagation();
-        props.openSideBar && props.openSideBar();
+        props.onClick && props.onClick();
     }
 
     return (
@@ -29,6 +30,7 @@ export default function ProfilePicture(props: ProfilePictureProps) {
                     overflow: "hidden",
                     borderRadius: 100,
                     backgroundColor: colors.schemes.light.surfaceContainerLowest,
+                    ...props.imageStyle
                 }}
             />
         </Pressable>

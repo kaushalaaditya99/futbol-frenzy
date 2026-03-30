@@ -5,7 +5,7 @@ import useLocalFonts from "@/hooks/useFonts";
 interface ThemedTextProps {
     children?: ReactNode;
     style?: TextStyle; 
-    fontFamily?: "Arimo"|"Inter";
+    fontFamily?: "Arimo"|"Inter"|"Silkscreen";
     numberLines?: number;
     onPress?: () => void;
 }

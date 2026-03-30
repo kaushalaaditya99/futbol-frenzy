@@ -8,7 +8,7 @@ import { SideBarLink } from "./SideBarLink";
 import { View } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigation, CommonActions } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 
 interface SideBarProps {
     targetWidth: number;
@@ -19,6 +19,7 @@ interface SideBarProps {
 
 export default function SideBar(props: SideBarProps) {
     const { logout } = useAuth();
+    const router = useRouter();
     const navigation = useNavigation();
 
     const logOut = async () => {
@@ -28,7 +29,7 @@ export default function SideBar(props: SideBarProps) {
         );
     }
 
-
+        
     return (
         <Animated.View
             style={[
@@ -59,6 +60,7 @@ export default function SideBar(props: SideBarProps) {
                     <ProfilePicture
                         width={48}
                         height={48}
+                        onClick={() => router.push("/profile")}
                     />
                     <View>
                         <ThemedText
