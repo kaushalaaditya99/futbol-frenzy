@@ -4,7 +4,7 @@ import { BottomScreenProps } from "@/components/ui/BottomScreen";
 import { Pressable, ScrollView, View } from "react-native";
 import { colors, fontSize, letterSpacing, padding, theme } from "@/theme";
 import InputCheckbox from "@/components/ui/input/InputCheckbox";
-import { Drillv2 as Drill } from "@/services/drills";
+import { Drill as Drill } from "@/services/drills";
 import useSearchBar from "@/hooks/useSearchBar";
 import { Session } from "@/services/sessions";
 import SearchBar from "@/components/ui/SearchBar";
@@ -116,7 +116,7 @@ export default function DisclosureInstances(props: DisclosureInstancesProps) {
                                     letterSpacing: letterSpacing.lg
                                 }}
                             >
-                                {instance.name}
+                                {instance.drillName}
                             </ThemedText>
                             <ThemedText
                                 style={{
@@ -126,7 +126,7 @@ export default function DisclosureInstances(props: DisclosureInstancesProps) {
                                     letterSpacing: letterSpacing.xl,
                                 }}
                             >
-                                {instance.type}
+                                {instance.drillType}
                             </ThemedText>
                         </View>
                     </Pressable>

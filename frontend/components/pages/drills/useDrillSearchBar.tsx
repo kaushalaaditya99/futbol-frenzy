@@ -1,60 +1,108 @@
+import { useAuth } from "@/contexts/AuthContext";
 import useSearchBar, { Key } from "@/hooks/useSearchBar";
-import { Drillv2 as Drill } from "@/services/drills";
+import { Drill as Drill } from "@/services/drills";
+import { getUser, User } from "@/services/user";
 import { useEffect, useState } from "react";
 
-export type AccessControl = "public" | "private";
+export type AccessControl = boolean | null;
+export type Feed = "library" | "bookmark" | null;
 
 export default function useDrillSearchBar(drills: Array<Drill>) {
+    const { token } = useAuth();
+    const [user, setUser] = useState<User>();
+
     const searchKeyOptions = [
-        ["name", "Name"],
-        ["uploadedByName", "Uploaded By"],
+        ["drillName", "Name"],
+        [(drill: Drill) => `${drill.coach.first_name} ${drill.coach.last_name}`, "Uploaded By"],
     ];
 
     const sortKeysOptions = [
-        ["name", "Name"],
-        ["uploadedByName", "Uploaded By"],
-        ["level", "Level"],
+        ["drillName", "Name"],
+        [(drill: Drill) => `${drill.coach.first_name} ${drill.coach.last_name}`, "Uploaded By"],
+        ["difficultyLevel", "Level"],
     ];
 
     const accessControlOptions = [
-        ["public", "Public"],
-        ["private", "Private"]
+        [null, "All"],
+        [true, "Public"],
+        [false, "Private"]
     ];
 
+    const feedOptions = [
+        ["library", "My Library"], 
+        [null, "Explore"], 
+        ["bookmark", "Bookmarks"]
+    ];
+
+    const [feed, setFeed] = useState<Feed>("library");
+
     const [sort, setSort] = useState<0|1|2>(0);
-    const [sortKey, setSortKey] = useState("name");
+    const [sortKey, setSortKey] = useState("drillName");
 
     const [search, setSearch] = useState("");
-    const [searchKey, setSearchKey] = useState("name");
+    const [searchKey, setSearchKey] = useState("drillName");
     
-    const [accessControl, setAccessControl] = useState<AccessControl>("public");
+    const [accessControl, setAccessControl] = useState<AccessControl>(null);
     
     const [filtered, setFiltered] = useState<Array<Drill>>([]);
     const searchBar = useSearchBar<Drill>(drills, searchKey, sortKey);
 
 
     useEffect(() => {
-        const fDrills = searchAndSortDrills(search, searchKey, sort, sortKey, accessControl, drills);
+        const load = async () => {
+            if (!token)
+                return;
+            const user = await getUser(token);
+            setUser(user[0]);
+        }
+        load();
+    }, [token]);
+
+    
+    useEffect(() => {
+        console.log(feed)
+        const fDrills = searchAndSortDrills(search, searchKey, sort, sortKey, accessControl, feed, drills);
         setFiltered(fDrills);
-    }, [search, searchKey, sort, sortKey, accessControl, drills]);
+    }, [search, searchKey, sort, sortKey, accessControl, feed, drills]);
+
 
 
     const searchDrillsByAccessControl = (accessControl: AccessControl, drills: Array<Drill>) => {
-        const fDrills = drills.filter((drill) => drill.accessControl === accessControl);
+        if (accessControl === null)
+            return [...drills];
+        const fDrills = drills.filter((drill) => drill.publicDrill === accessControl);
         return fDrills;
     }
 
 
-    const searchAndSortDrills = (search: string, searchKey: Key, sort: 0|1|2, sortKey: Key, accessControl: AccessControl, drills: Array<Drill>) => {
+    const searchDrillsByFeed = (feed: Feed, drills: Array<Drill>) => {
+        if (feed === null)
+            return [...drills];
+
+        let fDrills = [...drills];
+
+        if (feed === "bookmark")
+            fDrills = fDrills.filter((drill) => drill.bookmarked === true);
+        else if (feed === "library" && user)
+            fDrills = fDrills.filter((drill) => drill.coachID === user.id);
+        
+        return fDrills;
+    }
+
+
+    const searchAndSortDrills = (search: string, searchKey: Key, sort: 0|1|2, sortKey: Key, accessControl: AccessControl, feed: Feed, drills: Array<Drill>) => {
         return searchBar.sortObjects(
             sort, 
             sortKey, 
-            searchDrillsByAccessControl(
-                accessControl,
-                searchBar.searchObjects(
-                    search, 
-                    searchKey, 
-                    drills
+            searchDrillsByFeed(
+                feed,
+                searchDrillsByAccessControl(
+                    accessControl,
+                    searchBar.searchObjects(
+                        search, 
+                        searchKey, 
+                        drills
+                    )
                 )
             )
         );
@@ -78,6 +126,9 @@ export default function useDrillSearchBar(drills: Array<Drill>) {
         filtered,
         setFiltered,
         searchDrillsByAccessControl,
-        searchAndSortDrills
+        searchAndSortDrills,
+        feed,
+        feedOptions,
+        setFeed
     }
 }

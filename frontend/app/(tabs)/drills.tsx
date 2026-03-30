@@ -9,22 +9,16 @@ import Header from "@/components/ui/user/Header";
 import SideBar from "@/components/ui/user/sideBar/SideBar";
 import SideBarDim from "@/components/ui/user/sideBar/SideBarDim";
 import useSideBar from "@/components/ui/user/sideBar/useSideBar";
-import { Drillv2 as Drill, getDrills } from "@/services/drills";
+import { Drill as Drill, getDrills } from "@/services/drills";
 import { fontSize, margin, padding, theme } from "@/theme";
-import { router } from "expo-router";
-import { Fragment, useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { Dimensions, FlatList, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function Drills() {
-    const feedOptions = [
-        ["library", "My Library"], 
-        ["explore", "Explore"], 
-        ["bookmark", "Bookmarks"]
-    ];
-
-    const [feed, setFeed] = useState("library");
+    
     const [viewType, setViewType] = useState("list");
 
     const sideBar = useSideBar();
@@ -32,13 +26,20 @@ export default function Drills() {
     const drillSearchBar = useDrillSearchBar(drills);
     
     useEffect(() => {
-        const id = 0;
-        loadDrills(id);
+        loadDrills();
     }, []);
 
-    const loadDrills = async (id: number) => {
-        const drills = await getDrills(id);
+    useFocusEffect(
+        useCallback(() => {
+            loadDrills();
+        }, [])
+    );
+
+    const loadDrills = async () => {
+        const drills = await getDrills();
+        console.log(drills);
         setDrills(drills);
+        drillSearchBar.setFiltered(drills);
     }
 
     return (
@@ -97,9 +98,9 @@ export default function Drills() {
                             }}
                         >
                             <InputDropdownV2
-                                value={feed}
-                                onChange={setFeed}
-                                options={feedOptions as [string, string][]}
+                                value={drillSearchBar.feed}
+                                onChange={drillSearchBar.setFeed}
+                                options={drillSearchBar.feedOptions as any}
                                 buttonStyle={{
                                     borderRadius: 8,
                                 }}

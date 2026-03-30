@@ -137,6 +137,7 @@ function TabsLayout() {
                     href: null,
                 }}
             />
+            
             <Tabs.Screen 
                 name="workouts"
                 options={{ 

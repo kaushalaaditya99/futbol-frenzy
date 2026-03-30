@@ -1,5 +1,5 @@
 import ThemedText from "@/components/ui/ThemedText";
-import { Drillv2 as Drill } from "@/services/drills";
+import { Drill as Drill } from "@/services/drills";
 import { padding, theme } from "@/theme";
 import { Asset } from "expo-asset";
 import { useVideoPlayer, VideoView } from "expo-video";

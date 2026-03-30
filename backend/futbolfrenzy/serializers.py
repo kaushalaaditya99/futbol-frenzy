@@ -49,12 +49,17 @@ class SettingsSerializer(serializers.ModelSerializer):
 
 
 class DrillSerializer(serializers.ModelSerializer):
+    coach = serializers.SerializerMethodField()
+
     class Meta:
         model = Drill
         fields = ['id', 'drillName', 'drillType', 'coachID', 'url',
                   'time', 'difficultyLevel', 'instructions', 'imageBackgroundColor',
-                  'imageText', 'imageTextColor', 'publicDrill']
-        read_only_fields = ['id']
+                  'imageText', 'imageTextColor', 'publicDrill', 'bookmarked', 'coach']
+        read_only_fields = ['id', 'coach']
+    
+    def get_coach(self, obj):
+        return UserSerializer(obj.coachID).data
 
 
 class WorkoutSerializer(serializers.ModelSerializer):

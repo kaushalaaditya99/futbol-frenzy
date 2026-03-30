@@ -13,7 +13,7 @@ import DisclosureCategory from "./DisclosureCategory";
 import DisclosureInstances from "./DisclosureInstances";
 import useSearchBar from "@/hooks/useSearchBar";
 import { Student } from "@/services/students";
-import { Drillv2 as Drill } from "@/services/drills";
+import { Drill as Drill } from "@/services/drills";
 import { Session } from "@/services/sessions";
 import ThemedText from "@/components/ui/ThemedText";
 
@@ -65,8 +65,8 @@ export default function TabProgress(props: TabProgressProps) {
 
     const drillSearchBar = useSearchBar<Drill>(
         props.drills, 
-        (drill: Drill) => `${drill.name}`, 
-        (drill: Drill) => `${drill.name}`
+        (drill: Drill) => `${drill.drillName}`, 
+        (drill: Drill) => `${drill.drillName}`
     );
 
     const sessionSearchBar = useSearchBar<Session>(

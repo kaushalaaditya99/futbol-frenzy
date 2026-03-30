@@ -17,8 +17,12 @@ import UploadVideo from "@/components/pages/UploadVideo";
 import Button from "@/components/ui/button/Button";
 import InputErrorMessage from "@/components/ui/input/InputErrorMessage";
 import InputInlineRadioGroup from "@/components/ui/input/InputInlineRadioGroup";
+import { createDrill } from "@/services/drills";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function CreateDrill() {
+    const {token} = useAuth();
+
     const levelOptions = [
         ["beginner", "Beginner"],
         ["intermediate", "Intermediate"],
@@ -127,15 +131,30 @@ export default function CreateDrill() {
     }
 
 
-    const onCreateDrill = () => {
+    const onCreateDrill = async () => {
         const {errors, canSubmit} = checkForm();
         setErrors(errors);
 
-        if (canSubmit) {
-            // Create Drill Here
+        if (!token || !canSubmit) {
+            setFailed(true);
+            return;
+        }
+        
+        const successful = await createDrill(token, {
+            name: name,
+            type: "",
+            time: 0,
+            instructions: instructions,
+            level: level,
+            accessControl: accessControl,
+            url: "https://www.w3schools.com/html/mov_bbb.mp4"
+        });
+        
+        if (successful) {
             router.back();
             return;
         }
+
         setFailed(true);
     }
 
@@ -148,7 +167,7 @@ export default function CreateDrill() {
             nameError = {valid: false, errorMessage: "Must enter a name."};
             canSubmit = false;
         }
-        else if (name.length > 10) {
+        else if (name.length > 50) {
             nameError = {valid: false, errorMessage: "Must enter a name less than 10 characters."};
             canSubmit = false;
         }
@@ -159,17 +178,17 @@ export default function CreateDrill() {
             canSubmit = false;
         }
 
-        let demoError: Error = {valid: true, errorMessage: ""};
-        if (!videoURI) {
-            demoError = {valid: false, errorMessage: "Must upload demonstration."};
-            canSubmit = false;
-        }
+        // let demoError: Error = {valid: true, errorMessage: ""};
+        // if (!videoURI) {
+        //     demoError = {valid: false, errorMessage: "Must upload demonstration."};
+        //     canSubmit = false;
+        // }
 
         return {
             errors: {
                 "name": nameError,
                 "instructions": instructionError,
-                "demo": demoError
+                // "demo": demoError
             },
             canSubmit
         };

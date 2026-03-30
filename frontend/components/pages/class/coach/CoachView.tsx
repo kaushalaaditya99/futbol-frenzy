@@ -11,7 +11,7 @@ import TabStudent from "./TabStudent/TabStudent";
 import { getStudents, Student } from "@/services/students";
 import TabProgress from "./TabProgress/TabProgress";
 import { router } from "expo-router";
-import { Drillv2 as Drill, getDrills } from "@/services/drills";
+import { Drill as Drill, getDrills } from "@/services/drills";
 
 
 const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
@@ -88,7 +88,7 @@ export default function CoachView() {
 
 
     const loadDrills = async (teacherID: number) => {
-        const drills = await getDrills(teacherID);
+        const drills = await getDrills();
         setDrills(drills);
     }
 

@@ -1,5 +1,5 @@
 import ThemedText from "@/components/ui/ThemedText";
-import { Drillv2 as Drill } from "@/services/drills";
+import { Drill as Drill } from "@/services/drills";
 import { padding, theme } from "@/theme";
 import { Asset } from "expo-asset";
 import { useVideoPlayer, VideoView } from "expo-video";
@@ -13,18 +13,18 @@ interface DrillCardListProps extends Drill {
     onBookmark?: () => void;
 }
 
-const localVideos = {
-    "@/assets/videos/video.mp4": require("@/assets/videos/video.mp4"),
-    "@/assets/videos/video2.mp4": require("@/assets/videos/video2.mp4"),
-    "@/assets/videos/video3.mp4": require("@/assets/videos/video3.mp4"),
-    "@/assets/videos/video4.mp4": require("@/assets/videos/video4.mp4"),
-    "@/assets/videos/video5.mp4": require("@/assets/videos/video5.mp4"),
-    "@/assets/videos/video6.mp4": require("@/assets/videos/video6.mp4"),
-    "@/assets/videos/video7.mp4": require("@/assets/videos/video7.mp4"),
-    "@/assets/videos/video8.mp4": require("@/assets/videos/video8.mp4"),
-    "@/assets/videos/video9.mp4": require("@/assets/videos/video9.mp4"),
-    "@/assets/videos/video10.mp4": require("@/assets/videos/video10.mp4"),
-};
+// const localVideos = {
+//     "@/assets/videos/video.mp4": require("@/assets/videos/video.mp4"),
+//     "@/assets/videos/video2.mp4": require("@/assets/videos/video2.mp4"),
+//     "@/assets/videos/video3.mp4": require("@/assets/videos/video3.mp4"),
+//     "@/assets/videos/video4.mp4": require("@/assets/videos/video4.mp4"),
+//     "@/assets/videos/video5.mp4": require("@/assets/videos/video5.mp4"),
+//     "@/assets/videos/video6.mp4": require("@/assets/videos/video6.mp4"),
+//     "@/assets/videos/video7.mp4": require("@/assets/videos/video7.mp4"),
+//     "@/assets/videos/video8.mp4": require("@/assets/videos/video8.mp4"),
+//     "@/assets/videos/video9.mp4": require("@/assets/videos/video9.mp4"),
+//     "@/assets/videos/video10.mp4": require("@/assets/videos/video10.mp4"),
+// };
 
 export default function DrillCardList(props: DrillCardListProps) {
     const videoPlayer = useVideoPlayer(null, (player) => {
@@ -33,7 +33,7 @@ export default function DrillCardList(props: DrillCardListProps) {
     });
 
     useEffect(() => {
-        loadVideo(props.videoURL);
+        loadVideo(props.url);
     }, []);
     
     const loadVideo = async (url: string) => {
@@ -42,10 +42,10 @@ export default function DrillCardList(props: DrillCardListProps) {
     }
 
      const resolveURL = async (url: string) => {
-        if (!!url && url.charAt(0) === "@") {
-            const resolvedURL = await Asset.loadAsync((localVideos as any)[url]);
-            return resolvedURL[0].localUri;
-        }
+        // if (!!url && url.charAt(0) === "@") {
+        //     const resolvedURL = await Asset.loadAsync((localVideos as any)[url]);
+        //     return resolvedURL[0].localUri;
+        // }
         return url;
     }
 
@@ -75,7 +75,7 @@ export default function DrillCardList(props: DrillCardListProps) {
                 contentFit="cover"
             />
             <Pressable
-                onPress={() => router.push("/drill")}
+                onPress={() => router.push({ pathname: '/drill/[id]', params: { id: props.id } })}
                 style={{
                     flex: 1, 
                     paddingVertical: padding.sm,
@@ -90,7 +90,7 @@ export default function DrillCardList(props: DrillCardListProps) {
                         color: theme.colors.schemes.light.onSurfaceVariant
                     }}
                 >
-                    {props.uploadedByName}
+                    {props.coach.first_name} {props.coach.last_name}
                 </ThemedText>
                 <View
                     style={{
@@ -108,7 +108,7 @@ export default function DrillCardList(props: DrillCardListProps) {
                             color: theme.colors.schemes.light.onSurface
                         }}
                     >
-                        {props.name}
+                        {props.drillName}
                     </ThemedText>
                     <Bookmark
                         size={16}
@@ -138,7 +138,7 @@ export default function DrillCardList(props: DrillCardListProps) {
                         columnGap: padding.md,
                     }}
                 >
-                    {[props.time, props.level].map((tag, i) => (
+                    {[props.time, props.difficultyLevel].map((tag, i) => (
                         <Fragment
                             key={i}
                         >

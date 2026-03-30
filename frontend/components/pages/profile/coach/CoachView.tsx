@@ -3,7 +3,7 @@ import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import ProfilePicture from "@/components/ui/user/ProfilePicture";
 import { Class, getClasses } from "@/services/classes";
-import { Drillv2 as Drill, getDrills } from "@/services/drills";
+import { Drill as Drill, getDrills } from "@/services/drills";
 import { getSessions, Session } from "@/services/sessions";
 import { margin, shadow, theme } from "@/theme";
 import { Fragment, useEffect, useState } from "react";

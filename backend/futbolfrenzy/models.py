@@ -52,6 +52,7 @@ class Drill(models.Model):
     imageText = models.CharField(max_length = 255)
     imageTextColor = models.CharField(max_length = 255)
     publicDrill = models.BooleanField(default = False)
+    bookmarked = models.BooleanField(default = False)
 
     def __str__(self):
         return self.drillName

@@ -19,7 +19,7 @@ import ThemedText from "@/components/ui/ThemedText";
 import Calendar from "@/components/ui/calendar/Calendar";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import { ArrowRight, CalendarDays, Clock, GripVertical, Plus, X } from "lucide-react-native";
-import { Drillv2, getDrills } from "@/services/drills";
+import { Drill, getDrills } from "@/services/drills";
 import DrillPickerSheet from "@/components/pages/createSession/DrillPickerSheet";
 import TimePicker from "@/components/pages/createSession/TimePicker";
 
@@ -28,7 +28,7 @@ import TimePicker from "@/components/pages/createSession/TimePicker";
 const ITEM_HEIGHT = 76;
 
 interface DraggableDrillRowProps {
-    drill: Drillv2;
+    drill: Drill;
     index: number;
     isDragging: boolean;
     dragY: number;
@@ -119,7 +119,7 @@ function DraggableDrillRow(props: DraggableDrillRowProps) {
                         color: colors.schemes.light.onSurface,
                     }}
                 >
-                    {props.drill.name}
+                    {props.drill.drillName}
                 </ThemedText>
                 <ThemedText
                     style={{
@@ -128,7 +128,7 @@ function DraggableDrillRow(props: DraggableDrillRowProps) {
                         marginTop: 2,
                     }}
                 >
-                    {props.drill.type} · {props.drill.time} min
+                    {props.drill.drillType} · {props.drill.time} min
                 </ThemedText>
             </View>
             <Pressable
@@ -190,9 +190,9 @@ export default function CreateSession() {
     });
 
     const [name, setName] = useState("");
-    const [selectedDrills, setSelectedDrills] = useState<Drillv2[]>([]);
+    const [selectedDrills, setSelectedDrills] = useState<Drill[]>([]);
     const [showDrillPicker, setShowDrillPicker] = useState(false);
-    const [allDrills, setAllDrills] = useState<Drillv2[]>([]);
+    const [allDrills, setAllDrills] = useState<Drill[]>([]);
     const [nameError, setNameError] = useState("");
 
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);

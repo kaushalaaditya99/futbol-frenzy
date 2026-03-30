@@ -66,6 +66,13 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
+        name="drill/[id]"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
         name="workout"
         options={{
           headerTitle: "",

@@ -1,4 +1,4 @@
-import { Drillv2 } from "@/services/drills";
+import { Drill } from "@/services/drills";
 import { borderRadius, colors, fontSize, letterSpacing, padding, shadow, theme } from "@/theme";
 import { Asset } from "expo-asset";
 import { useVideoPlayer, VideoView } from "expo-video";
@@ -32,7 +32,7 @@ const localVideos: Record<string, any> = {
 };
 
 interface DrillPickerRowProps {
-    drill: Drillv2;
+    drill: Drill;
     isSelected: boolean;
     onToggle: () => void;
 }
@@ -45,7 +45,7 @@ function DrillPickerRow({ drill, isSelected, onToggle }: DrillPickerRowProps) {
 
     useEffect(() => {
         const load = async () => {
-            const url = drill.videoURL;
+            const url = drill.url;
             if (url && url.charAt(0) === "@") {
                 const resolved = await Asset.loadAsync(localVideos[url]);
                 videoPlayer.replaceAsync(resolved[0].localUri as string);
@@ -109,7 +109,7 @@ function DrillPickerRow({ drill, isSelected, onToggle }: DrillPickerRowProps) {
                         color: colors.schemes.light.onSurface,
                     }}
                 >
-                    {drill.name}
+                    {drill.drillName}
                 </ThemedText>
                 <View
                     style={{
@@ -120,7 +120,7 @@ function DrillPickerRow({ drill, isSelected, onToggle }: DrillPickerRowProps) {
                     }}
                 >
                     <Tag label={drill.time} />
-                    <Tag label={drill.level} />
+                    <Tag label={drill.difficultyLevel} />
                 </View>
             </View>
 
@@ -150,7 +150,7 @@ function DrillPickerRow({ drill, isSelected, onToggle }: DrillPickerRowProps) {
 
 interface DrillPickerSheetProps {
     visible: boolean;
-    drills: Drillv2[];
+    drills: Drill[];
     selectedDrillIds: Set<number>;
     onConfirm: (selectedIds: Set<number>) => void;
     onClose: () => void;
@@ -182,7 +182,7 @@ export default function DrillPickerSheet(props: DrillPickerSheetProps) {
     }, [props.visible]);
 
     const filteredDrills = props.drills.filter((drill) => {
-        const matchesSearch = drill.name.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = drill.drillName.toLowerCase().includes(search.toLowerCase());
         const matchesTab =
             tab === "library"
                 ? drill.accessControl === "private"

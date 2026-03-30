@@ -1,46 +1,96 @@
 import resolveEndpoint from "@/services/resolveEndpoint";
+import { getUser, User } from "./user";
 
-export interface Drillv2 {
-  id: number;
-  videoURL: string;
-  name: string;
-  type: string;
-  time: number;
-  level: string;
-  instructions: string;
-  accessControl: "public" | "private";
-  uploadedByID: number;
-  uploadedByName: string;
-  bookmarked: boolean;
+export interface Drill {
+    id: number;
+    coachID: number;
+    url: string;
+    drillName: string;
+    drillType: string;
+    time: number;
+    difficultyLevel: string;
+    instructions: string;
+    imageText?: string;
+    imageTextColor?: string;
+    imageBackgroundColor?: string;
+    publicDrill: boolean;
+    bookmarked: boolean;
+    coach: User;
 }
 
-const API_URL = resolveEndpoint("/api/");
+const API_URL = resolveEndpoint("/api");
 
-export async function getDrills(): Promise<Drillv2[]> {
-  try {
-    const res = await fetch(`${API_URL}drills/`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const data = await res.json();
+export async function getDrills(): Promise<Drill[]> {
+    try {
+        const res = await fetch(`${API_URL}/drills/`);
+        if (!res.ok) 
+            throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        // console.log("backend drills:", data);
+        return data;
+    } catch (err) {
+        console.error("Failed to fetch drills:", err);
+        return [];
+    }
+}
 
-    console.log("backend drills:", data);
+export async function getDrill(id: number) {
+    try {
+        const res = await fetch(`${API_URL}/drills/${id}`);
+        if (!res.ok) 
+            throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        console.log(data);
+        return data;
+    } catch (err) {
+        console.error("Failed to fetch drills:", err);
+        return [];
+    }
+}
 
-    return data.map((d: any) => ({
-      id: d.id,
-      videoURL: d.url,
-      name: d.drillName,
-      type: d.drillType,
-      time: d.time,
-      level: d.difficultyLevel,
-      instructions: d.instructions,
-      accessControl: d.publicDrill ? "public" : "private",
-      uploadedByID: d.coachID,
-      uploadedByName: "Coach",
-      bookmarked: false,
-    }));
-  } catch (err) {
-    console.error("Failed to fetch drills:", err);
-    return [];
-  }
+interface InputDrill {
+    name: string;
+    type: string;
+    time: number;
+    instructions: string;
+    level: string;
+    accessControl: string;
+    url: string;
+}
+
+export async function createDrill(token: string, drill: InputDrill) {
+    const user = await getUser(token);
+    if (!user)
+        return false;
+
+    const userID = user[0]["id"];
+    console.log("User", user);
+    console.log("User ID", userID);
+
+     const response = await fetch(`${API_URL}/drills/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+            drillName: drill.name,
+            drillType: "None",
+            coachID: userID,
+            url: drill.url,
+            time: 0,
+            difficultyLevel: drill.level,
+            instructions: drill.instructions,
+            imageBackgroundColor: "black",
+            imageTextColor: "white",
+            imageText: "-",
+            publicDrill: drill.accessControl === "public",
+            bookmarked: false
+        })
+    });
+    
+    const data = await response.json();
+    return data;
 }
 
 // the mock drill data, didn't wanna delete incase anyone wants to use it

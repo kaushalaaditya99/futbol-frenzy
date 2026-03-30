@@ -6,7 +6,7 @@ import { theme } from "@/theme";
 import ErrorMessage from "./ErrorMessage";
 import InputErrorMessage from "./InputErrorMessage";
 
-export interface InputDropdownProps extends InputDropdownV2Props {
+export interface InputDropdownProps<T> extends InputDropdownV2Props<T> {
     label?: string;
     errorMessage?: string;
     onChangeText?: (text: string) => void;
@@ -14,7 +14,7 @@ export interface InputDropdownProps extends InputDropdownV2Props {
     wrapperStyle?: ViewStyle;
 }
 
-export default function InputDropdown(props: InputDropdownProps) {
+export default function InputDropdown<T>(props: InputDropdownProps<T>) {
     return (
         <InputWrapper
             wrapperStyle={props.wrapperStyle}
