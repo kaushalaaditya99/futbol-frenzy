@@ -34,6 +34,8 @@ export default function Button(props: ButtonProps) {
                 borderRadius: outerBorderRadius,
                 backgroundColor: props.borderColor,
                 height: props.outerStyle?.height || 48,
+                minHeight: props.outerStyle?.height || 48,
+                maxHeight: props.outerStyle?.height || 48,
                 ...shadow.md,
                 ...outerStyle,
             }}

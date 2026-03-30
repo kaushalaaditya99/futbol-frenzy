@@ -111,6 +111,7 @@ export default function JoinClass() {
                         }}
                     />
                     <Button
+                        
                         innerStyle={{
                             columnGap: 12,
                             width: "100%"

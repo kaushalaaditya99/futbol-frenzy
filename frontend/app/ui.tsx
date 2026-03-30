@@ -116,7 +116,7 @@ export default function UI() {
                         </ThemedText>
                     </ButtonHalfWidth>
                 </View>
-                {/* <View
+                <View
                     style={{
                         flexDirection: "row"
                     }}
@@ -231,8 +231,8 @@ export default function UI() {
                             Button 2
                         </ThemedText>
                     </Button>
-                </View> */}
-                {/* <View
+                </View>
+                <View
                     style={{
                         flexDirection: "row"
                     }}
@@ -321,7 +321,7 @@ export default function UI() {
                     >
                         <SmileIcon/>
                     </InlineButton>
-                </View> */}
+                </View>
             </SafeAreaView>
         </ScrollView>
     )
