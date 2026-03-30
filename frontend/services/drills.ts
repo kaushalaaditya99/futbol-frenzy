@@ -1,19 +1,51 @@
-import { AccessControl } from "@/components/pages/drills/useDrillSearchBar";
+import resolveEndpoint from "@/services/resolveEndpoint";
 
 export interface Drillv2 {
-    id: number;
-    videoURL: string;
-    name: string;
-    type: string;
-    time: number;
-    level: string;
-    instructions: string;
-    accessControl: AccessControl;
-    uploadedByID: number;
-    uploadedByName: string;
-    bookmarked: boolean;
+  id: number;
+  videoURL: string;
+  name: string;
+  type: string;
+  time: number;
+  level: string;
+  instructions: string;
+  accessControl: "public" | "private";
+  uploadedByID: number;
+  uploadedByName: string;
+  bookmarked: boolean;
 }
 
+const API_URL = resolveEndpoint("/api/");
+
+export async function getDrills(): Promise<Drillv2[]> {
+  try {
+    const res = await fetch(`${API_URL}drills/`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const data = await res.json();
+
+    console.log("backend drills:", data);
+
+    return data.map((d: any) => ({
+      id: d.id,
+      videoURL: d.url,
+      name: d.drillName,
+      type: d.drillType,
+      time: d.time,
+      level: d.difficultyLevel,
+      instructions: d.instructions,
+      accessControl: d.publicDrill ? "public" : "private",
+      uploadedByID: d.coachID,
+      uploadedByName: "Coach",
+      bookmarked: false,
+    }));
+  } catch (err) {
+    console.error("Failed to fetch drills:", err);
+    return [];
+  }
+}
+
+// the mock drill data, didn't wanna delete incase anyone wants to use it
+
+/*
 export async function getDrills(id: number): Promise<Array<Drillv2>> {
     return (
         [
@@ -153,5 +185,4 @@ export async function getDrills(id: number): Promise<Array<Drillv2>> {
 
 export async function getDrill(userID: number, drillID: number): Promise<Drillv2> {
     const drills = await getDrills(userID);
-    return drills[0];
-}
+    return drills[0];*/

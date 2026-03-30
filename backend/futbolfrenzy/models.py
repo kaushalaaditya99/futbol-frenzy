@@ -7,9 +7,12 @@ class Notification(models.Model):
     # id
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length = 255) 
-    body = models.CharField(max_length = 255) 
-    url = models.URLField(max_length=200)
-    seen = models.BooleanField(default=False)
+    description = models.CharField(max_length = 255) 
+    url = models.URLField(max_length=200, blank=True, null=True)
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    icon = models.CharField(max_length=50)
+    iconBackground = models.CharField(max_length=7, default="#FFFFFF")
 
 # Settings for each user
 class Settings(models.Model):

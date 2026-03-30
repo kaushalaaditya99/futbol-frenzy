@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'userID', 'title', 'body', 'url', 'seen']
+        fields = ['id', 'userID', 'title', 'description', 'url', 'read', 'created_at', 'icon', 'iconBackground']
         read_only_fields = ['id']
 
 class SettingsSerializer(serializers.ModelSerializer):
