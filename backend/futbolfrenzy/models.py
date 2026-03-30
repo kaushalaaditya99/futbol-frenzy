@@ -16,7 +16,11 @@ class Notification(models.Model):
 # Settings for each user
 class Settings(models.Model):
     # id
-    userID = models.ForeignKey(User, on_delete=models.CASCADE)
+    userID = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
     mode = models.CharField(max_length=255)
     notificationType = models.CharField(max_length=255, default="NONE")
     profilePicture = models.CharField(max_length=255, null=True, blank=True)

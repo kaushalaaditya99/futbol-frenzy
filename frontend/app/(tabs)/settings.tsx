@@ -28,11 +28,24 @@ export default function Settings() {
   const [tag1, setTag1] = useState("Player");
   const [tag2, setTag2] = useState("Midfielder");
   const [id, setId] = useState("");
-  const { token, loaded } = useAuth();
+  const { token, loaded, role } = useAuth();
   const [profile, setProfile] = useState(null);
 
+  const toggleDarkMode = async (currentSetting: boolean) => {
+    setDarkMode(currentSetting);
+    const payload = { isDarkMode: darkMode };
+    const updateDarkMode = await fetch(`${API_URL}settings/${id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+  };
+
   useEffect(() => {
-    if (!loaded || !token) return;
+    if (!loaded || !token || !role) return;
 
     async function loadProfile() {
       const resMe = await fetch(`${API_URL}users/me`, {
@@ -44,10 +57,23 @@ export default function Settings() {
         headers: { Authorization: `Token ${token}` },
       });
       const user = await resUser.json();
+
+      const resSettings = await fetch(`${API_URL}settings/${me.id}`, {
+        headers: { Authorization: `Token ${token}` },
+      });
+
+      const userSettings = await resSettings.json();
+
       setFirstName(user.first_name);
       setLastName(user.last_name);
       setEmail(user.email);
       setPfp(user.profilePicture);
+      setId(user.id);
+      if (!role) setTag1("Unknown");
+      else setTag1(role);
+
+      setTag2(userSettings.position);
+      setDarkMode(userSettings.isDarkMode);
     }
 
     loadProfile();
@@ -182,7 +208,7 @@ export default function Settings() {
             <Text style={{ fontSize: 16, flex: 1 }}>Dark Mode</Text>
             <Switch
               value={darkMode}
-              onValueChange={(newValue) => setDarkMode(newValue)}
+              onValueChange={(newValue) => toggleDarkMode(newValue)}
               trackColor={{ false: "#DDD", true: "#4CD964" }}
             />
           </View>
