@@ -118,14 +118,6 @@ export default function ShowDrills() {
               fill={item.bookmarked ? theme.colors.coreColors.primary : "transparent"}
             />
           </View>
-          <ThemedText
-            style={{
-              fontSize: 12,
-              color: theme.colors.schemes.light.onSurfaceVariant,
-            }}
-          >
-            {item.type.toUpperCase()} • {item.time} min • {item.level}
-          </ThemedText>
           <ThemedText style={{ marginTop: padding.sm, fontSize: 14 }}>
             {item.instructions}
           </ThemedText>

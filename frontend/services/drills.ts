@@ -5,7 +5,6 @@ export interface Drillv2 {
   videoURL: string;
   name: string;
   type: string;
-  time: number;
   level: string;
   instructions: string;
   accessControl: "public" | "private";
@@ -29,7 +28,6 @@ export async function getDrills(): Promise<Drillv2[]> {
       videoURL: d.url,
       name: d.drillName,
       type: d.drillType,
-      time: d.time,
       level: d.difficultyLevel,
       instructions: d.instructions,
       accessControl: d.publicDrill ? "public" : "private",
