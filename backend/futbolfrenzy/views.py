@@ -22,6 +22,7 @@ def me(request):
         'groups': list(user.groups.values_list('name', flat=True))
     })
 
+#returns extended user data with the setting, including data such as profile picture and such
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def detailed_user_info(request):
