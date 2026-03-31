@@ -69,8 +69,8 @@ class Workout(models.Model):
     imageBackgroundColor = models.CharField(max_length = 7)
     imageText = models.CharField(max_length = 255)
     imageTextColor = models.CharField(max_length = 255)
-    drills = models.ManyToManyField(Drill, related_name="workouts")
-    # drills = models.ManyToManyField(Drill, through="WorkoutDrill", related_name="workouts")
+    #drills = models.ManyToManyField(Drill, related_name="workouts")
+    drills = models.ManyToManyField(Drill, through="WorkoutDrill", related_name="workouts")
     publicWorkout = models.BooleanField(default = False)
 
     def __str__(self):
