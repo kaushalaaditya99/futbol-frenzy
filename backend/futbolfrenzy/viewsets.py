@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Notification, Settings, Drill, DrillBookmark, Workout, WorkoutBookmark, WorkoutDrill, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 from futbolfrenzy.serializers import UserSerializer, NotificationSerializer, SettingsSerializer, DrillSerializer, DrillBookmarkSerializer, WorkoutSerializer, WorkoutBookmarkSerializer, WorkoutDrillSerializer, AssignmentSerializer, SubmissionSerializer, SubmittedDrillSerializer, SoccerClassSerializer, ClassMemberSerializer
 from rest_framework.filters import OrderingFilter
@@ -43,14 +43,14 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
 
-        
+
         #user_id = self.request.query_params.get("userID")
         #queryset = super().get_queryset()
 
-        # notifications for a specific user 
+        # notifications for a specific user
         #if user_id:
         #    queryset = queryset.filter(userID=user_id)
-        
+
         return Notification.objects.filter(userID=self.request.user)
 
 
@@ -86,7 +86,7 @@ class DrillViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(coachID=coach_id)
 
         return queryset
-    
+
 class DrillBookmarkViewSet(viewsets.ModelViewSet):
     queryset = DrillBookmark.objects.all()
     serializer_class = DrillBookmarkSerializer
@@ -123,7 +123,7 @@ class WorkoutViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(coachID=coach_id)
 
         return queryset
-    
+
 class WorkoutBookmarkViewSet(viewsets.ModelViewSet):
     queryset = WorkoutBookmark.objects.all()
     serializer_class = WorkoutBookmarkSerializer
@@ -139,7 +139,7 @@ class WorkoutBookmarkViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(userID=user_id)
 
         return queryset
-    
+
 class WorkoutDrillViewSet(viewsets.ModelViewSet):
     queryset = WorkoutDrill.objects.all()
     serializer_class = WorkoutDrillSerializer
@@ -175,11 +175,11 @@ class AssignmentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(soccer_classes__id=class_id).distinct()
 
         return queryset
-    
+
         # notifies student when assigned an assignment
         def perform_create(self, serializer):
             instance = serializer.save()
-        
+
             for member in instance.soccer_classes.first().members.all():
                 student = member.studentID
                 notify_student(
@@ -215,7 +215,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(assignmentID=assignment_id)
 
         return queryset
-    
+
 
 
 class SubmittedDrillViewSet(viewsets.ModelViewSet):
@@ -246,11 +246,11 @@ class SubmittedDrillViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(drillID=drill_id)
 
         return queryset
-    
+
     # if coach grades on API, notifies student
     def grade_update(self, serializer):
         instance = serializer.save()
-    
+
         if 'grade' in serializer.validated_data:
             student = instance.submissionID.studentID
             drill = instance.drillID
