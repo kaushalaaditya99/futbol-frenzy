@@ -1,15 +1,14 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 # Notifications for users
 class Notification(models.Model):
     # id
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length = 255) 
-    description = models.CharField(max_length = 255) 
+    title = models.CharField(max_length = 255)
+    description = models.CharField(max_length = 255)
     url = models.URLField(max_length=200, blank=True, null=True)
     read = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
@@ -62,12 +61,12 @@ class Drill(models.Model):
 
     def __str__(self):
         return self.drillName
-    
+
 class DrillBookmark(models.Model):
     # id
     drillID = models.ForeignKey(Drill, on_delete=models.CASCADE)
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
-    
+
 # A workout is a list of drills that can be assigned
 class Workout(models.Model):
     workoutName = models.CharField(max_length=255)
@@ -83,7 +82,7 @@ class Workout(models.Model):
 
     def __str__(self):
         return self.workoutName
-    
+
 class WorkoutBookmark(models.Model):
     # id
     workoutID = models.ForeignKey(Workout, on_delete=models.CASCADE)
@@ -99,10 +98,10 @@ class WorkoutDrill(models.Model):
     def clean(self):
         if self.minutes and self.repetitions:
             raise ValidationError("Only one of minutes or repetitions can be set.")
-        
+
         if not self.minutes and not self.repetitions:
             raise ValidationError("You must set either minutes or repetitions.")
-        
+
     def save(self, *args, **kwargs):
         self.full_clean()  # runs clean()
         super().save(*args, **kwargs)

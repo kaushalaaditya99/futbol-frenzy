@@ -1,7 +1,6 @@
 from django.contrib.auth.models import Group, User
 from rest_framework import serializers
 from .models import Notification, Settings, Drill, DrillBookmark, Workout, WorkoutBookmark, WorkoutDrill, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
-from django.contrib.auth.models import User, Group
 #class serializers to help django convert JSON data to python objects
 
 class UserSerializer(serializers.ModelSerializer):
