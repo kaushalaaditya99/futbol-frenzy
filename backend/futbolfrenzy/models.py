@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 # Notifications for users
 class Notification(models.Model):
@@ -87,6 +88,17 @@ class WorkoutDrill(models.Model):
 
     minutes = models.IntegerField(null=True, blank=True)
     repetitions = models.IntegerField(null=True, blank=True)
+
+    def clean(self):
+        if self.minutes and self.repetitions:
+            raise ValidationError("Only one of minutes or repetitions can be set.")
+        
+        if not self.minutes and not self.repetitions:
+            raise ValidationError("You must set either minutes or repetitions.")
+        
+    def save(self, *args, **kwargs):
+        self.full_clean()  # runs clean()
+        super().save(*args, **kwargs)
 
 # An assignment contains a workout that is due at some time
 class Assignment(models.Model):
