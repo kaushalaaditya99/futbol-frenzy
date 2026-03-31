@@ -1,33 +1,10 @@
-from django.contrib.auth.models import User
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
+from .models import Notification, Settings, Drill, DrillBookmark, Workout, WorkoutBookmark, WorkoutDrill, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
+from futbolfrenzy.serializers import UserSerializer, NotificationSerializer, SettingsSerializer, DrillSerializer, DrillBookmarkSerializer, WorkoutSerializer, WorkoutBookmarkSerializer, WorkoutDrillSerializer, AssignmentSerializer, SubmissionSerializer, SubmittedDrillSerializer, SoccerClassSerializer, ClassMemberSerializer
 from rest_framework.filters import OrderingFilter
-from rest_framework.permissions import AllowAny, IsAuthenticated
-
-from futbolfrenzy.serializers import (
-    AssignmentSerializer,
-    ClassMemberSerializer,
-    DrillSerializer,
-    NotificationSerializer,
-    SettingsSerializer,
-    SoccerClassSerializer,
-    SubmissionSerializer,
-    SubmittedDrillSerializer,
-    UserSerializer,
-    WorkoutSerializer,
-)
-
-from .models import (
-    Assignment,
-    ClassMember,
-    Drill,
-    Notification,
-    Settings,
-    SoccerClass,
-    Submission,
-    SubmittedDrill,
-    Workout,
-)
-
+from django.contrib.auth.models import User
+from .services import notify_user
 
 # helpers to check group of a user (Student vs. Coach)
 def user_is_student(user):
@@ -66,14 +43,15 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
 
-        user_id = self.request.query_params.get("userID")
-        queryset = super().get_queryset()
+        
+        #user_id = self.request.query_params.get("userID")
+        #queryset = super().get_queryset()
 
-        # notifications for a specific user
-        if user_id:
-            queryset = queryset.filter(userID=user_id)
-
-        return queryset
+        # notifications for a specific user 
+        #if user_id:
+        #    queryset = queryset.filter(userID=user_id)
+        
+        return Notification.objects.filter(userID=self.request.user)
 
 
 class SettingsViewSet(viewsets.ModelViewSet):
@@ -108,6 +86,22 @@ class DrillViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(coachID=coach_id)
 
         return queryset
+    
+class DrillBookmarkViewSet(viewsets.ModelViewSet):
+    queryset = DrillBookmark.objects.all()
+    serializer_class = DrillBookmarkSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        queryset = DrillBookmark.objects.all()
+        user_id = self.request.query_params.get('userID')
+
+        # drills bookmarked by a specific user
+        if user_id:
+            queryset = queryset.filter(userID=user_id)
+
+        return queryset
 
 
 class WorkoutViewSet(viewsets.ModelViewSet):
@@ -129,6 +123,27 @@ class WorkoutViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(coachID=coach_id)
 
         return queryset
+    
+class WorkoutBookmarkViewSet(viewsets.ModelViewSet):
+    queryset = WorkoutBookmark.objects.all()
+    serializer_class = WorkoutBookmarkSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        queryset = WorkoutBookmark.objects.all()
+        user_id = self.request.query_params.get('userID')
+
+        # workouts bookmarked by a specific user
+        if user_id:
+            queryset = queryset.filter(userID=user_id)
+
+        return queryset
+    
+class WorkoutDrillViewSet(viewsets.ModelViewSet):
+    queryset = WorkoutDrill.objects.all()
+    serializer_class = WorkoutDrillSerializer
+    permission_classes = [AllowAny]
 
 
 class AssignmentViewSet(viewsets.ModelViewSet):
@@ -160,6 +175,21 @@ class AssignmentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(soccer_classes__id=class_id).distinct()
 
         return queryset
+    
+        # notifies student when assigned an assignment
+        def perform_create(self, serializer):
+            instance = serializer.save()
+        
+            for member in instance.soccer_classes.first().members.all():
+                student = member.studentID
+                notify_student(
+                    student,
+                    title="New Session Assigned",
+                    description=f"Coach {instance.soccer_classes.first().coachID.username} assigned Session #{instance.id} with {instance.drills.count()} drills. Due {instance.dueDate}.",
+                    icon="session",
+                    iconBackground="#6db1ff",
+                    url=f"/sessions/{instance.id}"
+                )
 
 
 class SubmissionViewSet(viewsets.ModelViewSet):
@@ -185,6 +215,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(assignmentID=assignment_id)
 
         return queryset
+    
 
 
 class SubmittedDrillViewSet(viewsets.ModelViewSet):
@@ -215,6 +246,22 @@ class SubmittedDrillViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(drillID=drill_id)
 
         return queryset
+    
+    # if coach grades on API, notifies student
+    def grade_update(self, serializer):
+        instance = serializer.save()
+    
+        if 'grade' in serializer.validated_data:
+            student = instance.submissionID.studentID
+            drill = instance.drillID
+            notify_user(
+                student,
+                title="Drill Graded!",
+                description=f"You scored {instance.grade}/100 on {drill.name}. Tap to see feedback",
+                icon="graded",
+                iconBackground="#c3f7c8",
+                url=f"/drills/{drill.id}/submission/{instance.submissionID.id}"
+            )
 
 
 class SoccerClassViewSet(viewsets.ModelViewSet):

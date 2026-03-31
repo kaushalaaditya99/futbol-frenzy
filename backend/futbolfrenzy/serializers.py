@@ -1,20 +1,8 @@
 from django.contrib.auth.models import Group, User
 from rest_framework import serializers
-
-from .models import (
-    Assignment,
-    ClassMember,
-    Drill,
-    Notification,
-    Settings,
-    SoccerClass,
-    Submission,
-    SubmittedDrill,
-    Workout,
-)
-
-# class serializers to help django convert JSON data to python objects
-
+from .models import Notification, Settings, Drill, DrillBookmark, Workout, WorkoutBookmark, WorkoutDrill, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
+from django.contrib.auth.models import User, Group
+#class serializers to help django convert JSON data to python objects
 
 class UserSerializer(serializers.ModelSerializer):
     group = serializers.CharField(write_only=True)
@@ -58,9 +46,8 @@ class UserSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ["id", "userID", "title", "body", "url", "seen"]
-        read_only_fields = ["id"]
-
+        fields = ['id', 'userID', 'title', 'description', 'url', 'read', 'created_at', 'icon', 'iconBackground']
+        read_only_fields = ['id']
 
 class SettingsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -80,22 +67,16 @@ class SettingsSerializer(serializers.ModelSerializer):
 class DrillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drill
-        fields = [
-            "id",
-            "drillName",
-            "drillType",
-            "coachID",
-            "url",
-            "time",
-            "difficultyLevel",
-            "instructions",
-            "imageBackgroundColor",
-            "imageText",
-            "imageTextColor",
-            "publicDrill",
-        ]
-        read_only_fields = ["id"]
+        fields = ['id', 'drillName', 'drillType', 'coachID', 'url',
+                  'difficultyLevel', 'instructions', 'imageBackgroundColor',
+                  'imageText', 'imageTextColor', 'publicDrill']
+        read_only_fields = ['id']
 
+class DrillBookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DrillBookmark
+        fields = ['id', 'drillID', 'userID']
+        read_only_fields = ['id']
 
 class WorkoutSerializer(serializers.ModelSerializer):
     class Meta:
@@ -114,6 +95,18 @@ class WorkoutSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id"]
 
+
+class WorkoutBookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkoutBookmark
+        fields = ['id', 'workoutID', 'userID']
+        read_only_fields = ['id']
+
+class WorkoutDrillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkoutDrill
+        fields = ['id', 'workoutID', 'drillID', 'minutes', 'repetitions']
+        read_only_fields = ['id']
 
 class AssignmentSerializer(serializers.ModelSerializer):
     class Meta:
