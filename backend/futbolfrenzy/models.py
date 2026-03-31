@@ -70,6 +70,7 @@ class Workout(models.Model):
     imageText = models.CharField(max_length = 255)
     imageTextColor = models.CharField(max_length = 255)
     drills = models.ManyToManyField(Drill, related_name="workouts")
+    # drills = models.ManyToManyField(Drill, through="WorkoutDrill", related_name="workouts")
     publicWorkout = models.BooleanField(default = False)
 
     def __str__(self):
@@ -79,6 +80,13 @@ class WorkoutBookmark(models.Model):
     # id
     workoutID = models.ForeignKey(Workout, on_delete=models.CASCADE)
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class WorkoutDrill(models.Model):
+    workoutID = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    drillID = models.ForeignKey(Drill, on_delete=models.CASCADE)
+
+    minutes = models.IntegerField(null=True, blank=True)
+    repetitions = models.IntegerField(null=True, blank=True)
 
 # An assignment contains a workout that is due at some time
 class Assignment(models.Model):
