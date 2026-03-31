@@ -59,7 +59,7 @@ class DrillSerializer(serializers.ModelSerializer):
 class DrillBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = DrillBookmark
-        field = ['id', 'drillID', 'userID']
+        fields = ['id', 'drillID', 'userID']
         read_only_fields = ['id']
 
 class WorkoutSerializer(serializers.ModelSerializer):
@@ -72,7 +72,7 @@ class WorkoutSerializer(serializers.ModelSerializer):
 class WorkoutBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkoutBookmark
-        field = ['id', 'workoutID', 'userID']
+        fields = ['id', 'workoutID', 'userID']
         read_only_fields = ['id']
 
 class AssignmentSerializer(serializers.ModelSerializer):
