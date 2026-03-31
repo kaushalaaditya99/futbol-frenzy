@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
-from .models import Notification, Settings, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
-from futbolfrenzy.serializers import UserSerializer, NotificationSerializer, SettingsSerializer, DrillSerializer, WorkoutSerializer, AssignmentSerializer, SubmissionSerializer, SubmittedDrillSerializer, SoccerClassSerializer, ClassMemberSerializer
+from .models import Notification, Settings, Drill, DrillBookmark, Workout, WorkoutBookmark, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
+from futbolfrenzy.serializers import UserSerializer, NotificationSerializer, SettingsSerializer, DrillSerializer, DrillBookmarkSerializer, WorkoutSerializer, WorkoutBookmarkSerializer, AssignmentSerializer, SubmissionSerializer, SubmittedDrillSerializer, SoccerClassSerializer, ClassMemberSerializer
 from rest_framework.filters import OrderingFilter
 from django.contrib.auth.models import User
 from .services import notify_user
@@ -80,6 +80,11 @@ class DrillViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(coachID=coach_id)
 
         return queryset
+    
+class DrillBookmarkViewSet(viewsets.ModelViewSet):
+    queryset = DrillBookmark.objects.all()
+    serializer_class = DrillBookmarkSerializer
+    permission_classes = [AllowAny]
 
 class WorkoutViewSet(viewsets.ModelViewSet):
     queryset = Workout.objects.all()
@@ -100,6 +105,11 @@ class WorkoutViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(coachID=coach_id)
 
         return queryset
+    
+class WorkoutBookmarkViewSet(viewsets.ModelViewSet):
+    queryset = WorkoutBookmark.objects.all()
+    serializer_class = WorkoutBookmarkSerializer
+    permission_classes = [AllowAny]
 
 class AssignmentViewSet(viewsets.ModelViewSet):
     queryset = Assignment.objects.all()
