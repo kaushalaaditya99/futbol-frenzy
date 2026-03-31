@@ -52,7 +52,7 @@ class DrillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drill
         fields = ['id', 'drillName', 'drillType', 'coachID', 'url',
-                  'time', 'difficultyLevel', 'instructions', 'imageBackgroundColor',
+                  'difficultyLevel', 'instructions', 'imageBackgroundColor',
                   'imageText', 'imageTextColor', 'publicDrill']
         read_only_fields = ['id']
 
