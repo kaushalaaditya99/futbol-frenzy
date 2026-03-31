@@ -86,6 +86,17 @@ class DrillBookmarkViewSet(viewsets.ModelViewSet):
     serializer_class = DrillBookmarkSerializer
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+
+        queryset = DrillBookmark.objects.all()
+        user_id = self.request.query_params.get('userID')
+
+        # drills bookmarked by a specific user
+        if user_id:
+            queryset = queryset.filter(userID=user_id)
+
+        return queryset
+
 class WorkoutViewSet(viewsets.ModelViewSet):
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
@@ -110,6 +121,17 @@ class WorkoutBookmarkViewSet(viewsets.ModelViewSet):
     queryset = WorkoutBookmark.objects.all()
     serializer_class = WorkoutBookmarkSerializer
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        queryset = WorkoutBookmark.objects.all()
+        user_id = self.request.query_params.get('userID')
+
+        # workouts bookmarked by a specific user
+        if user_id:
+            queryset = queryset.filter(userID=user_id)
+
+        return queryset
 
 class AssignmentViewSet(viewsets.ModelViewSet):
     queryset = Assignment.objects.all()
