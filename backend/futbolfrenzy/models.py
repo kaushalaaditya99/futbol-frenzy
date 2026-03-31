@@ -45,7 +45,6 @@ class Drill(models.Model):
     drillType = models.CharField(max_length = 255)
     coachID = models.ForeignKey(User, on_delete=models.CASCADE)
     url = models.URLField(max_length=200)
-    time = models.IntegerField()
     difficultyLevel = models.CharField(max_length = 255)
     instructions = models.TextField()
     imageBackgroundColor = models.CharField(max_length = 7)
