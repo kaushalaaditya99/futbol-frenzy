@@ -38,7 +38,7 @@ class Settings(models.Model):
     )
 
 
-# A drill is self explanator
+# A drill is self explanatory
 class Drill(models.Model):
     # id
     drillName = models.CharField(max_length = 255) 
@@ -56,6 +56,11 @@ class Drill(models.Model):
     def __str__(self):
         return self.drillName
     
+class DrillBookmark(models.Model):
+    # id
+    drillID = models.ForeignKey(Drill, on_delete=models.CASCADE)
+    userID = models.ForeignKey(User, on_delete=models.CASCADE)
+    
 # A workout is a list of drills that can be assigned
 class Workout(models.Model):
     workoutName = models.CharField(max_length = 255) 
@@ -70,6 +75,11 @@ class Workout(models.Model):
 
     def __str__(self):
         return self.workoutName
+    
+class WorkoutBookmark(models.Model):
+    # id
+    workoutID = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    userID = models.ForeignKey(User, on_delete=models.CASCADE)
 
 # An assignment contains a workout that is due at some time
 class Assignment(models.Model):
