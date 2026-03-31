@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Notification, Settings, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
+from .models import Notification, Settings, Drill, DrillBookmark, Workout, WorkoutBookmark, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 from django.contrib.auth.models import User, Group
 #class serializers to help django convert JSON data to python objects
 
@@ -56,12 +56,23 @@ class DrillSerializer(serializers.ModelSerializer):
                   'imageText', 'imageTextColor', 'publicDrill']
         read_only_fields = ['id']
 
+class DrillBookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DrillBookmark
+        field = ['id', 'drillID', 'userID']
+        read_only_fields = ['id']
 
 class WorkoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workout
         fields = ['id', 'workoutName', 'workoutType', 'coachID', 'dueDate',
                   'imageBackgroundColor','imageText', 'imageTextColor', 'drills', 'publicWorkout']
+        read_only_fields = ['id']
+
+class WorkoutBookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkoutBookmark
+        field = ['id', 'workoutID', 'userID']
         read_only_fields = ['id']
 
 class AssignmentSerializer(serializers.ModelSerializer):
