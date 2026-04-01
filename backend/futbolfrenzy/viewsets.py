@@ -31,8 +31,7 @@ class UserViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         else:
             # Said it couldn't find it so I commented it out (Lysandra)
-            # permission_classes = [IsAuthenticated]
-            permission_classes = []
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
     # def get_queryset(self):
@@ -284,19 +283,19 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
         class_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
         while class_code in existing_codes:
             class_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
-        
+
         serializer.save(classCode=class_code)
 
     # Look for class by its code
     @action(detail=False, methods=['get'], url_path='code')
     def by_code(self, request):
         code = request.query_params.get('code')
-        
+
         if not code:
             return Response({
                 "error": "Must provide a code."
             }, status=400)
-        
+
         try:
             object = SoccerClass.objects.get(classCode=code)
             serializer = self.get_serializer(object)
@@ -305,12 +304,12 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
             return Response({
                 "error": "There is no class with the provided code."
             }, status=404)
-    
+
 
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset()
-        
+
         if user_is_student(user):
             queryset = queryset.filter(members__studentID=user.id).distinct()
         else:

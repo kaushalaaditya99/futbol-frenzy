@@ -8,7 +8,7 @@ import { SideBarLink } from "./SideBarLink";
 import { View } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigation, CommonActions } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { ExtendedUser, loadExtendedProfile, defaultExtendedUser } from "@/services/extendeduser";
 import { useState, useEffect } from "react";
 
@@ -53,6 +53,8 @@ export default function SideBar(props: SideBarProps) {
       }
     }, [loaded, token, role]);
 
+
+    const router = useRouter();
     return (
         <Animated.View
             style={[

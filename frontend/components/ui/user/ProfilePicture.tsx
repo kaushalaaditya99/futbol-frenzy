@@ -7,7 +7,6 @@ interface ProfilePictureProps {
     width?: number;
     height?: number;
     imageStyle?: ViewStyle;
-  height?: number;
   //use the following path to specify a path to the actual user image
     path?: string;
 }
