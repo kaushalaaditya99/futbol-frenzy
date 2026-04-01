@@ -38,11 +38,11 @@ export default function Settings() {
 
   useEffect(() => {
     if (!loaded || !token || !role) return;
-    async function loadProfile(escapedtoken: string, escapedrole: string)
+    async function loadProfile(escapedtoken: string)
     {
       try
       {
-        const userData = await loadExtendedProfile(escapedtoken, escapedrole);
+        const userData = await loadExtendedProfile(escapedtoken);
         setUserData(userData);
       }
       catch(err)
@@ -53,7 +53,7 @@ export default function Settings() {
     }
     if (token != null && role != null)
     {
-      loadProfile(token, role)
+      loadProfile(token)
     }
   }, [loaded, token, role]);
 

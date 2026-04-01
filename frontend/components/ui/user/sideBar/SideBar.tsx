@@ -9,6 +9,8 @@ import { View } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { router } from "expo-router";
+import { ExtendedUser, loadExtendedProfile, defaultExtendedUser } from "@/services/extendeduser";
+import { useState, useEffect } from "react";
 
 interface SideBarProps {
     targetWidth: number;
@@ -18,7 +20,8 @@ interface SideBarProps {
 }
 
 export default function SideBar(props: SideBarProps) {
-    const { logout } = useAuth();
+  const { logout, token, loaded, role } = useAuth();
+  const [profile, setProfile] = useState(defaultExtendedUser);
     const navigation = useNavigation();
 
     const logOut = async () => {
@@ -28,6 +31,27 @@ export default function SideBar(props: SideBarProps) {
         );
     }
 
+
+    useEffect(() => {
+      if (!loaded || !token || !role) return;
+      async function loadProfile(escapedtoken: string)
+      {
+        try
+        {
+          const userProfile = await loadExtendedProfile(escapedtoken);
+          setProfile(userProfile);
+        }
+        catch(err)
+        {
+          console.log("Error retrieving user data: ", err)
+          throw err;
+        }
+      }
+      if (token != null)
+      {
+        loadProfile(token)
+      }
+    }, [loaded, token, role]);
 
     return (
         <Animated.View
@@ -59,7 +83,8 @@ export default function SideBar(props: SideBarProps) {
                     <ProfilePicture
                         width={48}
                         height={48}
-                    />
+                        path={'../../../assets/images/Pedri-11.jpg'}
+                        />
                     <View>
                         <ThemedText
                             style={{
@@ -80,7 +105,7 @@ export default function SideBar(props: SideBarProps) {
                                 color: colors.schemes.light.onSurface
                             }}
                         >
-                            Alex Rivera
+                            {profile.first_name} {profile.last_name}
                         </ThemedText>
                     </View>
                 </View>
