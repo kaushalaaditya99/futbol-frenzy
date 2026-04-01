@@ -20,6 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Classes() {
     const { token, role } = useAuth();
     const [classes, setClasses] = useState<Array<Class>>([]);
+    const [isCoach, setIsCoach] = useState(false);
     const sideBar = useSideBar();
     const searchBar = useSearchBar(classes, "className", "className");
 
@@ -35,7 +36,15 @@ export default function Classes() {
         }, [token])
     );
 
-    
+    //in case the conditional doesn't work for whatever reason
+    useEffect(() => {
+      if (!role)
+      {
+        return;
+      }
+      setIsCoach(role == "Coach")
+    }, [role]);
+
     const loadClasses = async () => {
         if (!token)
             return;
