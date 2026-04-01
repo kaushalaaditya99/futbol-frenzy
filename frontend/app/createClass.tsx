@@ -38,7 +38,7 @@ export default function CreateClass() {
     const [ground, setGround] = useState("Background");
 
     // Authentication
-    const { token } = useAuth();
+    const { token, loaded } = useAuth();
 
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export default function CreateClass() {
 
 
     const onCreateClass = async () => {
-        if (!token) {
+        if (!token && !loaded) {
             setFailed(true);
             return;
         }

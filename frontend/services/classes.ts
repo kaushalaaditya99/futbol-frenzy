@@ -1,5 +1,6 @@
 import resolveEndpoint from "./resolveEndpoint";
 import { getUser, User } from "./user";
+import { ExtendedUser, loadExtendedProfile } from "./extendeduser";
 
 export interface Class {
     id: number;
@@ -56,7 +57,7 @@ export async function joinClass(token: string, classCode: string): Promise<boole
     });
     const data = await response.json();
     const classID = data["id"];
-    
+
     // Get User ID
     const user = await getUser(token);
     if (!user || !user.length)
@@ -65,7 +66,7 @@ export async function joinClass(token: string, classCode: string): Promise<boole
 
     console.log("Class ID", classID);
     console.log("User ID", userID);
-    
+
     // Join Class
     const joinClassResponse = await fetch(`${API_URL}/classmembers/`, {
         method: "POST",
@@ -78,7 +79,7 @@ export async function joinClass(token: string, classCode: string): Promise<boole
             studentID: userID
         })
     });
-    
+
     const joinClassData = await joinClassResponse.json();
     // console.log("Join Class Data", joinClassData);
 
@@ -86,11 +87,11 @@ export async function joinClass(token: string, classCode: string): Promise<boole
 }
 
 export async function createClass(token: string, className: string, imageBackgroundColor: string, imageTextColor: string, imageText: string) {
-    const user = await getUser(token);
+    const user = await loadExtendedProfile(token);
     if (!user)
         return false;
 
-    const coachID = user[0]["id"];
+    const coachID = user.id;
     console.log("User", user);
     console.log("Coach ID", coachID);
 

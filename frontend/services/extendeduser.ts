@@ -26,7 +26,11 @@ export async function loadExtendedProfile(token: string): Promise<ExtendedUser>
   {
     const resMe = await fetch(`${API_URL}users/detailed-user-info/`,
     {
-      headers: { Authorization: `Token ${token}` },
+      headers: {
+        Authorization: `Token ${token}`,
+        "Content-Type": "application/json",
+
+      },
     });
     if(!resMe.ok) throw new Error(`HTTP error! status: ${resMe.status}`)
     const me = await resMe.json();
