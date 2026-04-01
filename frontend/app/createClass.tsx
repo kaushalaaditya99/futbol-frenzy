@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
 import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface Errors {
     [inputName: string]: {
-        valid: boolean; 
+        valid: boolean;
         errorMessage: string;
     }
 };
@@ -27,13 +27,13 @@ interface Errors {
 export default function CreateClass() {
     const [failed, setFailed] = useState(false);
     const [errors, setErrors] = useState<Errors>();
-    
+
     // Form
     const [className, setClassName] = useState("");
     const [imageText, setImageAbbreviation] = useState("");
     const [imageBackgroundColor, setImageBackgroundColor] = useState("lightgray");
     const [imageTextColor, setImageTextColor] = useState("black");
-    
+
     // Switch Between Foreground and Background
     const [ground, setGround] = useState("Background");
 
@@ -81,18 +81,18 @@ export default function CreateClass() {
         }
 
         const successful = await createClass(
-            token, 
-            className, 
-            imageBackgroundColor, 
-            imageTextColor, 
+            token,
+            className,
+            imageBackgroundColor,
+            imageTextColor,
             imageText
         );
-        
+
         if (successful) {
             router.back();
             return;
         }
-        
+
         setFailed(true);
     }
 
@@ -104,7 +104,8 @@ export default function CreateClass() {
                 flex: 1,
                 backgroundColor: colors.schemes.light.surface,
             }}
-        >
+      >
+        <ScrollView>
             <HeaderWithBack
                 header="Create Class"
                 onBack={() => router.back()}
@@ -175,12 +176,12 @@ export default function CreateClass() {
                             marginBottom: padding.sm
                         }}
                     >
-                        <ColorPicker 
-                            style={{ 
+                        <ColorPicker
+                            style={{
                                 width: "100%",
                                 borderRadius: borderRadius.base,
                                 ...shadow.md
-                            }} 
+                            }}
                             value="black"
                             onChangeJS={onColorChange}
                         >
@@ -305,7 +306,8 @@ export default function CreateClass() {
                         Create Class
                     </ThemedText>
                 </Button>
-            </View>
+        </View>
+        </ScrollView>
         </SafeAreaView>
     )
 }
