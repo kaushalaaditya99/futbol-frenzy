@@ -57,7 +57,8 @@ export default function ClassPage() {
                 }}
             />
             {
-                isTeacher ? <CoachView/> : <StudentView/>
+          isTeacher ? <CoachView
+            classID={jojo_id} /> : <StudentView />
             }
         </SafeAreaView>
     )

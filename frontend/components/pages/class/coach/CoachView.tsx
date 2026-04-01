@@ -12,15 +12,19 @@ import { getStudents, Student } from "@/services/students";
 import TabProgress from "./TabProgress/TabProgress";
 import { router } from "expo-router";
 import { Drillv2 as Drill, getDrills } from "@/services/drills";
+import { Class, defaultClass } from "@/services/classes";
 
-
+interface ProfilePictureProps {
+  classID: number,
+}
 const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
 
-export default function CoachView() {
+export default function CoachView(props: ProfilePictureProps) {
     const [classID, setClassID] = useState(0);
     const [teacherID, setTeacherID] = useState(0);
 
-    const [tab, setTab] = useState("Progress");
+  const [classData, setClassData] = useState(defaultClass);
+    const [tab, setTab] = useState("Overview");
     const tabs = ["Overview", "Workout", "Students", "Progress"];
 
     const functionalDate = useFunctionalDate();
@@ -34,11 +38,11 @@ export default function CoachView() {
     const [sessionsOnDate, setSessionsOnDate] =  useState<Array<Session>>([]);
     const [sessionsOnDateLabel, setSessionsOnDateLabel] = useState("");
     const sessionsOnDateSearchBar = useSearchBar<Session>(sessionsOnDate, "name", "name");
-    
+
     const [students, setStudents] = useState<Array<Student>>([]);
     const studentSearchBar = useSearchBar<Student>(
-        students, 
-        getStudentFullName, 
+        students,
+        getStudentFullName,
         getStudentFullName
     );
 
@@ -106,7 +110,7 @@ export default function CoachView() {
                 todaysSessions.push(session);
             }
         }
-        
+
         setSessionsToday(todaysSessions);
     }
 
