@@ -1,11 +1,11 @@
-import SimpleButton from '@/components/ui/button/SimpleButton';
-import SimpleHalfWidthButton from '@/components/ui/button/SimpleHalfWidthButton';
-import SimpleInlineButton from '@/components/ui/button/SimpleInlineButton';
-import InputText from '@/components/ui/input/InputText';
-import Separator from '@/components/ui/Separator';
-import SeparatorText from '@/components/ui/SeparatorText';
-import ThemedText from '@/components/ui/ThemedText';
-import { fontSize, padding, theme } from '@/theme';
+import SimpleButton from "@/components/ui/button/SimpleButton";
+import SimpleHalfWidthButton from "@/components/ui/button/SimpleHalfWidthButton";
+import SimpleInlineButton from "@/components/ui/button/SimpleInlineButton";
+import InputText from "@/components/ui/input/InputText";
+import Separator from "@/components/ui/Separator";
+import SeparatorText from "@/components/ui/SeparatorText";
+import ThemedText from "@/components/ui/ThemedText";
+import { fontSize, padding, theme } from "@/theme";
 import { router } from "expo-router";
 import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,58 +16,62 @@ import { useAuth } from '@/contexts/AuthContext';
 const API_URL = resolveEndpoint("/api/");
 
 export default function Index() {
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-	const { setAuth, token, loaded } = useAuth();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { setAuth, token, loaded } = useAuth();
 
-	useEffect(() => {
-		if (loaded && token) {
-			router.replace("/(tabs)");
-		}
-	}, [loaded, token]);
+  useEffect(() => {
+    if (loaded && token) {
+      router.replace("/(tabs)");
+    }
+  }, [loaded, token]);
 
-	// returns "Coach", "Student", or null
-	const determineUserType = async (authToken: string) => {
-		try {
-			const response = await fetch(`${API_URL}users/me/`, {
-				headers: { 'Authorization': `Token ${authToken}` },
-			});
-			if (!response.ok) {
-				console.error("Failed to fetch user:", response.status, response.statusText);
-				return null;
-			}
-			const data = await response.json();
-			console.log('users/me response:', JSON.stringify(data));
-			if (data.groups.includes('Coach')) return 'Coach' as const;
-			if (data.groups.includes('Student')) return 'Student' as const;
-			return null;
-		} catch (error) {
-			console.error('Error determining user type:', error);
-			return null;
-		}
-	};
+  // returns "Coach", "Student", or null
+  const determineUserType = async (authToken: string) => {
+    try {
+      const response = await fetch(`${API_URL}users/me/`, {
+        headers: { Authorization: `Token ${authToken}` },
+      });
+      if (!response.ok) {
+        console.error(
+          "Failed to fetch user:",
+          response.status,
+          response.statusText,
+        );
+        return null;
+      }
+      const data = await response.json();
+      console.log("users/me response:", JSON.stringify(data));
+      if (data.groups.includes("Coach")) return "Coach" as const;
+      if (data.groups.includes("Student")) return "Student" as const;
+      return null;
+    } catch (error) {
+      console.error("Error determining user type:", error);
+      return null;
+    }
+  };
 
-	// login
-	const login = async () => {
-		try {
-			const response = await fetch(`${API_URL}api-token-auth/`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username, password }),
-			});
-			const data = await response.json();
-			if (response.ok && data.token) {
-				const role = await determineUserType(data.token);
-				setAuth(data.token, role);
-			} else {
-				console.error('Login failed:', data);
-				alert(`Login failed: ${data.error || JSON.stringify(data)}`);
-			}
-		} catch (error) {
-			console.error('Network/Login error:', error);
-			alert('Login error! See console for details.');
-		}
-	};
+  // login
+  const login = async () => {
+    try {
+      const response = await fetch(`${API_URL}api-token-auth/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await response.json();
+      if (response.ok && data.token) {
+        const role = await determineUserType(data.token);
+        setAuth(data.token, role);
+      } else {
+        console.error("Login failed:", data);
+        alert(`Login failed: ${data.error || JSON.stringify(data)}`);
+      }
+    } catch (error) {
+      console.error("Network/Login error:", error);
+      alert("Login error! See console for details.");
+    }
+  };
 
 	return (
 		<SafeAreaView

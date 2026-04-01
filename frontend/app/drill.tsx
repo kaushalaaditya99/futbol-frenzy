@@ -98,6 +98,7 @@ export default function ShowDrills() {
           }}
           contentFit="cover"
         />
+        {/*
         <View style={{ padding: padding.md }}>
           <View
             style={{
@@ -129,7 +130,7 @@ export default function ShowDrills() {
           <ThemedText style={{ marginTop: padding.sm, fontSize: 14 }}>
             {item.instructions}
           </ThemedText>
-        </View>
+        </View>*/}
       </View>
     );
   };

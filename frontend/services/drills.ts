@@ -5,13 +5,13 @@ export interface Drillv2 {
   videoURL: string;
   name: string;
   type: string;
-  time: number;
+  //time: number;
   level: string;
   instructions: string;
   accessControl: "public" | "private";
   uploadedByID: number;
   uploadedByName: string;
-  bookmarked: boolean;
+  //bookmarked: boolean;
 }
 
 const API_URL = resolveEndpoint("/api/");
@@ -29,13 +29,13 @@ export async function getDrills(): Promise<Drillv2[]> {
       videoURL: d.url,
       name: d.drillName,
       type: d.drillType,
-      time: d.time,
+      //time: d.time,
       level: d.difficultyLevel,
       instructions: d.instructions,
       accessControl: d.publicDrill ? "public" : "private",
       uploadedByID: d.coachID,
       uploadedByName: "Coach",
-      bookmarked: false,
+      //bookmarked: false,
     }));
   } catch (err) {
     console.error("Failed to fetch drills:", err);
