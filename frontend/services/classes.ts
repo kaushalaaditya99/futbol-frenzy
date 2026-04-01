@@ -1,6 +1,5 @@
 import resolveEndpoint from "./resolveEndpoint";
-import { getUser, User } from "./user";
-import { ExtendedUser, loadExtendedProfile } from "./extendeduser";
+import { getUser, User, simpleGetUser } from "./user";
 
 export interface Class {
     id: number;
@@ -87,7 +86,7 @@ export async function joinClass(token: string, classCode: string): Promise<boole
 }
 
 export async function createClass(token: string, className: string, imageBackgroundColor: string, imageTextColor: string, imageText: string) {
-    const user = await loadExtendedProfile(token);
+    const user = await simpleGetUser(token);
     if (!user)
         return false;
 
