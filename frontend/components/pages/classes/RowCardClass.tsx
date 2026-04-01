@@ -12,10 +12,10 @@ export default function RowCardClass(props: RowCardClassProps) {
             imageTextColor={props.imageTextColor || "black"}
             imageText={props.imageText || ""}
             descriptions={[
-                `Coach ${props.coach?.first_name} ${props.coach?.last_name}`, 
+                `Coach ${props.coach?.first_name} ${props.coach?.last_name}`,
                 `${props.students?.length} students`
             ]}
-            onPress={() => router.push('/class')}
+            onPress={() => router.push(`/classes/${props.id}`)}
         />
     )
 }

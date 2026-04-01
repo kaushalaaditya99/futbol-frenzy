@@ -1,18 +1,35 @@
 import resolveEndpoint from "./resolveEndpoint";
-import { getUser, User, simpleGetUser } from "./user";
+import { getUser, User, simpleGetUser, defaultUser } from "./user";
 
 export interface Class {
     id: number;
-    className?: string;
-    classCode?: string;
+    className: string;
+    classCode: string;
     students: Array<User>;
     coach: User;
     // These fields aren't in the model yet.
-    imageText?: string;
-    imageTextColor?: string;
-    imageBackgroundColor?: string;
-    description?: string;
+    imageText: string;
+    imageTextColor: string;
+    imageBackgroundColor: string;
+    description: string;
+
 }
+
+
+export const defaultClass: Class =
+{
+  id: 0,
+  className: "U10",
+  classCode: "Ligma",
+  students: [],
+  coach: defaultUser,
+  // These fields aren't in the model yet.
+  imageText: "something",
+  imageTextColor: "red",
+  imageBackgroundColor: "black",
+  description: "this is a soccer class",
+};
+
 
 const API_URL = resolveEndpoint("/api");
 
@@ -44,6 +61,20 @@ export async function getClasses(token: string): Promise<Array<Class>> {
     //         classCode: "BN4Q8R"
     //     }
     // ]
+}
+
+export async function getClassById(token: string, id: number): Promise<Class>
+{
+  const resClass = await fetch(`${API_URL}/classes/${id}`,
+  {
+      headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "application/json",
+      },
+  });
+  if (!resClass.ok) { console.log("Failed to retrieve class."); return defaultClass }
+  const myclass = await resClass.json();
+  return myclass;
 }
 
 export async function joinClass(token: string, classCode: string): Promise<boolean> {

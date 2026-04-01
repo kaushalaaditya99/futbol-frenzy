@@ -158,8 +158,9 @@ class SoccerClassSerializer(serializers.ModelSerializer):
         return UserSerializer(obj.coachID).data
 
     def get_students(self, obj):
-        students = User.objects.filter(classmember__classID=obj)
-        return UserSerializer(students, many=True).data
+        students = ClassMember.objects.filter(classID=obj)
+        users = User.objects.filter(id__in=students.values_list('studentID', flat=True))
+        return UserSerializer(users, many=True).data
 
 
 class ClassMemberSerializer(serializers.ModelSerializer):

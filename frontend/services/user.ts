@@ -10,6 +10,14 @@ export interface User {
     last_name: string;
 }
 
+export const defaultUser: User = {
+  id: 0,
+  username: "Coach Popovich",
+  email: "gregpop@gmail.com",
+  first_name: "Greg",
+  last_name: "Popovich",
+};
+
 export async function getUser(token: string) {
     const response = await fetch(`${API_URL}/user/`, {
         headers: {

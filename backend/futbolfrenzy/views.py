@@ -40,3 +40,22 @@ def detailed_user_info(request):
         'profileBackgroundColor' : extended_settings.profileBackgroundColor,
         'isDarkMode': extended_settings.isDarkMode,
     })
+
+
+#returns extended user data with the setting, including data such as profile picture and such
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_class_students(request, id):
+    extended_settings = SoccerClass.objects.get(pk=id)
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'role': list(user.groups.values_list('name', flat=True)),
+        'position': extended_settings.position,
+        'profilePicture': extended_settings.profilePicture,
+        'profileBackgroundColor' : extended_settings.profileBackgroundColor,
+        'isDarkMode': extended_settings.isDarkMode,
+    })
