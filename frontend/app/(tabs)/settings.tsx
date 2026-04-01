@@ -15,70 +15,29 @@ import {
   Settings as SettingsIcon,
 } from "lucide-react-native";
 import { useAuth } from "@/contexts/AuthContext";
-import resolveEndpoint from "@/services/resolveEndpoint";
-import { ExtendedUser, loadExtendedProfile, defaultExtendedUser } from "@/services/extendeduser";
+import { ExtendedUser, loadExtendedProfile, defaultExtendedUser, patchUserSettings } from "@/services/extendeduser";
 
 
 export default function Settings() {
   const [darkMode, setDarkMode] = useState(false);
   const [userData, setUserData] = useState(defaultExtendedUser);
-  const [pfp, setPfp] = useState("");
-  const [firstName, setFirstName] = useState("Alex");
-  const [lastName, setLastName] = useState("Rivera");
-  const [email, setEmail] = useState("alexrivera@yahoo.com");
-  const [tag1, setTag1] = useState("Player");
-  const [tag2, setTag2] = useState("Midfielder");
+
   const [id, setId] = useState("");
   const { token, loaded, role } = useAuth();
-  const [profile, setProfile] = useState(null);
 
   const toggleDarkMode = async (currentSetting: boolean) => {
+    if (!token)
+    {
+      console.log("User hasn't been properly authenticated")
+      return;
+    }
     setDarkMode(currentSetting);
     const payload = { isDarkMode: darkMode };
-    const updateDarkMode = await fetch(`${API_URL}settings/${id}/`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    patchUserSettings(userData.id, token, payload);
   };
 
   useEffect(() => {
     if (!loaded || !token || !role) return;
-    /*
-    async function loadProfile() {
-      const resMe = await fetch(`${API_URL}users/me`, {
-        headers: { Authorization: `Token ${token}` },
-      });
-      const me = await resMe.json();
-
-      const resUser = await fetch(`${API_URL}user/${me.id}`, {
-        headers: { Authorization: `Token ${token}` },
-      });
-      const user = await resUser.json();
-
-      const resSettings = await fetch(`${API_URL}settings/${me.id}`, {
-        headers: { Authorization: `Token ${token}` },
-      });
-
-      const userSettings = await resSettings.json();
-
-      setFirstName(user.first_name);
-      setLastName(user.last_name);
-      setEmail(user.email);
-      setPfp(user.profilePicture);
-      setId(user.id);
-      if (!role) setTag1("Unknown");
-      else setTag1(role);
-
-      setTag2(userSettings.position);
-      setDarkMode(userSettings.isDarkMode);
-    }
-
-    loadProfile();
-      */
     async function loadProfile(escapedtoken: string, escapedrole: string)
     {
       try

@@ -17,6 +17,9 @@ export interface ExtendedUser
 const API_URL = resolveEndpoint("/api/");
 
 
+
+//taking user authentication token, it returns an ExtendedUser with data from the backend
+// this data can then be used for i.e. displaying profiles, retrieving names, roles, etc.
 export async function loadExtendedProfile(token: string, role: string): Promise<ExtendedUser>
 {
   try
@@ -47,6 +50,23 @@ export async function loadExtendedProfile(token: string, role: string): Promise<
     throw err;
   }
 }
+
+// takes a variable user payload and modifies the relevant user settings
+// i.e. const payload = {isDarkMode: true} would only change it so that the darkMode is on
+// i.e. const payload = {first_name: "Gordon", last_name: "Ramsay"} would allow user to change their name
+export async function patchUserSettings(id: number, token: string, payload: any) {
+  const res = await fetch(`${API_URL}settings/${id}/`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
 
 export const defaultExtendedUser: ExtendedUser = {
   id: 0,
