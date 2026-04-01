@@ -28,4 +28,6 @@ urlpatterns = [
     # The Router will define the paths that ultimately
     # allow us to access /api/drills and /api/enrollments.
     path('api/', include(api_router.urls)),
+    path('api/google-auth/', views.google_auth),
+    path('api/set-role/', views.set_role)
 ]

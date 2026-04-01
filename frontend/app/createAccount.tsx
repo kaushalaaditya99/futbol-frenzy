@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import resolveEndpoint from '@/services/resolveEndpoint';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useGoogleAuth from "@/hooks/useGoogleauth";
 
 
 const API_URL = resolveEndpoint("/api/");
@@ -26,7 +27,8 @@ export default function CreateAccount() {
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('');
     const [email, setEmail] = useState('');
-    const [group, setGroup] = useState('Coach')
+    const [group, setGroup] = useState('Coach');
+    const promptGoogleAuth = useGoogleAuth();
 
 	// login
   	const postAccount = async () => 
@@ -108,6 +110,7 @@ export default function CreateAccount() {
                 >
                     <SimpleButton
                         label="Sign Up with Google"
+                        onPress={() => promptGoogleAuth()}
                     />
                     <SimpleButton
                         label="Sign Up with Apple"
