@@ -28,8 +28,7 @@ def me(request):
 def detailed_user_info(request):
     user = request.user
     extended_settings = Settings.objects.get(pk=user.id)
-    return Response
-    ({
+    return Response({
         'id': user.id,
         'username': user.username,
         'first_name': user.first_name,

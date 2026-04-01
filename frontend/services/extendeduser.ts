@@ -14,27 +14,31 @@ export interface ExtendedUser
   isDarkMode: boolean;
 }
 
-export async function loadExtendedProfile(API_URL: string, token: string, role: string): Promise<ExtendedUser>
+const API_URL = resolveEndpoint("/api/");
+
+
+export async function loadExtendedProfile(token: string, role: string): Promise<ExtendedUser>
 {
   try
   {
-    const resMe = await fetch(`${API_URL}api/users/detailed-user-info/`,
+    const resMe = await fetch(`${API_URL}users/detailed-user-info/`,
     {
       headers: { Authorization: `Token ${token}` },
     });
     if(!resMe.ok) throw new Error(`HTTP error! status: ${resMe.status}`)
     const me = await resMe.json();
-    return me.map((d: any) => ({
-      id: d.id,
-      username: d.username,
-      first_name: d.first_name,
-      last_name: d.last_name,
-      email: d.email,
+    return {
+      id: me.id,
+      username: me.username,
+      first_name: me.first_name,
+      last_name: me.last_name,
+      email: me.email,
       role: role,
-      position: d.position,
-      pfp: d.profilePicture,
-      isDarkMode: d.isDarkMode,
-    }));
+      position: me.position,
+      pfp: me.profilePicture,
+      isDarkMode: me.isDarkMode,
+    } as ExtendedUser;
+
 
   }
   catch (err)
@@ -43,3 +47,15 @@ export async function loadExtendedProfile(API_URL: string, token: string, role: 
     throw err;
   }
 }
+
+export const defaultExtendedUser: ExtendedUser = {
+  id: 0,
+  username: 'alexrivera',
+  first_name: 'Alex',
+  last_name: 'Rivera',
+  email: 'alexrivera@gmail.com',
+  role: 'Student',
+  position: 'Midfielder',
+  pfp: 'sometext.png',
+  isDarkMode: false,
+};

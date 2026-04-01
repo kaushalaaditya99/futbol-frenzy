@@ -16,11 +16,12 @@ import {
 } from "lucide-react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import resolveEndpoint from "@/services/resolveEndpoint";
+import { ExtendedUser, loadExtendedProfile, defaultExtendedUser } from "@/services/extendeduser";
 
-const API_URL = resolveEndpoint("/api/");
 
 export default function Settings() {
   const [darkMode, setDarkMode] = useState(false);
+  const [userData, setUserData] = useState(defaultExtendedUser);
   const [pfp, setPfp] = useState("");
   const [firstName, setFirstName] = useState("Alex");
   const [lastName, setLastName] = useState("Rivera");
@@ -46,7 +47,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (!loaded || !token || !role) return;
-
+    /*
     async function loadProfile() {
       const resMe = await fetch(`${API_URL}users/me`, {
         headers: { Authorization: `Token ${token}` },
@@ -77,7 +78,25 @@ export default function Settings() {
     }
 
     loadProfile();
-  }, [loaded, token]);
+      */
+    async function loadProfile(escapedtoken: string, escapedrole: string)
+    {
+      try
+      {
+        const userData = await loadExtendedProfile(escapedtoken, escapedrole);
+        setUserData(userData);
+      }
+      catch(err)
+      {
+        console.log("Error retrieving user data: ", err)
+        throw err;
+      }
+    }
+    if (token != null && role != null)
+    {
+      loadProfile(token, role)
+    }
+  }, [loaded, token, role]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
@@ -121,9 +140,9 @@ export default function Settings() {
 
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 16, fontWeight: "700" }}>
-              {firstName} {lastName}
+              {userData.first_name} {userData.last_name}
             </Text>
-            <Text style={{ fontSize: 13, color: "gray" }}>{email}</Text>
+            <Text style={{ fontSize: 13, color: "gray" }}>{userData.email}</Text>
             <View style={{ flexDirection: "row", marginTop: 6, columnGap: 8 }}>
               <View
                 style={{
@@ -133,7 +152,7 @@ export default function Settings() {
                   paddingVertical: 2,
                 }}
               >
-                <Text style={{ fontSize: 12, fontWeight: "600" }}>{tag1}</Text>
+                <Text style={{ fontSize: 12, fontWeight: "600" }}>{role}</Text>
               </View>
               <View
                 style={{
@@ -143,7 +162,7 @@ export default function Settings() {
                   paddingVertical: 2,
                 }}
               >
-                <Text style={{ fontSize: 12, fontWeight: "600" }}>{tag2}</Text>
+                <Text style={{ fontSize: 12, fontWeight: "600" }}>{userData.position}</Text>
               </View>
             </View>
           </View>
