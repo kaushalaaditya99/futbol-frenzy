@@ -64,6 +64,7 @@ class SettingsSerializer(serializers.ModelSerializer):
 
 
 class DrillSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Drill
         fields = ['id', 'drillName', 'drillType', 'coachID', 'url',

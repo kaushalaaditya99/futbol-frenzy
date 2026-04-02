@@ -17,6 +17,7 @@ import Button from "@/components/ui/button/Button";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import ButtonHalfWidth from "@/components/ui/button/ButtonHalfWidth";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, useMediaLibraryPermissions } from "expo-image-picker";
+import { createSubmission, uploadAndSubmitDrill } from "@/services/cloud";
 
 // Example
 // This is just a workaround so you can see the functionality.
@@ -219,33 +220,64 @@ export default function Demonstration() {
         // values here.
         const sessionID = 0;
         const studentID = 2;
-        const drills = Object.fromEntries(Object.entries(submissions).map(([k, v]) => [k, v.uri]));
-        
+        //const drills = Object.fromEntries(Object.entries(submissions).map(([k, v]) => [k, v.uri]));
+        const assignmentID = sessionID;
+        setSendingSubmission(true);
+        try {
+            const submission = await createSubmission({
+                studentID,
+                assignmentID,
+                imageBackgroundColor: "#FFFFFF",
+                imageText: "",
+                imageTextColor: "#000000"
+            });
+            const submissionID = submission.id;
+            await Promise.all(Object.entries(submissions).map(async ([drillIndexStr, {uri, analysis}]) => {
+                const drillIndex = parseInt(drillIndexStr);
+                const drill = session.drills[drillIndex];
+                await uploadAndSubmitDrill({
+                    videoUri: uri,
+                    submissionID,
+                    drillID: drill.id,
+                    touchCount: analysis?.numTouches || undefined
+                });
+            }));
+
+            setSendingSubmission(false);
+            setSentSubmission(false);
+            setTimeout(() => {
+                setSentSubmission(true);
+            }, 500);
+        } catch (error) {
+            setSendingSubmission(false);
+            alert("Error in Drill Submission!");
+            console.error("Error submitting session:", error);
+        }
         // Error (Missing Video)
         // if (Object.keys(drills).length !== session.drills.length) {
         //     alert("Must Submit All Drills!");
         //     return;
         // }
 
-        const submitted = await submitSessionForGrading(
-            sessionID,
-            studentID,
-            drills
-        );
+        // const submitted = await submitSessionForGrading(
+        //    sessionID,
+        //    studentID,
+        //    drills
+        //);
 
-        if (!submitted) {
-            alert("Error in Drill Submission!");
-            return false;
-        }
+        //if (!submitted) {
+        //    alert("Error in Drill Submission!");
+        //    return false;
+        //}
 
-        setSendingSubmission(true);
-        setTimeout(() => {
-            setSendingSubmission(false);
-            setSentSubmission(false);
-            setTimeout(() => {
-                setSentSubmission(true);
-            }, 500);
-        }, 2000);
+        //setSendingSubmission(true);
+        //setTimeout(() => {
+         //   setSendingSubmission(false);
+        //    setSentSubmission(false);
+        //    setTimeout(() => {
+        //        setSentSubmission(true);
+        //    }, 500);
+        //}, 2000);
     }
 
 
@@ -259,9 +291,10 @@ export default function Demonstration() {
         >
             {(session && drill) &&
                 <>
-                    <StatusBar 
-                        style="light"  
+                    <StatusBar
+                        style="light"
                     />
+                    {/* @ts-ignore - expo-blur BlurView has type incompatibility with React Native */}
                     <BlurView
                         intensity={50}
                         style={{
