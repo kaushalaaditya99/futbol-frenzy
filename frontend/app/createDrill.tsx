@@ -147,7 +147,6 @@ export default function CreateDrill() {
                     drillName: name,
                     drillType: "drill",
                     coachID: coachID,
-                    time: 0,
                     difficultyLevel: level,
                     instructions: instructions,
                     imageBackgroundColor: theme.colors.schemes.light.primary || "#000000",

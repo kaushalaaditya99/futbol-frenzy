@@ -123,7 +123,6 @@ export async function createDrill(drillData: {
     drillType: string;
     coachID: number;
     url: string;  // S3 video URL
-    time: number;
     difficultyLevel: string;
     instructions: string;
     imageBackgroundColor: string;
@@ -132,12 +131,28 @@ export async function createDrill(drillData: {
     publicDrill: boolean;
 }): Promise<{ id: number; drillName: string }> {
     const API_URL = resolveEndpoint("/api/");
-    const headers = await authHeaders();
+    const token = await getAuthToken();
 
     const response = await axios.post(
         `${API_URL}drills/`,
-        drillData,
-        { headers }
+        JSON.stringify({
+            drillName: drillData.drillName,
+            drillType: drillData.drillType,
+            coachID: Number(drillData.coachID),
+            url: drillData.url,
+            difficultyLevel: drillData.difficultyLevel,
+            instructions: drillData.instructions,
+            imageBackgroundColor: drillData.imageBackgroundColor,
+            imageText: drillData.imageText,
+            imageTextColor: drillData.imageTextColor,
+            publicDrill: drillData.publicDrill
+        }),
+        {
+            headers: {
+                Authorization: `Token ${token}`,
+                'Content-Type': 'application/json'
+            }
+        }
     );
 
     return response.data;
@@ -230,7 +245,6 @@ export async function uploadAndCreateDrill(params: {
     drillName: string;
     drillType: string;
     coachID: number;
-    time: number;
     difficultyLevel: string;
     instructions: string;
     imageBackgroundColor: string;

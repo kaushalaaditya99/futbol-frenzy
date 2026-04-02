@@ -203,13 +203,12 @@ async function fetchDrillsFromAPI(): Promise<Drillv2[]> {
         videoURL: drill.url,  // S3 URL from backend
         name: drill.drillName,
         type: drill.drillType,
-        time: drill.time,
         level: drill.difficultyLevel,
         instructions: drill.instructions,
         accessControl: drill.publicDrill ? "public" : "private",
         uploadedByID: drill.coachID,
-        uploadedByName: drill.coachName || "Unknown", 
-        bookmarked: false, 
+        uploadedByName: drill.coachID?.toString() || "Unknown",
+        bookmarked: false,
     }));
 }
 
@@ -367,13 +366,12 @@ async function fetchDrillsFromAPI(): Promise<Drillv2[]> {
         videoURL: drill.url,  // S3 URL from backend
         name: drill.drillName,
         type: drill.drillType,
-        time: drill.time,
         level: drill.difficultyLevel,
         instructions: drill.instructions,
         accessControl: drill.publicDrill ? "public" : "private",
         uploadedByID: drill.coachID,
-        uploadedByName: drill.coachName || "Unknown", 
-        bookmarked: false, 
+        uploadedByName: drill.coachID?.toString() || "Unknown",
+        bookmarked: false,
     }));
 }
 
