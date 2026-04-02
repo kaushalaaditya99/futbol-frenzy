@@ -15,13 +15,11 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User, Group
 import os
 from dotenv import load_dotenv
-
-load_dotenv()
+import uuid
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
 GOOGLE_IOS_CLIENT_ID = os.getenv('GOOGLE_IOS_CLIENT_ID')
-import uuid
-from dotenv import load_dotenv
+
 
 load_dotenv()
 # Create your views here.
@@ -64,7 +62,7 @@ def detailed_user_info(request):
 @permission_classes([AllowAny])
 def google_auth(request):
     token = request.data.get('idToken')
-    
+
     try:
         try:
             user_info = id_token.verify_oauth2_token(token, google_requests.Request(), GOOGLE_WEB_CLIENT_ID)
@@ -86,7 +84,7 @@ def google_auth(request):
 
         return Response({
             'token': auth_token.key,
-            'groups': list(user.groups.values_list('name', flat=True))  
+            'groups': list(user.groups.values_list('name', flat=True))
         })
 
     except ValueError:

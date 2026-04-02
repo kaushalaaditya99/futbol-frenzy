@@ -29,8 +29,7 @@ urlpatterns = [
     # allow us to access /api/drills and /api/enrollments.
     path('api/', include(api_router.urls)),
     path('api/google-auth/', views.google_auth),
-    path('api/set-role/', views.set_role)
-]
+    path('api/set-role/', views.set_role),
     path('', views.home, name='test-home'),
     path('get_presigned_url/', views.get_presigned_url, name='get_presigned_url'),
 ]
