@@ -1,15 +1,19 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 # Notifications for users
 class Notification(models.Model):
     # id
     userID = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length = 255) 
-    body = models.CharField(max_length = 255) 
-    url = models.URLField(max_length=200)
-    seen = models.BooleanField(default=False)
+    description = models.CharField(max_length = 255) 
+    url = models.URLField(max_length=200, blank=True, null=True)
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    icon = models.CharField(max_length=50)
+    iconBackground = models.CharField(max_length=7, default="#FFFFFF")
 
 # Settings for each user
 class Settings(models.Model):
@@ -35,14 +39,13 @@ class Settings(models.Model):
     )
 
 
-# A drill is self explanator
+# A drill is self explanatory
 class Drill(models.Model):
     # id
     drillName = models.CharField(max_length = 255) 
     drillType = models.CharField(max_length = 255)
     coachID = models.ForeignKey(User, on_delete=models.CASCADE)
     url = models.URLField(max_length=200)
-    time = models.IntegerField()
     difficultyLevel = models.CharField(max_length = 255)
     instructions = models.TextField()
     imageBackgroundColor = models.CharField(max_length = 7)
@@ -53,6 +56,11 @@ class Drill(models.Model):
     def __str__(self):
         return self.drillName
     
+class DrillBookmark(models.Model):
+    # id
+    drillID = models.ForeignKey(Drill, on_delete=models.CASCADE)
+    userID = models.ForeignKey(User, on_delete=models.CASCADE)
+    
 # A workout is a list of drills that can be assigned
 class Workout(models.Model):
     workoutName = models.CharField(max_length = 255) 
@@ -62,11 +70,35 @@ class Workout(models.Model):
     imageBackgroundColor = models.CharField(max_length = 7)
     imageText = models.CharField(max_length = 255)
     imageTextColor = models.CharField(max_length = 255)
-    drills = models.ManyToManyField(Drill, related_name="workouts")
+    #drills = models.ManyToManyField(Drill, related_name="workouts")
+    drills = models.ManyToManyField(Drill, through="WorkoutDrill", related_name="workouts")
     publicWorkout = models.BooleanField(default = False)
 
     def __str__(self):
         return self.workoutName
+    
+class WorkoutBookmark(models.Model):
+    # id
+    workoutID = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    userID = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class WorkoutDrill(models.Model):
+    workoutID = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    drillID = models.ForeignKey(Drill, on_delete=models.CASCADE)
+
+    minutes = models.IntegerField(null=True, blank=True)
+    repetitions = models.IntegerField(null=True, blank=True)
+
+    def clean(self):
+        if self.minutes and self.repetitions:
+            raise ValidationError("Only one of minutes or repetitions can be set.")
+        
+        if not self.minutes and not self.repetitions:
+            raise ValidationError("You must set either minutes or repetitions.")
+        
+    def save(self, *args, **kwargs):
+        self.full_clean()  # runs clean()
+        super().save(*args, **kwargs)
 
 # An assignment contains a workout that is due at some time
 class Assignment(models.Model):

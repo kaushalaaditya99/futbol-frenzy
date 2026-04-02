@@ -25,7 +25,6 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Home() {
     const [results, setResults] = useState<Array<Result>>([]);
     const [sessions, setSessions] = useState<Array<Session>>([]);
-
     
     const sideBar = useSideBar();
     const functionalDate = useFunctionalDate();
