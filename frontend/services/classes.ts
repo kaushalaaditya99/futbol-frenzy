@@ -1,5 +1,6 @@
 import resolveEndpoint from "./resolveEndpoint";
 import { getUser, User, simpleGetUser, defaultUser } from "./user";
+import { Student } from "./students";
 
 export interface Class {
     id: number;

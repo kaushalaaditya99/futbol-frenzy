@@ -14,16 +14,15 @@ import { router } from "expo-router";
 import { Drillv2 as Drill, getDrills } from "@/services/drills";
 import { Class, defaultClass } from "@/services/classes";
 
-interface ProfilePictureProps {
-  classID: number,
+interface CoachViewProps {
+  param_class: Class;
 }
 const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
 
-export default function CoachView(props: ProfilePictureProps) {
+export default function CoachView(props: CoachViewProps) {
     const [classID, setClassID] = useState(0);
     const [teacherID, setTeacherID] = useState(0);
 
-  const [classData, setClassData] = useState(defaultClass);
     const [tab, setTab] = useState("Overview");
     const tabs = ["Overview", "Workout", "Students", "Progress"];
 
