@@ -34,7 +34,7 @@ export default function ClassPage() {
       }
       fetchClass(token, jojo_id);
 
-    }, [token, loaded]);
+    }, [token, loaded, jojo_id]);
 
     return (
         <SafeAreaView

@@ -19,8 +19,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Drills() {
     const feedOptions = [
-        ["library", "My Library"], 
-        ["explore", "Explore"], 
+        ["library", "My Library"],
+        ["explore", "Explore"],
         ["bookmark", "Bookmarks"]
     ];
 
@@ -30,14 +30,14 @@ export default function Drills() {
     const sideBar = useSideBar();
     const [drills, setDrills] = useState<Array<Drill>>([]);
     const drillSearchBar = useDrillSearchBar(drills);
-    
+
     useEffect(() => {
         const id = 0;
         loadDrills(id);
     }, []);
 
     const loadDrills = async (id: number) => {
-        const drills = await getDrills(id);
+        const drills = await getDrills();
         setDrills(drills);
     }
 
@@ -106,7 +106,7 @@ export default function Drills() {
                             />
                             <CreateDrillButton
                                 onPress={() => router.push("/createDrill")}
-                            />  
+                            />
                        </View>
                        <Filter
                             viewType={viewType}
