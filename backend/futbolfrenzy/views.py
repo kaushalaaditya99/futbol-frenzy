@@ -16,12 +16,13 @@ from django.contrib.auth.models import User, Group
 import os
 from dotenv import load_dotenv
 import uuid
-from .mediapipe import PoseService
+from .mediapipe import PoseService, VideoPoseService
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
 GOOGLE_IOS_CLIENT_ID = os.getenv('GOOGLE_IOS_CLIENT_ID')
 
 pose_service = PoseService()
+video_service = VideoPoseService()
 
 
 load_dotenv()
@@ -158,4 +159,14 @@ def analyze_pose(request):
 
     result = pose_service.process_image(image)
 
+    return Response(result)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def analyze_video_pose(request):
+    video = request.FILES.get("video")
+    if not video:
+        return Response({"error": "No video provided"}, status=400)
+
+    result = video_service.process_video(video)
     return Response(result)
