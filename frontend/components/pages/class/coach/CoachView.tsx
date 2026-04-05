@@ -50,9 +50,13 @@ export default function CoachView(props: CoachViewProps) {
 
     const [drills, setDrills] = useState<Array<Drill>>([]);
 
+  useEffect(() => {
+    setStudents(props.param_class.students)
+  }, [props.param_class])
+
     useEffect(() => {
         loadSessions(teacherID);
-        loadStudents(classID);
+        //loadStudents(classID);
         loadDrills(teacherID);
     }, []);
 
@@ -162,8 +166,8 @@ export default function CoachView(props: CoachViewProps) {
                     setShowSettings={setShowSettings}
                     sessionsToday={sessionsToday}
                     students={students}
-                    className="U12 Boys A-Team"
-                    classCode="XK7M2P"
+                    className={props.param_class.className}
+                    classCode={props.param_class.classCode}
                 />
             }
             {tab === "Workout" &&

@@ -6,7 +6,7 @@ export interface Class {
     id: number;
     className: string;
     classCode: string;
-    students: Array<User>;
+    students: Student[];
     coach: User;
     // These fields aren't in the model yet.
     imageText: string;

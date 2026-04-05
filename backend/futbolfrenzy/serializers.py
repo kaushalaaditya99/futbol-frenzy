@@ -1,7 +1,21 @@
 from django.contrib.auth.models import Group, User
 from rest_framework import serializers
+from django.db.models import F, Value
+from django.db.models.functions import Coalesce
 from .models import Notification, Settings, Drill, DrillBookmark, Workout, WorkoutBookmark, WorkoutDrill, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 #class serializers to help django convert JSON data to python objects
+
+class StudentSerializer(serializers.ModelSerializer):
+    position = serializers.CharField(read_only=True, allow_blank=True)
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "position",
+        ]
+        read_only_fields = ["id", "position"]
 
 class UserSerializer(serializers.ModelSerializer):
     group = serializers.CharField(write_only=True)
@@ -159,9 +173,11 @@ class SoccerClassSerializer(serializers.ModelSerializer):
         return UserSerializer(obj.coachID).data
 
     def get_students(self, obj):
-        students = ClassMember.objects.filter(classID=obj)
-        users = User.objects.filter(id__in=students.values_list('studentID', flat=True))
-        return UserSerializer(users, many=True).data
+        student_ids = ClassMember.objects.filter(classID=obj).values_list('studentID', flat=True)
+        users = User.objects.filter(id__in=student_ids).annotate(
+            position=Coalesce(F('settings__position'), Value('US'))
+        )
+        return StudentSerializer(users, many=True).data
 
 
 class ClassMemberSerializer(serializers.ModelSerializer):
