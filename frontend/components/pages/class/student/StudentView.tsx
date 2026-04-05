@@ -1,11 +1,76 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
+import { MarkedDates } from "react-native-calendars/src/types";
 import Tabs from "../coach/Tabs";
 import StudentTabOverview from "./TabOverview/TabOverview";
+import StudentTabWorkout from "./TabWorkout/TabWorkout";
+import useFunctionalDate from "@/hooks/useFunctionalDate";
+import useSearchBar from "@/hooks/useSearchBar";
+import { getSessions, Session } from "@/services/sessions";
 
 export default function StudentView() {
     const [tab, setTab] = useState("Overview");
     const tabs = ["Overview", "Workout", "Students", "Progress"];
+
+    const [studentID] = useState(0);
+
+    // Workout tab state
+    const functionalDate = useFunctionalDate();
+    const [sessions, setSessions] = useState<Array<Session>>([]);
+    const [markedDatesAndSessions, setMarkedDatesAndSessions] = useState<MarkedDates>({});
+    const [sessionsOnDate, setSessionsOnDate] = useState<Array<Session>>([]);
+    const [sessionsOnDateLabel, setSessionsOnDateLabel] = useState("");
+    const [sessionsViewType, setSessionsViewType] = useState("Big");
+    const sessionsOnDateSearchBar = useSearchBar<Session>(sessionsOnDate, "name", "name");
+
+    useEffect(() => {
+        loadSessions(studentID);
+    }, []);
+
+    useEffect(() => {
+        const markedDates = functionalDate.getMarkedDates();
+        const marked = functionalDate.markSessionsOnCalendar(markedDates, sessions);
+        setMarkedDatesAndSessions(marked);
+    }, [sessions, functionalDate.date]);
+
+    useEffect(() => {
+        getSessionsOnDate(functionalDate.date, sessions);
+    }, [sessions, functionalDate.date]);
+
+    useEffect(() => {
+        updateSessionsOnDateLabel(functionalDate.date);
+    }, [functionalDate.date]);
+
+    const loadSessions = async (studentID: number) => {
+        const sessions = await getSessions(studentID);
+        setSessions(sessions);
+    };
+
+    const getSessionsOnDate = (date: Date, sessions: Array<Session>) => {
+        const dateShortISOString = functionalDate.getShortISOString(date);
+        const filtered: Array<Session> = [];
+        for (const session of sessions)
+            if (functionalDate.getShortISOString(session.date) === dateShortISOString)
+                filtered.push(session);
+        setSessionsOnDate(filtered);
+    };
+
+    const updateSessionsOnDateLabel = (date: Date) => {
+        if (functionalDate.isToday(date)) {
+            setSessionsOnDateLabel("Today's Sessions");
+        } else if (functionalDate.isYesterday(date)) {
+            setSessionsOnDateLabel("Yesterday's Sessions");
+        } else if (functionalDate.isTomorrow(date)) {
+            setSessionsOnDateLabel("Tomorrow's Sessions");
+        } else {
+            const dateLabel = functionalDate.date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "2-digit",
+            });
+            setSessionsOnDateLabel(`Sessions on ${dateLabel}`);
+        }
+    };
 
     // TODO: Replace with real data from backend
     const overviewProps = {
@@ -39,7 +104,17 @@ export default function StudentView() {
         <ScrollView>
             <Tabs tab={tab} tabs={tabs} setTab={setTab} />
             {tab === "Overview" && <StudentTabOverview {...overviewProps} />}
-            {tab === "Workout" && <View />}
+            {tab === "Workout" && (
+                <StudentTabWorkout
+                    searchBar={sessionsOnDateSearchBar}
+                    viewType={sessionsViewType}
+                    setViewType={setSessionsViewType}
+                    sessionsOnDate={sessionsOnDateSearchBar.filtered}
+                    sessionsOnDateLabel={sessionsOnDateLabel}
+                    functionalDate={functionalDate}
+                    markedDatesAndSessions={markedDatesAndSessions}
+                />
+            )}
             {tab === "Students" && <View />}
             {tab === "Progress" && <View />}
         </ScrollView>
