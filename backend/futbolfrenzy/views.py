@@ -16,9 +16,12 @@ from django.contrib.auth.models import User, Group
 import os
 from dotenv import load_dotenv
 import uuid
+from .mediapipe import PoseService
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
 GOOGLE_IOS_CLIENT_ID = os.getenv('GOOGLE_IOS_CLIENT_ID')
+
+pose_service = PoseService()
 
 
 load_dotenv()
@@ -144,3 +147,15 @@ def get_presigned_url(request):
         })
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+    
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def analyze_pose(request):
+    image = request.FILES.get("image")
+
+    if not image:
+        return Response({"error": "No image provided"}, status=400)
+
+    result = pose_service.process_image(image)
+
+    return Response(result)
