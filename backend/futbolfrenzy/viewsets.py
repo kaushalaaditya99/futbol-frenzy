@@ -311,7 +311,11 @@ class SoccerClassViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
 
         if user_is_student(user):
-            queryset = queryset.filter(members__studentID=user.id).distinct()
+            class_ids = ClassMember.objects.filter(studentID=user.id).values_list('classID', flat=True)
+
+
+            queryset = queryset.filter(id__in=class_ids)
+
         else:
             queryset = queryset.filter(coachID=user.id)
         # PUT BACK WHEN DONE

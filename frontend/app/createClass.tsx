@@ -45,7 +45,7 @@ export default function CreateClass() {
         // There's definitely a better way to go
         // about this, but my fingers are starting to hurt.
         // So, I'm going to try and do the bare minimum for now.
-        if (className && className.length > 5) {
+        if (className && className.length > 20) {
             setErrors(errors => ({
                 ...errors,
                 className: {

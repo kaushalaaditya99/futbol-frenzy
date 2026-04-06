@@ -90,10 +90,11 @@ export async function joinClass(token: string, classCode: string): Promise<boole
     const classID = data["id"];
 
     // Get User ID
-    const user = await getUser(token);
-    if (!user || !user.length)
+    const user = await simpleGetUser(token);
+    if (!user)
         return false;
-    const userID = user[0]["id"];
+
+    const userID = user.id;
 
     console.log("Class ID", classID);
     console.log("User ID", userID);
