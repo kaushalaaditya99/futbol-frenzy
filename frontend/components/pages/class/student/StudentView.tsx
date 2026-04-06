@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import { MarkedDates } from "react-native-calendars/src/types";
 import Tabs from "../coach/Tabs";
 import StudentTabOverview from "./TabOverview/TabOverview";
@@ -7,12 +7,18 @@ import StudentTabWorkout from "./TabWorkout/TabWorkout";
 import useFunctionalDate from "@/hooks/useFunctionalDate";
 import useSearchBar from "@/hooks/useSearchBar";
 import { getSessions, Session } from "@/services/sessions";
+import { getStudents, Student } from "@/services/students";
+import StudentTabStudent from "./TabStudent/TabStudent";
+import StudentTabProgress from "./TabProgress/TabProgress";
+
+const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
 
 export default function StudentView() {
     const [tab, setTab] = useState("Overview");
     const tabs = ["Overview", "Workout", "Students", "Progress"];
 
     const [studentID] = useState(0);
+    const [classID] = useState(0);
 
     // Workout tab state
     const functionalDate = useFunctionalDate();
@@ -23,8 +29,13 @@ export default function StudentView() {
     const [sessionsViewType, setSessionsViewType] = useState("Big");
     const sessionsOnDateSearchBar = useSearchBar<Session>(sessionsOnDate, "name", "name");
 
+    // Students tab state
+    const [students, setStudents] = useState<Array<Student>>([]);
+    const studentSearchBar = useSearchBar<Student>(students, getStudentFullName, getStudentFullName);
+
     useEffect(() => {
         loadSessions(studentID);
+        loadStudents(classID);
     }, []);
 
     useEffect(() => {
@@ -44,6 +55,11 @@ export default function StudentView() {
     const loadSessions = async (studentID: number) => {
         const sessions = await getSessions(studentID);
         setSessions(sessions);
+    };
+
+    const loadStudents = async (classID: number) => {
+        const students = await getStudents(classID);
+        setStudents(students);
     };
 
     const getSessionsOnDate = (date: Date, sessions: Array<Session>) => {
@@ -115,8 +131,13 @@ export default function StudentView() {
                     markedDatesAndSessions={markedDatesAndSessions}
                 />
             )}
-            {tab === "Students" && <View />}
-            {tab === "Progress" && <View />}
+            {tab === "Students" && (
+                <StudentTabStudent
+                    searchBar={studentSearchBar}
+                    students={studentSearchBar.filtered}
+                />
+            )}
+            {tab === "Progress" && <StudentTabProgress />}
         </ScrollView>
     );
 }
