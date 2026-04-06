@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { colors, fontSize, margin, padding } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import CardMetric from "@/components/pages/CardMetric";
 import ThemedText from "@/components/ui/ThemedText";
 import ProgressBar from "./ProgressBar";
@@ -57,7 +57,7 @@ export default function StudentTabOverview(props: StudentTabOverviewProps) {
                     valueIcon={
                         <ThemedText
                             style={{
-                                fontSize: 10,
+                                fontSize: fontSize.xs,
                                 fontWeight: "600",
                                 color: colors.coreColors.tertiary,
                             }}
@@ -104,8 +104,9 @@ export default function StudentTabOverview(props: StudentTabOverviewProps) {
                         >
                             <ThemedText
                                 style={{
-                                    fontWeight: "700",
-                                    fontSize: fontSize.base,
+                                    fontWeight: "500",
+                                    fontSize: fontSize.lg,
+                                    letterSpacing: letterSpacing.xs,
                                     color: colors.schemes.light.onBackground,
                                 }}
                             >
@@ -121,8 +122,9 @@ export default function StudentTabOverview(props: StudentTabOverviewProps) {
                     <>
                         <ThemedText
                             style={{
-                                fontWeight: "700",
-                                fontSize: fontSize.base,
+                                fontWeight: "500",
+                                fontSize: fontSize.lg,
+                                letterSpacing: letterSpacing.xs,
                                 color: colors.schemes.light.onBackground,
                             }}
                         >

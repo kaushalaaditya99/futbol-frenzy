@@ -1,6 +1,6 @@
 import SimpleButton from "@/components/ui/button/SimpleButton";
 import ThemedText from "@/components/ui/ThemedText";
-import { borderRadius, colors, fontSize, padding, shadow } from "@/theme";
+import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "@/theme";
 import { View } from "react-native";
 
 interface Drill {
@@ -29,7 +29,7 @@ export default function NextSessionCard({
                 borderWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
                 padding: padding.xl,
-                gap: 10,
+                gap: padding.lg,
                 ...shadow.sm,
             }}
         >
@@ -43,8 +43,9 @@ export default function NextSessionCard({
             >
                 <ThemedText
                     style={{
-                        fontSize: 15,
-                        fontWeight: "700",
+                        fontSize: fontSize.lg,
+                        fontWeight: "500",
+                        letterSpacing: letterSpacing.xs,
                         color: colors.schemes.light.onSurface,
                     }}
                 >
@@ -53,9 +54,9 @@ export default function NextSessionCard({
                 <View
                     style={{
                         backgroundColor: "#FFF8E1",
-                        paddingVertical: 4,
-                        paddingHorizontal: 10,
-                        borderRadius: 6,
+                        paddingVertical: padding.sm,
+                        paddingHorizontal: padding.lg,
+                        borderRadius: borderRadius.sm,
                     }}
                 >
                     <ThemedText
@@ -71,14 +72,14 @@ export default function NextSessionCard({
             </View>
 
             {/* Drill list */}
-            <View style={{ gap: 6 }}>
+            <View style={{ gap: padding.md }}>
                 {drills.map((drill, i) => (
                     <View
                         key={i}
                         style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            gap: 8,
+                            gap: padding.md,
                         }}
                     >
                         <View

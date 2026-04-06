@@ -41,7 +41,7 @@ export default function FeedbackCard({
                 style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 10,
+                    gap: padding.lg,
                     padding: padding.xl,
                     borderBottomWidth: 1,
                     borderColor: colors.schemes.light.outlineVariant,
@@ -58,7 +58,7 @@ export default function FeedbackCard({
                         justifyContent: "center",
                     }}
                 >
-                    <ThemedText style={{ fontSize: 18 }}>{drillEmoji}</ThemedText>
+                    <ThemedText style={{ fontSize: fontSize.lg }}>{drillEmoji}</ThemedText>
                 </View>
                 <View style={{ flex: 1 }}>
                     <ThemedText
@@ -97,7 +97,7 @@ export default function FeedbackCard({
                     style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        gap: 8,
+                        gap: padding.md,
                         marginBottom: padding.md,
                     }}
                 >
@@ -113,7 +113,7 @@ export default function FeedbackCard({
                     >
                         <ThemedText
                             style={{
-                                fontSize: 10,
+                                fontSize: fontSize.xs,
                                 fontWeight: "700",
                                 color: "white",
                             }}
@@ -133,14 +133,14 @@ export default function FeedbackCard({
                     <View
                         style={{
                             backgroundColor: colors.schemes.light.surfaceContainerHigh,
-                            paddingVertical: 2,
-                            paddingHorizontal: 6,
-                            borderRadius: 4,
+                            paddingVertical: padding.xs,
+                            paddingHorizontal: padding.md,
+                            borderRadius: borderRadius.sm,
                         }}
                     >
                         <ThemedText
                             style={{
-                                fontSize: 10,
+                                fontSize: fontSize.xs,
                                 fontWeight: "600",
                                 color: colors.schemes.light.onSurfaceVariant,
                             }}

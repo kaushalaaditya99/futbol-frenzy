@@ -1,5 +1,5 @@
 import { Class, getClasses } from "@/services/classes";
-import { colors, margin, padding } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import { Fragment, useEffect, useState } from "react";
 import { Dimensions, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -91,9 +91,10 @@ export default function Classes() {
                         >
                             <ThemedText
                                 style={{
-                                    fontSize: 18,
-                                    fontWeight: 500,
-                                    letterSpacing: -0.25
+                                    fontSize: fontSize.lg,
+                                    fontWeight: "500",
+                                    letterSpacing: letterSpacing.xs,
+                                    color: colors.schemes.light.onBackground,
                                 }}
                             >
                                 My Classes
