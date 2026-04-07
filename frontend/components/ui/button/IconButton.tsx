@@ -12,16 +12,27 @@ export default function IconButton(props: ButtonProps) {
             borderRadius={props.borderRadius}
             outerStyle={{
                 width: undefined,
-                flexShrink: 1,
+                height: undefined,
+                flex: undefined,
+                flexGrow: undefined,
+                flexShrink: undefined,
                 ...shadow.sm,
                 ...props.outerStyle
             }}
             innerStyle={{
+                width: undefined,
+                height: undefined,
+                flex: undefined,
+                flexGrow: undefined,
+                flexShrink: undefined,
                 ...props.innerStyle
             }}
             innerMostStyle={{
                 width: undefined,
                 height: 28,
+                flex: undefined,
+                flexGrow: undefined,
+                flexShrink: undefined,
                 aspectRatio: 1,
                 ...props.innerMostStyle
             }}

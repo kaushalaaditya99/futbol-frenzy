@@ -1,4 +1,4 @@
-import { borderRadius, colors } from "@/theme";
+import { borderRadius, colors, padding } from "@/theme";
 import { ArrowLeft, ArrowRight } from "lucide-react-native";
 import { ViewStyle } from "react-native";
 import { DateData, Calendar as ReactNativeCalendar } from "react-native-calendars";

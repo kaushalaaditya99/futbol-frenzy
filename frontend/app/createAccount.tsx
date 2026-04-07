@@ -31,7 +31,7 @@ export default function CreateAccount() {
     const promptGoogleAuth = useGoogleAuth();
 
 	// login
-  	const postAccount = async () => 
+  	const postAccount = async () =>
     {
         //check if password matches confirm_password field, return early if so
         if (password != password_confirm)
@@ -71,7 +71,7 @@ export default function CreateAccount() {
             }}
         >
             <SafeAreaView
-                style={{    
+                style={{
                     rowGap: padding.xl,
                     paddingVertical: margin.lg,
                     paddingTop: margin.lg * 1.25,
@@ -148,12 +148,14 @@ export default function CreateAccount() {
                     <InputText
                         label="Password"
                         value={password}
-        	            onChangeText={setPassword}
+                        onChangeText={setPassword}
+                        secureTextEntry={true}
                     />
                     <InputText
                         label="Confirm Password"
                         value={password_confirm}
-        	            onChangeText={setPasswordConfirm}
+                        onChangeText={setPasswordConfirm}
+                        secureTextEntry={true}
                     />
                     <View
                         style={{

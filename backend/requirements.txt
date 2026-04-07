@@ -10,3 +10,6 @@ requests==2.33.0
 sqlparse==0.5.5
 types-PyYAML==6.0.12.20250915
 typing_extensions==4.15.0
+boto3==1.42.59
+django-storages==1.14.6
+djangorestframework-simplejwt==5.5.1

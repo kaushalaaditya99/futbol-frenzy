@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from . import views
 from . import viewsets
-from .views import me
+from .views import me, detailed_user_info
 
 api_router = DefaultRouter()
 api_router.register(r'user', viewsets.UserViewSet)
@@ -22,11 +22,14 @@ api_router.register(r'classmembers', viewsets.ClassMemberViewSet)
 urlpatterns = [
     path('home/', views.home, name='futbolfrenzy-home'),
     path('api/users/me/', me, name='me'),
+    path('api/users/detailed-user-info/', detailed_user_info, name='detailed-user-info'),
     # For this path, we're passing in a Router that
     # is registered with the DrillViewSet and EnrollmentViewSet.
     # The Router will define the paths that ultimately
     # allow us to access /api/drills and /api/enrollments.
     path('api/', include(api_router.urls)),
     path('api/google-auth/', views.google_auth),
-    path('api/set-role/', views.set_role)
+    path('api/set-role/', views.set_role),
+    path('', views.home, name='test-home'),
+    path('get_presigned_url/', views.get_presigned_url, name='get_presigned_url'),
 ]

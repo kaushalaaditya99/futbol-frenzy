@@ -28,7 +28,7 @@ export default function Header(props: HeaderProps) {
                 }}
             >
                 <ProfilePicture
-                    openSideBar={props.openSideBar}
+                    onClick={props.openSideBar}
                 />
             </View>
             <View

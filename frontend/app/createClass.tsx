@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
 import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -15,10 +15,11 @@ import InputLabel from "@/components/ui/input/InputLabel";
 import Button from "@/components/ui/button/Button";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import InlineRadioGroup from "@/components/ui/input/InlineRadioGroup";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Errors {
     [inputName: string]: {
-        valid: boolean; 
+        valid: boolean;
         errorMessage: string;
     }
 };
@@ -27,24 +28,24 @@ export default function CreateClass() {
     const [failed, setFailed] = useState(false);
     const [errors, setErrors] = useState<Errors>();
 
-    const [teacherName, setCoachName] = useState("");
+    // Form
     const [className, setClassName] = useState("");
-    const [imageAbbreviation, setImageAbbreviation] = useState("");
+    const [imageText, setImageAbbreviation] = useState("");
     const [imageBackgroundColor, setImageBackgroundColor] = useState("lightgray");
     const [imageTextColor, setImageTextColor] = useState("black");
+
+    // Switch Between Foreground and Background
     const [ground, setGround] = useState("Background");
 
-
-    useEffect(() => {
-        load();
-    }, []);
+    // Authentication
+    const { token, loaded } = useAuth();
 
 
     useEffect(() => {
         // There's definitely a better way to go
         // about this, but my fingers are starting to hurt.
         // So, I'm going to try and do the bare minimum for now.
-        if (className && className.length > 5) {
+        if (className && className.length > 20) {
             setErrors(errors => ({
                 ...errors,
                 className: {
@@ -65,13 +66,6 @@ export default function CreateClass() {
     }, [className]);
 
 
-    const load = async () => {
-        // You'd need to call the actual function here to
-        // fetch any data you need for this process.
-        setCoachName("Kafka");
-    }
-
-
     const onColorChange = (color: ColorFormatsObject) => {
         if (ground === "Background")
             setImageBackgroundColor(color["hsl"]);
@@ -81,19 +75,24 @@ export default function CreateClass() {
 
 
     const onCreateClass = async () => {
-        const teacherID = 0;
+        if (!token && !loaded) {
+            setFailed(true);
+            return;
+        }
+
         const successful = await createClass(
-            teacherID, 
-            className, 
-            imageBackgroundColor, 
-            imageTextColor, 
-            imageAbbreviation
+            token,
+            className,
+            imageBackgroundColor,
+            imageTextColor,
+            imageText
         );
-        
+
         if (successful) {
             router.back();
             return;
         }
+
         setFailed(true);
     }
 
@@ -105,7 +104,8 @@ export default function CreateClass() {
                 flex: 1,
                 backgroundColor: colors.schemes.light.surface,
             }}
-        >
+      >
+        <ScrollView>
             <HeaderWithBack
                 header="Create Class"
                 onBack={() => router.back()}
@@ -176,12 +176,12 @@ export default function CreateClass() {
                             marginBottom: padding.sm
                         }}
                     >
-                        <ColorPicker 
-                            style={{ 
+                        <ColorPicker
+                            style={{
                                 width: "100%",
                                 borderRadius: borderRadius.base,
                                 ...shadow.md
-                            }} 
+                            }}
                             value="black"
                             onChangeJS={onColorChange}
                         >
@@ -230,7 +230,7 @@ export default function CreateClass() {
                     </View>
                     <InputText
                         label="Abbreviation"
-                        value={imageAbbreviation}
+                        value={imageText}
                         onChangeText={setImageAbbreviation}
                         inputStyle={{
                             paddingBottom: padding.lg
@@ -257,10 +257,16 @@ export default function CreateClass() {
                             />
                             <RowCardClass
                                 id={0}
-                                name={className || "Class Name"}
-                                numStudents={15}
-                                teacherName={teacherName}
-                                imageText={imageAbbreviation}
+                                className={className || "Class Name"}
+                                coach={{
+                                    id: -1,
+                                    first_name: "FName",
+                                    last_name: "LName",
+                                    email: "",
+                                    username: ""
+                                }}
+                                students={[]}
+                                imageText={imageText}
                                 imageTextColor={imageTextColor}
                                 imageBackgroundColor={imageBackgroundColor}
                             />
@@ -300,7 +306,8 @@ export default function CreateClass() {
                         Create Class
                     </ThemedText>
                 </Button>
-            </View>
+        </View>
+        </ScrollView>
         </SafeAreaView>
     )
 }

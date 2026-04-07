@@ -1,4 +1,4 @@
-// I do not know how to do this!
+// I do not know how to do this
 // https://m3.material.io/styles/color/roles
 // https://m3.material.io/foundations/layout/understanding-layout/spacing
 // https://material-foundation.github.io/material-theme-builder/
@@ -7,7 +7,8 @@ export const colors = {
     "description": "TYPE: CUSTOM\nMaterial Theme Builder export 2026-02-27 10:02:10",
     "seed": "#0592F7",
     "coreColors": {
-        "primary": "#0592F7",
+        // "primary": "#0592F7",
+        "primary": "#2989FF",
         "tertiary": "#2BA466"
     },
     "extendedColors": [],

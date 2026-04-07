@@ -53,12 +53,12 @@ export default function RowCard(props: RowCardProps) {
                 <ThemedText
                     numberLines={1}
                     style={{
-                        fontSize: fontSizes[(props.imageText.length % 4 || 0) as 0|1|2|3],
+                        fontSize: fontSizes[((!props.imageText ? 0 : props.imageText.length) % 4 || 0) as 0|1|2|3],
                         fontWeight: 500,
                         color: props.imageTextColor || "black"
                     }}
                 >
-                    {props.imageText.toUpperCase().slice(0, 3)}
+                    {props.imageText && props.imageText.toUpperCase().slice(0, 3)}
                 </ThemedText>
             </View>
             <View
@@ -107,7 +107,7 @@ export default function RowCard(props: RowCardProps) {
                             >
                                 {description}
                             </ThemedText>
-                            {i !== props.descriptions.length - 1 &&
+                            {(props.descriptions && i !== props.descriptions.length - 1) &&
                                 <View
                                     style={{
                                         width: 3,

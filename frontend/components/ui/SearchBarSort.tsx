@@ -6,6 +6,7 @@ interface SearchBarSortProps {
     sortDirection: 0|1|2;
     updateSortDirection: (direction: number) => void;
     sortButtonStyle?: ViewStyle;
+    sortButtonSVGStyle?: ViewStyle;
 }
 
 export default function SearchBarSort(props: SearchBarSortProps) {
@@ -23,19 +24,19 @@ export default function SearchBarSort(props: SearchBarSortProps) {
         >
             {props.sortDirection === 0 &&
                 <ArrowDownUp
-                    size={18}
+                    size={props?.sortButtonSVGStyle?.width as any || 18}
                     color={theme.colors.schemes.light.onSurfaceVariant}
                 />
             }
             {props.sortDirection === 1 &&
                 <MoveUp
-                    size={18}
+                    size={props?.sortButtonSVGStyle?.width as any || 18}
                     color={"#307351"}
                 />
             }
             {props.sortDirection === 2 &&
                 <MoveDown
-                    size={18}
+                    size={props?.sortButtonSVGStyle?.width as any || 18}
                     color={"#D7263D"}
                 />
             }

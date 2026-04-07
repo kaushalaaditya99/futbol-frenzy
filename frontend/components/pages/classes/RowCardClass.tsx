@@ -2,20 +2,20 @@ import RowCard from "@/components/ui/RowCard";
 import { Class } from "@/services/classes";
 import { router } from "expo-router";
 
-interface RowCardClassProps extends Class {}
+interface RowCardClassProps extends Partial<Class> {}
 
 export default function RowCardClass(props: RowCardClassProps) {
     return (
         <RowCard
-            title={props.name}
+            title={props.className || ""}
             imageBackgroundColor={props.imageBackgroundColor || "lightgray"}
             imageTextColor={props.imageTextColor || "black"}
-            imageText={props.imageText}
+            imageText={props.imageText || ""}
             descriptions={[
-                `Coach ${props.teacherName}`, 
-                `${props.numStudents} students`
+                `Coach ${props.coach?.first_name} ${props.coach?.last_name}`,
+                `${props.students?.length} students`
             ]}
-            onPress={() => router.push('/class')}
+            onPress={() => router.push(`/classes/${props.id}`)}
         />
     )
 }

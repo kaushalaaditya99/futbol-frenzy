@@ -6,10 +6,10 @@ import { useEffect, useState } from 'react';
 import { Pressable, TextStyle, View, ViewStyle } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
-export interface DropdownProps {
-    value: string;
-    options: Array<[string, string]>;
-    onChange: (value: string) => void;
+export interface InputDropdownV2Props<T> {
+    value: T;
+    options: Array<[T, string]>;
+    onChange: (value: T) => void;
     placeholder?: string;
     containerStyle?: ViewStyle;
     buttonStyle?: ViewStyle;
@@ -19,7 +19,7 @@ export interface DropdownProps {
     labelPrefix?: string;
 }
 
-export default function Dropdown(props: DropdownProps) {
+export default function InputDropdownV2<T>(props: InputDropdownV2Props<T>) {
     const [label, setLabel] = useState("");
 
     useEffect(() => {
@@ -64,7 +64,7 @@ export default function Dropdown(props: DropdownProps) {
                         style={{
                             fontSize: 14,
                             fontWeight: 500,
-                            letterSpacing: theme.letterSpacing.lg,
+                            letterSpacing: theme.letterSpacing.xl,
                             color: theme.colors.schemes.light.onSurface,
                             ...props.textStyle
                         }}

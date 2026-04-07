@@ -11,16 +11,20 @@ export default function InputLabel(props: InputLabelProps) {
     const flatLabelStyle = StyleSheet.flatten(props.labelStyle);
 
     return (
-        <ThemedText
-            style={{
-                fontSize: fontSize.base,
-                fontWeight: 500,
-                letterSpacing: letterSpacing.sm,
-                color: colors.schemes.light.onSurfaceVariant,
-                ...flatLabelStyle
-            }}
-        >
-            {props.label}
-        </ThemedText>
+        <>
+            {props.label &&
+                <ThemedText
+                style={{
+                    fontSize: fontSize.base,
+                    fontWeight: 500,
+                    letterSpacing: letterSpacing.sm,
+                    color: colors.schemes.light.onSurfaceVariant,
+                    ...flatLabelStyle
+                }}
+            >
+                {props.label}
+            </ThemedText>    
+            }
+        </>
     )
 }

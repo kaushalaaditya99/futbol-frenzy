@@ -11,15 +11,19 @@ import TabStudent from "./TabStudent/TabStudent";
 import { getStudents, Student } from "@/services/students";
 import TabProgress from "./TabProgress/TabProgress";
 import { router } from "expo-router";
+import { Drillv2 as Drill, getDrills } from "@/services/drills";
+import { Class, defaultClass } from "@/services/classes";
 
-
+interface CoachViewProps {
+  param_class: Class;
+}
 const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
 
-export default function CoachView() {
+export default function CoachView(props: CoachViewProps) {
     const [classID, setClassID] = useState(0);
     const [teacherID, setTeacherID] = useState(0);
 
-    const [tab, setTab] = useState("Progress");
+    const [tab, setTab] = useState("Overview");
     const tabs = ["Overview", "Workout", "Students", "Progress"];
 
     const functionalDate = useFunctionalDate();
@@ -33,20 +37,27 @@ export default function CoachView() {
     const [sessionsOnDate, setSessionsOnDate] =  useState<Array<Session>>([]);
     const [sessionsOnDateLabel, setSessionsOnDateLabel] = useState("");
     const sessionsOnDateSearchBar = useSearchBar<Session>(sessionsOnDate, "name", "name");
-    
+
     const [students, setStudents] = useState<Array<Student>>([]);
     const studentSearchBar = useSearchBar<Student>(
-        students, 
-        getStudentFullName, 
+        students,
+        getStudentFullName,
         getStudentFullName
     );
 
     const [showShareClass, setShowShareClass] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
 
+    const [drills, setDrills] = useState<Array<Drill>>([]);
+
+  useEffect(() => {
+    setStudents(props.param_class.students)
+  }, [props.param_class])
+
     useEffect(() => {
         loadSessions(teacherID);
-        loadStudents(classID);
+        //loadStudents(classID);
+        loadDrills(teacherID);
     }, []);
 
 
@@ -83,6 +94,12 @@ export default function CoachView() {
     }
 
 
+    const loadDrills = async (teacherID: number) => {
+        const drills = await getDrills(teacherID);
+        setDrills(drills);
+    }
+
+
     const loadSessionsToday = (sessions: Array<Session>) => {
         const todaysSessions: Array<Session> = [];
         const today = new Date();
@@ -96,7 +113,7 @@ export default function CoachView() {
                 todaysSessions.push(session);
             }
         }
-        
+
         setSessionsToday(todaysSessions);
     }
 
@@ -149,8 +166,8 @@ export default function CoachView() {
                     setShowSettings={setShowSettings}
                     sessionsToday={sessionsToday}
                     students={students}
-                    className="U12 Boys A-Team"
-                    classCode="XK7M2P"
+                    className={props.param_class.className}
+                    classCode={props.param_class.classCode}
                 />
             }
             {tab === "Workout" &&
@@ -179,7 +196,11 @@ export default function CoachView() {
                 />
             }
             {tab === "Progress" &&
-                <TabProgress/>
+                <TabProgress
+                    drills={drills}
+                    sessions={sessions}
+                    students={students}
+                />
             }
         </ScrollView>
     )

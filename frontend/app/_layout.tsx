@@ -10,6 +10,13 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen
+        name="ui"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
         name="index"
         options={{
           headerTitle: "",
@@ -60,6 +67,13 @@ export default function RootLayout() {
       />
       <Stack.Screen
         name="drill"
+        options={{
+          headerTitle: "",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name="workout"
         options={{
           headerTitle: "",
           headerShown: false

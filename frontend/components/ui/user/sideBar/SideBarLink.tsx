@@ -28,8 +28,8 @@ export function SideBarLink(props: SideBarLinkProps) {
             <ThemedText
                 style={{
                     fontSize: fontSize.base,
-                    fontWeight: 500,
-                    letterSpacing: letterSpacing.base,
+                    fontWeight: 400,
+                    letterSpacing: letterSpacing["xl"],
                     color: colors.schemes.light.onSurface
                 }}
             >

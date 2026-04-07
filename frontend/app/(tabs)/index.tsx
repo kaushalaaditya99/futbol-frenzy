@@ -21,11 +21,12 @@ import CalendarNavigate from "@/components/ui/calendar/CalendarNavigate";
 import WeekButtonGroup from "@/components/ui/calendar/WeekButtonGroup";
 import CoachHome from "@/components/pages/home/CoachHome";
 import { useAuth } from "@/contexts/AuthContext";
+import { router } from "expo-router";
 
 export default function Home() {
     const [results, setResults] = useState<Array<Result>>([]);
     const [sessions, setSessions] = useState<Array<Session>>([]);
-    
+
     const sideBar = useSideBar();
     const functionalDate = useFunctionalDate();
 
@@ -36,6 +37,8 @@ export default function Home() {
         // as it is called when the component loads.
         // The studentID would likely be defined elsewhere,
         // but I hope I'm getting my point across.
+        //router.push("/(tabs)/classes");
+        // router.push("/ui")
         loadResults();
         loadSessions();
     }, []);
@@ -64,7 +67,7 @@ export default function Home() {
     return (
         <>
             <StatusBar
-                style="dark"  
+                style="dark"
             />
             <View
                 style={{
@@ -129,7 +132,7 @@ export default function Home() {
                                     label="Days Streak"
                                     value="7"
                                     valueIcon={
-                                        <Flame 
+                                        <Flame
                                             size={14}
                                             fill={"yellow"}
                                             color={"orange"}

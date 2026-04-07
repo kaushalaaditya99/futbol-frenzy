@@ -18,8 +18,8 @@ interface TabOverviewProps {
     showSettings: boolean;
     setShowSettings: (settings: boolean) => void;
     setShowShareClass: (shareClass: boolean) => void;
-    sessionsToday: Array<Session>;
-    students: Array<Student>;
+    sessionsToday: Session[];
+    students: Student[];
     className?: string;
     classCode?: string;
 }
@@ -41,6 +41,7 @@ export default function TabOverview(props: TabOverviewProps) {
             }
             {props.showShareClass &&
                 <ShareClass
+                    classCode={props.classCode}
                     onClose={() => props.setShowShareClass(false)}
                 />
             }
@@ -74,7 +75,7 @@ export default function TabOverview(props: TabOverviewProps) {
             >
                 <CardMetric
                     label={"Students\nIn Class"}
-                    value="10"
+                    value={props.students.length.toString()}
                 />
                 <CardMetric
                     label={props.sessionsToday.length === 1 ? "Session\nToday" : "Sessions\nToday"}

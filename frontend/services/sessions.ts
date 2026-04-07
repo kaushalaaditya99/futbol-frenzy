@@ -20,7 +20,10 @@ export interface Session {
     isDue: boolean;
     imageBackgroundColor: string;
     imageTextColor?: string;
+    uploadedBy: string;
     imageText: string;
+    bookmarked: boolean;
+    accessControl: string;
 }
 
 export const fakeData = [
@@ -35,7 +38,10 @@ export const fakeData = [
         isDue: false,
         imageBackgroundColor: "#1C1C1C",
         imageText: "🏃‍♂️",
-        drills: []
+        drills: [],
+        accessControl: "public",
+        bookmarked: false,
+        uploadedBy: "Coaching Academy"
     },
     {
         id: 1,
@@ -48,7 +54,10 @@ export const fakeData = [
         isDue: false,
         imageBackgroundColor: "#000",
         imageText: "⚽",
-        drills: []
+        drills: [],
+        accessControl: "public",
+        bookmarked: false,
+        uploadedBy: "Coaching Academy"
     },
     {
         id: 2,
@@ -61,7 +70,10 @@ export const fakeData = [
         isDue: true,
         imageBackgroundColor: "#e9e9e9",
         imageText: "🥅",
-        drills: []
+        drills: [],
+        accessControl: "public",
+        bookmarked: false,
+        uploadedBy: "Coaching Academy"
     },
     {
         id: 10,
@@ -74,7 +86,10 @@ export const fakeData = [
         isDue: false,
         imageBackgroundColor: "black",
         imageText: "",
-        drills: []
+        drills: [],
+        accessControl: "public",
+        bookmarked: false,
+        uploadedBy: "John Smith"
     },
     {
         id: 3,
@@ -87,6 +102,9 @@ export const fakeData = [
         isDue: true,
         imageBackgroundColor: "#e9e9e9",
         imageText: "🙂",
+        accessControl: "public",
+        bookmarked: true,
+        uploadedBy: "Bob of the Sponge",
         drills: [
             {
                 id: 0,
@@ -140,7 +158,7 @@ export async function getSessions(id: number, role?: string): Promise<Array<Sess
 }
 
 export async function getSession(sessionID: number, sestudentID: number): Promise<Session> {
-    return fakeData.find((s) => s.id === sessionID) ?? fakeData[4];
+    return fakeData.find((s) => s.id === 3) ?? fakeData[4];
 }
 
 

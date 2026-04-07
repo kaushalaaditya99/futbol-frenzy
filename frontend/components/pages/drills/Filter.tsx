@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import useDrillSearchBar from "./useDrillSearchBar"
 import SearchBar from "@/components/ui/SearchBar";
-import Dropdown from "./Dropdown";
+import InputDropdownV2 from "../../ui/input/InputDropdownV2";
 import SearchBarSort from "@/components/ui/SearchBarSort";
 import InlineRadioGroup from "@/components/ui/input/InlineRadioGroup";
 import { useState } from "react";
@@ -30,7 +30,7 @@ export default function Filter(props: FilterProps) {
                         height: 36,
                     }}
                     childrenLeftOfSort={
-                        <Dropdown
+                        <InputDropdownV2
                             value={props.drillSearchBar.searchKey}
                             onChange={props.drillSearchBar.setSearchKey}
                             options={props.drillSearchBar.searchKeyOptions as [string, string][]}
@@ -58,7 +58,7 @@ export default function Filter(props: FilterProps) {
                         flexDirection: "row"
                     }}
                 >
-                    <Dropdown
+                    <InputDropdownV2
                         value={props.drillSearchBar.sortKey}
                         onChange={props.drillSearchBar.setSortKey}
                         options={props.drillSearchBar.sortKeysOptions as [string, string][]}
@@ -86,7 +86,7 @@ export default function Filter(props: FilterProps) {
                     />
                 </View>
                 <View>
-                    <Dropdown
+                    <InputDropdownV2
                         value={props.drillSearchBar.accessControl}
                         onChange={(value: string) => props.drillSearchBar.setAccessControl(value as any)}
                         options={props.drillSearchBar.accessControlOptions as [string, string][]}

@@ -529,7 +529,8 @@ export default function CreateSession() {
                     <Button
                         onPress={canCreate ? onCreateSession : undefined}
                         {...(canCreate ? buttonTheme.blue : buttonTheme.disabled)}
-                        innerStyle={{ width: "100%" }}
+                        // Added a height, the buttons are finicky, my bad
+                        innerStyle={{ width: "100%", height: 48 }}
                     >
                         <ThemedText
                             style={{
