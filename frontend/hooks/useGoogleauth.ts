@@ -1,6 +1,7 @@
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext'
 import resolveEndpoint from '@/services/resolveEndpoint';
 
@@ -8,13 +9,25 @@ WebBrowser.maybeCompleteAuthSession();
 
 const API_URL = resolveEndpoint("/api/");
 
+const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID!;
+const ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID!;
+const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
+
+const IOS_REVERSED_ID = IOS_CLIENT_ID.replace('.apps.googleusercontent.com', '');
+const ANDROID_REVERSED_ID = ANDROID_CLIENT_ID.replace('.apps.googleusercontent.com', '');
+
+const redirectUri = Platform.select({
+    ios: `com.googleusercontent.apps.${IOS_REVERSED_ID}:/oauth2redirect/google`,
+    android: `com.googleusercontent.apps.${ANDROID_REVERSED_ID}:/oauth2redirect/google`,
+}) as string;
+
 export default function useGoogleAuth() {
     const { setAuth } = useAuth();
-    const redirectUri = 'com.googleusercontent.apps.696867146373-r20qb1a55su6tbqs35mlos8s3dst657a:/oauth2redirect/google';
     console.log('Redirect URI:', redirectUri);
     const [request, response, promptAsync] = Google.useAuthRequest({
-        webClientId: '696867146373-01u2hr7io7qv3uehfu7krcobcbhtcob1.apps.googleusercontent.com',
-        iosClientId: '696867146373-r20qb1a55su6tbqs35mlos8s3dst657a.apps.googleusercontent.com',
+        webClientId: WEB_CLIENT_ID,
+        iosClientId: IOS_CLIENT_ID,
+        androidClientId: ANDROID_CLIENT_ID,
         redirectUri,
     });
 

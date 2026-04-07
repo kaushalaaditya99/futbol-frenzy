@@ -19,6 +19,7 @@ import uuid
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
 GOOGLE_IOS_CLIENT_ID = os.getenv('GOOGLE_IOS_CLIENT_ID')
+GOOGLE_ANDROID_CLIENT_ID = os.getenv('GOOGLE_ANDROID_CLIENT_ID')
 
 
 load_dotenv()
@@ -64,10 +65,15 @@ def google_auth(request):
     token = request.data.get('idToken')
 
     try:
-        try:
-            user_info = id_token.verify_oauth2_token(token, google_requests.Request(), GOOGLE_WEB_CLIENT_ID)
-        except ValueError:
-            user_info = id_token.verify_oauth2_token(token, google_requests.Request(), GOOGLE_IOS_CLIENT_ID)
+        user_info = None
+        for client_id in [GOOGLE_WEB_CLIENT_ID, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID]:
+            try:
+                user_info = id_token.verify_oauth2_token(token, google_requests.Request(), client_id)
+                break
+            except ValueError:
+                continue
+        if user_info is None:
+            raise ValueError("Token verification failed for all client IDs")
 
         email = user_info['email']
         first_name = user_info.get('given_name', '')

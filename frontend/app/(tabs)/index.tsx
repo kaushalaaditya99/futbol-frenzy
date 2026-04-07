@@ -1,7 +1,7 @@
 import { Flame } from "lucide-react-native";
 import { Dimensions, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, fontSize, letterSpacing, padding } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import { Fragment, useEffect, useState } from "react";
 import CardMetric from "@/components/pages/CardMetric";
 import RowCardSession from "@/components/pages/home/RowCardSession";
@@ -120,9 +120,9 @@ export default function Home() {
                                 style={{
                                     display: "flex",
                                     flexDirection: "row",
-                                    columnGap: 24,
-                                    paddingVertical: 24,
-                                    paddingHorizontal: 24,
+                                    columnGap: margin.sm,
+                                    paddingVertical: margin.sm,
+                                    paddingHorizontal: margin.sm,
                                     borderBottomWidth: 1,
                                     borderBottomColor: colors.schemes.light.outlineVariant,
                                     borderStyle: "solid"
@@ -150,9 +150,9 @@ export default function Home() {
                             </View>
                             <View
                                 style={{
-                                    paddingVertical: 24,
-                                    paddingHorizontal: 24,
-                                    rowGap: 12
+                                    paddingVertical: margin.sm,
+                                    paddingHorizontal: margin.sm,
+                                    rowGap: padding.lg
                                 }}
                             >
                                 <View
@@ -200,9 +200,9 @@ export default function Home() {
                             </View>
                             <View
                                 style={{
-                                    paddingBottom: 24,
-                                    paddingHorizontal: 24,
-                                    rowGap: 12
+                                    paddingBottom: margin.sm,
+                                    paddingHorizontal: margin.sm,
+                                    rowGap: padding.lg
                                 }}
                             >
                                 <View

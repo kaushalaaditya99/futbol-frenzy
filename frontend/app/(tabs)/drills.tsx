@@ -10,10 +10,11 @@ import SideBar from "@/components/ui/user/sideBar/SideBar";
 import SideBarDim from "@/components/ui/user/sideBar/SideBarDim";
 import useSideBar from "@/components/ui/user/sideBar/useSideBar";
 import { Drillv2 as Drill, getDrills } from "@/services/drills";
-import { fontSize, margin, padding, theme } from "@/theme";
+import { fontSize, letterSpacing, margin, padding, theme } from "@/theme";
 import { router } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
-import { Dimensions, FlatList, ScrollView, Text, View } from "react-native";
+import { useAuth } from "@/contexts/AuthContext";
+import { Dimensions, FlatList, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -27,6 +28,7 @@ export default function Drills() {
     const [feed, setFeed] = useState("library");
     const [viewType, setViewType] = useState("list");
 
+    const { role } = useAuth();
     const sideBar = useSideBar();
     const [drills, setDrills] = useState<Array<Drill>>([]);
     const drillSearchBar = useDrillSearchBar(drills);
@@ -104,9 +106,11 @@ export default function Drills() {
                                     borderRadius: 8,
                                 }}
                             />
-                            <CreateDrillButton
-                                onPress={() => router.push("/createDrill")}
-                            />
+                            {role === "Coach" && (
+                                <CreateDrillButton
+                                    onPress={() => router.push("/createDrill")}
+                                />
+                            )}
                        </View>
                        <Filter
                             viewType={viewType}
@@ -116,9 +120,10 @@ export default function Drills() {
                        <ThemedText
                             style={{
                                 marginTop: theme.margin.sm,
-                                fontSize: theme.fontSize.base,
-                                fontWeight: 500,
-                                letterSpacing: -0.25
+                                fontSize: fontSize.lg,
+                                fontWeight: "500",
+                                letterSpacing: letterSpacing.xs,
+                                color: theme.colors.schemes.light.onBackground,
                             }}
                         >
                             Found {drillSearchBar.filtered.length} Drills

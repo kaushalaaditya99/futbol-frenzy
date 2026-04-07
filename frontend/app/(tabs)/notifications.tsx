@@ -1,8 +1,9 @@
-import { Pressable, Text, View, ScrollView } from "react-native";
+import { Pressable, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NotificationRow, { Notification } from "@/components/NotificationsRow";
 import { useNotifications } from "@/contexts/NotificationsContext";
-import { colors } from "@/theme";
+import ThemedText from "@/components/ui/ThemedText";
+import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 
 function getDateGroup(date: Date): string {
     const now = new Date();
@@ -27,20 +28,33 @@ export default function Notifications() {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.surface }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.background }}>
             {/* Header */}
             <View style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
-                paddingHorizontal: 20,
-                paddingVertical: 16,
+                paddingHorizontal: margin.sm,
+                paddingVertical: padding.xl,
                 borderBottomWidth: 1,
                 borderBottomColor: colors.schemes.light.outlineVariant,
             }}>
-                <Text style={{ fontSize: 22, fontWeight: "700" }}>Notifications</Text>
+                <ThemedText style={{
+                    fontSize: fontSize.lg,
+                    fontWeight: "500",
+                    letterSpacing: letterSpacing.xs,
+                    color: colors.schemes.light.onBackground,
+                }}>
+                    Notifications
+                </ThemedText>
                 <Pressable onPress={markAllRead}>
-                    <Text style={{ fontSize: 15, color: colors.coreColors.primary }}>Mark all read</Text>
+                    <ThemedText style={{
+                        fontSize: fontSize.md,
+                        fontWeight: "500",
+                        color: colors.coreColors.primary,
+                    }}>
+                        Mark all read
+                    </ThemedText>
                 </Pressable>
             </View>
 
@@ -48,18 +62,18 @@ export default function Notifications() {
             <ScrollView>
                 {Object.entries(groups).map(([label, items]) => (
                     <View key={label}>
-                        <Text style={{
-                            fontSize: 11,
+                        <ThemedText style={{
+                            fontSize: fontSize.xs,
                             fontWeight: "700",
                             color: colors.schemes.light.outline,
                             textTransform: "uppercase",
-                            letterSpacing: 1,
-                            paddingHorizontal: 20,
-                            paddingTop: 16,
-                            paddingBottom: 4,
+                            letterSpacing: letterSpacing["2xl"],
+                            paddingHorizontal: margin.sm,
+                            paddingTop: padding.xl,
+                            paddingBottom: padding.sm,
                         }}>
                             {label}
-                        </Text>
+                        </ThemedText>
 
                         {items.map((item, index) => (
                             <View key={item.id}>

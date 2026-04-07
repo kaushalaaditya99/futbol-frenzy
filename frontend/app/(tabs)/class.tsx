@@ -1,19 +1,13 @@
-import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, margin } from "@/theme";
 import { router } from "expo-router";
 import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import CoachView from "@/components/pages/class/coach/CoachView";
 import StudentView from "@/components/pages/class/student/StudentView";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Class() {
-    const [isTeacher, setIsTeacher] = useState(true);
-    
-    const loadIsTeacher = () => {
-        // is this user a teacher
-        setIsTeacher(false);
-    }
-    
+    const { role } = useAuth();
 
     return (
         <SafeAreaView
@@ -35,9 +29,7 @@ export default function Class() {
                     backgroundColor: "#00000010"
                 }}
             />
-            {
-                isTeacher ? <CoachView/> : <StudentView/>
-            }
+            {role === "Coach" ? <CoachView/> : <StudentView/>}
         </SafeAreaView>
     )
 }
