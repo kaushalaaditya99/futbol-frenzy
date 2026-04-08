@@ -1,7 +1,7 @@
 import SimpleButton from "@/components/ui/button/SimpleButton";
 import RadioCard from "@/components/ui/input/RadioCard";
 import ThemedText from "@/components/ui/ThemedText";
-import { colors, letterSpacing, padding, margin, theme } from "@/theme";
+import { colors, fontSize, letterSpacing, padding, margin, theme } from "@/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
@@ -51,7 +51,7 @@ export default function SelectRole() {
             <View>
                 <ThemedText
                     style={{
-                        fontSize: 32,
+                        fontSize: fontSize.xl,
                         fontWeight: "600",
                         textAlign: "center",
                         marginBottom: 4,
@@ -61,7 +61,7 @@ export default function SelectRole() {
                 </ThemedText>
                 <ThemedText
                     style={{
-                        fontSize: 16,
+                        fontSize: fontSize.base,
                         fontWeight: "400",
                         textAlign: "center",
                         letterSpacing: letterSpacing.lg,

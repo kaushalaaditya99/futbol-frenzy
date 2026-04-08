@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeft, RefreshCw } from 'lucide-react-native';
 import InputText from "@/components/ui/input/InputText";
@@ -41,7 +41,7 @@ export default function ResetPassword() {
                     style={{
                         padding: padding.sm,
                         borderRadius: 100,
-                        backgroundColor: "white",
+                        backgroundColor: colors.schemes.light.surfaceContainerLowest,
                         borderWidth: 1,
                         borderColor: theme.colors.schemes.light.outlineVariant,
                         ...theme.shadow.sm
@@ -57,7 +57,7 @@ export default function ResetPassword() {
                             borderRadius: 100,
                             borderWidth: 1,
                             borderColor: theme.colors.schemes.light.outlineVariant,
-                            backgroundColor: "white"
+                            backgroundColor: colors.schemes.light.surfaceContainerLowest
                         }}
                     >
                         <RefreshCw
@@ -75,11 +75,11 @@ export default function ResetPassword() {
                 >
                     <ThemedText
                         style={{
-                            fontSize: 32,
-                            fontWeight: 600,
+                            fontSize: fontSize.xl,
+                            fontWeight: "600",
                             letterSpacing: theme.letterSpacing.xs,
                             textAlign: "center",
-                            marginBottom: 4
+                            marginBottom: padding.sm
                         }}
                     >
                         Reset Password
@@ -87,8 +87,8 @@ export default function ResetPassword() {
                     <ThemedText
                         style={{
                             maxWidth: 300,
-                            fontSize: 16,
-                            fontWeight: 400,
+                            fontSize: fontSize.base,
+                            fontWeight: "400",
                             letterSpacing: theme.letterSpacing.lg,
                             textAlign: "center",
                             color: theme.colors.schemes.light.onSurfaceVariant
@@ -122,7 +122,7 @@ export default function ResetPassword() {
                                 flexDirection: "row",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                columnGap: 4
+                                columnGap: padding.sm
                             }}
                         >
                             <ArrowLeft

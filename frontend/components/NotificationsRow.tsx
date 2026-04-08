@@ -1,5 +1,7 @@
-import { Text, View, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import { CircleCheck, Calendar1, MessageCircleMore, AlarmClock } from "lucide-react-native";
+import ThemedText from "@/components/ui/ThemedText";
+import { colors, fontSize, margin, padding } from "@/theme";
 
 export interface Notification {
     id: string;
@@ -18,8 +20,8 @@ export default function NotificationItem({ notification, onPress }: { notificati
             style={{
                 flexDirection: "row",
                 alignItems: "center",
-                paddingHorizontal: 20,
-                paddingVertical: 14,
+                paddingHorizontal: margin.sm,
+                paddingVertical: padding.xl,
             }}
         >
             {/* Icon circle */}
@@ -31,25 +33,25 @@ export default function NotificationItem({ notification, onPress }: { notificati
                     backgroundColor: notification.iconBackground,
                     justifyContent: "center",
                     alignItems: "center",
-                    marginRight: 12,
+                    marginRight: padding.lg,
                 }}
             >
-                <Text style={{ fontSize: 20 }}>
-                    {notification.icon === "graded"   && <CircleCheck        size={25} color="#2a9d4e" />}
-                    {notification.icon === "session"  && <Calendar1          size={22} color="#1a6fdb" />}
-                    {notification.icon === "chat"     && <MessageCircleMore  size={22} color="#555" />}
-                    {notification.icon === "reminder" && <AlarmClock         size={22} color="#b5860d" />}
-                </Text>
+                <View>
+                    {notification.icon === "graded"   && <CircleCheck        size={25} color={colors.coreColors.tertiary} />}
+                    {notification.icon === "session"  && <Calendar1          size={22} color={colors.coreColors.primary} />}
+                    {notification.icon === "chat"     && <MessageCircleMore  size={22} color={colors.schemes.light.onSurfaceVariant} />}
+                    {notification.icon === "reminder" && <AlarmClock         size={22} color="#FF9800" />}
+                </View>
             </View>
 
             {/* Text content */}
             <View style={{ flex: 1 }}>
-                <Text style={{ fontWeight: "700", fontSize: 15 }}>
+                <ThemedText style={{ fontWeight: "700", fontSize: fontSize.md, color: colors.schemes.light.onSurface }}>
                     {notification.title}
-                </Text>
-                <Text style={{ fontSize: 13, color: "gray", marginTop: 2 }}>
+                </ThemedText>
+                <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.onSurfaceVariant, marginTop: padding.xs }}>
                     {notification.description}
-                </Text>
+                </ThemedText>
             </View>
 
             {/* Unread blue dot */}
@@ -59,8 +61,8 @@ export default function NotificationItem({ notification, onPress }: { notificati
                         width: 10,
                         height: 10,
                         borderRadius: 5,
-                        backgroundColor: "#007AFF",
-                        marginLeft: 8,
+                        backgroundColor: colors.coreColors.primary,
+                        marginLeft: padding.md,
                     }}
                 />
             )}

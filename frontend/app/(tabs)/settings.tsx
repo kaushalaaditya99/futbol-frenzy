@@ -1,4 +1,4 @@
-import { Text, View, Switch, ScrollView } from "react-native";
+import { View, Switch, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import SettingsRow from "@/components/SettingsRow";
@@ -16,6 +16,8 @@ import {
 } from "lucide-react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { ExtendedUser, loadExtendedProfile, defaultExtendedUser, patchUserSettings } from "@/services/extendeduser";
+import ThemedText from "@/components/ui/ThemedText";
+import { colors, fontSize, letterSpacing, borderRadius, margin, padding } from "@/theme";
 
 
 export default function Settings() {
@@ -58,27 +60,27 @@ export default function Settings() {
   }, [loaded, token, role]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
-      <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.background }}>
+      <ScrollView style={{ flex: 1, paddingHorizontal: margin.sm }}>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginBottom: 24,
+            marginBottom: margin.sm,
           }}
         >
-          <SettingsIcon size={28} color="black" style={{ marginRight: 8 }} />
-          <Text style={{ fontSize: 28, fontWeight: "700" }}>Settings</Text>
+          <SettingsIcon size={28} color={colors.schemes.light.onBackground} style={{ marginRight: padding.md }} />
+          <ThemedText style={{ fontSize: fontSize.xl, fontWeight: "700", color: colors.schemes.light.onBackground }}>Settings</ThemedText>
         </View>
 
         <View
           style={{
-            backgroundColor: "white",
-            borderRadius: 12,
-            padding: 16,
+            backgroundColor: colors.schemes.light.surfaceContainerLowest,
+            borderRadius: borderRadius.lg,
+            padding: padding.xl,
             flexDirection: "row",
             alignItems: "center",
-            marginBottom: 24,
+            marginBottom: margin.sm,
           }}
         >
           <View
@@ -86,62 +88,62 @@ export default function Settings() {
               width: 48,
               height: 48,
               borderRadius: 24,
-              backgroundColor: "#E0E0E0",
+              backgroundColor: colors.schemes.light.surfaceContainerHigh,
               alignItems: "center",
               justifyContent: "center",
-              marginRight: 12,
+              marginRight: padding.lg,
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "700", color: "#555" }}>
+            <ThemedText style={{ fontSize: fontSize.base, fontWeight: "700", color: colors.schemes.light.onSurfaceVariant }}>
               AR
-            </Text>
+            </ThemedText>
           </View>
 
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: "700" }}>
+            <ThemedText style={{ fontSize: fontSize.base, fontWeight: "700", color: colors.schemes.light.onSurface }}>
               {userData.first_name} {userData.last_name}
-            </Text>
-            <Text style={{ fontSize: 13, color: "gray" }}>{userData.email}</Text>
-            <View style={{ flexDirection: "row", marginTop: 6, columnGap: 8 }}>
+            </ThemedText>
+            <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.onSurfaceVariant }}>{userData.email}</ThemedText>
+            <View style={{ flexDirection: "row", marginTop: padding.md, columnGap: padding.md }}>
               <View
                 style={{
-                  backgroundColor: "#F0F0F0",
-                  borderRadius: 12,
-                  paddingHorizontal: 10,
-                  paddingVertical: 2,
+                  backgroundColor: colors.schemes.light.surfaceContainerHigh,
+                  borderRadius: borderRadius.lg,
+                  paddingHorizontal: padding.lg,
+                  paddingVertical: padding.xs,
                 }}
               >
-                <Text style={{ fontSize: 12, fontWeight: "600" }}>{role}</Text>
+                <ThemedText style={{ fontSize: fontSize.sm, fontWeight: "600", color: colors.schemes.light.onSurface }}>{role}</ThemedText>
               </View>
               <View
                 style={{
-                  backgroundColor: "#F0F0F0",
-                  borderRadius: 12,
-                  paddingHorizontal: 10,
-                  paddingVertical: 2,
+                  backgroundColor: colors.schemes.light.surfaceContainerHigh,
+                  borderRadius: borderRadius.lg,
+                  paddingHorizontal: padding.lg,
+                  paddingVertical: padding.xs,
                 }}
               >
-                <Text style={{ fontSize: 12, fontWeight: "600" }}>{userData.position}</Text>
+                <ThemedText style={{ fontSize: fontSize.sm, fontWeight: "600", color: colors.schemes.light.onSurface }}>{userData.position}</ThemedText>
               </View>
             </View>
           </View>
         </View>
 
-        <Text
+        <ThemedText
           style={{
-            fontSize: 13,
+            fontSize: fontSize.md,
             fontWeight: "700",
-            color: "gray",
-            marginBottom: 8,
+            color: colors.schemes.light.onSurfaceVariant,
+            marginBottom: padding.md,
           }}
         >
           ACCOUNT
-        </Text>
+        </ThemedText>
         <View
           style={{
-            backgroundColor: "white",
-            borderRadius: 12,
-            marginBottom: 24,
+            backgroundColor: colors.schemes.light.surfaceContainerLowest,
+            borderRadius: borderRadius.lg,
+            marginBottom: margin.sm,
             overflow: "hidden",
           }}
         >
@@ -152,21 +154,21 @@ export default function Settings() {
           <SettingsRow icon={Link} label="Connected Accounts" rightText="G" />
         </View>
 
-        <Text
+        <ThemedText
           style={{
-            fontSize: 13,
+            fontSize: fontSize.md,
             fontWeight: "700",
-            color: "gray",
-            marginBottom: 8,
+            color: colors.schemes.light.onSurfaceVariant,
+            marginBottom: padding.md,
           }}
         >
           PREFERENCES
-        </Text>
+        </ThemedText>
         <View
           style={{
-            backgroundColor: "white",
-            borderRadius: 12,
-            marginBottom: 24,
+            backgroundColor: colors.schemes.light.surfaceContainerLowest,
+            borderRadius: borderRadius.lg,
+            marginBottom: margin.sm,
             overflow: "hidden",
           }}
         >
@@ -178,34 +180,34 @@ export default function Settings() {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              paddingHorizontal: 16,
-              paddingVertical: 12,
+              paddingHorizontal: padding.xl,
+              paddingVertical: padding.lg,
             }}
           >
-            <Moon size={20} color="#555" style={{ marginRight: 12 }} />
-            <Text style={{ fontSize: 16, flex: 1 }}>Dark Mode</Text>
+            <Moon size={20} color={colors.schemes.light.onSurfaceVariant} style={{ marginRight: padding.lg }} />
+            <ThemedText style={{ fontSize: fontSize.base, flex: 1, color: colors.schemes.light.onSurface }}>Dark Mode</ThemedText>
             <Switch
               value={darkMode}
               onValueChange={(newValue) => toggleDarkMode(newValue)}
-              trackColor={{ false: "#DDD", true: "#4CD964" }}
+              trackColor={{ false: colors.schemes.light.outlineVariant, true: colors.coreColors.tertiary }}
             />
           </View>
         </View>
 
-        <Text
+        <ThemedText
           style={{
-            fontSize: 13,
+            fontSize: fontSize.md,
             fontWeight: "700",
-            color: "gray",
-            marginBottom: 8,
+            color: colors.schemes.light.onSurfaceVariant,
+            marginBottom: padding.md,
           }}
         >
           SUPPORT
-        </Text>
+        </ThemedText>
         <View
           style={{
-            backgroundColor: "white",
-            borderRadius: 12,
+            backgroundColor: colors.schemes.light.surfaceContainerLowest,
+            borderRadius: borderRadius.lg,
             marginBottom: 40,
             overflow: "hidden",
           }}

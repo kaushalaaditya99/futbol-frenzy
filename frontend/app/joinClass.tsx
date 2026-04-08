@@ -60,7 +60,7 @@ export default function JoinClass() {
                     paddingVertical: padding["2xl"],
                     paddingHorizontal: padding["2xl"],
                     flex: 1,
-                    rowGap: 24,
+                    rowGap: margin.sm,
                     justifyContent: "center",
                     backgroundColor: colors.schemes.light.background
                 }}
@@ -68,7 +68,7 @@ export default function JoinClass() {
                 <View
                     style={{
                         alignItems: "center",
-                        rowGap: 4
+                        rowGap: padding.sm
                     }}
                 >
                     <ThemedText
@@ -97,20 +97,20 @@ export default function JoinClass() {
                 </View>
                 <View
                     style={{
-                        rowGap: 12
+                        rowGap: padding.lg
                     }}
                 >
                     <TextInput
                         value={classCode}
                         onChangeText={(text) => setClassCode(text)}
                         style={{
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
+                            paddingVertical: padding.md,
+                            paddingHorizontal: padding.lg,
                             borderWidth: 1,
                             borderColor: colors.schemes.light.outlineVariant,
                             borderRadius: borderRadius.base,
-                            backgroundColor: "white",
-                            fontSize: 24,
+                            backgroundColor: colors.schemes.light.surfaceContainerLowest,
+                            fontSize: fontSize.xl,
                             textAlign: "center",
                             fontFamily: "Arimo-700Bold",
                             ...shadow.sm
@@ -119,7 +119,7 @@ export default function JoinClass() {
                     <Button
                         
                         innerStyle={{
-                            columnGap: 12,
+                            columnGap: padding.lg,
                             width: "100%"
                         }}
                         {...buttonTheme.blue}
@@ -131,9 +131,9 @@ export default function JoinClass() {
                         />
                         <ThemedText
                             style={{
-                                fontSize: 18,
-                                fontWeight: 500,
-                                letterSpacing: -0.25,
+                                fontSize: fontSize.lg,
+                                fontWeight: "500",
+                                letterSpacing: letterSpacing.xs,
                                 color: "white"
                             }}
                         >
