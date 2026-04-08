@@ -83,15 +83,20 @@ export default function Index() {
   	<SafeAreaView
     	style={{
       		backgroundColor: theme.colors.schemes.light.background,
-      		display: "flex",
-      		rowGap: 12,
-      		alignItems: "center",
-      		justifyContent: "center",
-      		paddingVertical: 24,
-      		paddingHorizontal: 36,
-      	flex: 1
+      		flex: 1,
     	}}
   	>
+	<ScrollView
+		contentContainerStyle={{
+			flexGrow: 1,
+			justifyContent: "center",
+			alignItems: "center",
+			rowGap: padding.lg,
+			paddingVertical: 24,
+			paddingHorizontal: 36,
+		}}
+		keyboardShouldPersistTaps="handled"
+	>
     	<View
       		style={{
         		display: "flex",
@@ -247,6 +252,7 @@ export default function Index() {
         </ThemedText>
       </Pressable>
     </View>
+  </ScrollView>
   </SafeAreaView>
 );
 }
