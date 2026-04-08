@@ -46,7 +46,7 @@ def me(request):
 @permission_classes([IsAuthenticated])
 def detailed_user_info(request):
     user = request.user
-    extended_settings = Settings.objects.get(pk=user.id)
+    extended_settings, _ = Settings.objects.get_or_create(userID=user)
     return Response({
         'id': user.id,
         'username': user.username,

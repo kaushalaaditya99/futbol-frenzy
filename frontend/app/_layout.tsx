@@ -1,9 +1,11 @@
 import { Stack } from "expo-router";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ProfileProvider } from "@/contexts/ProfileContext";
 
 export default function RootLayout() {
   return (
     <AuthProvider>
+    <ProfileProvider>
     <Stack
       screenOptions={{
         headerShown: false
@@ -101,6 +103,7 @@ export default function RootLayout() {
         }}
       />
     </Stack>
+    </ProfileProvider>
     </AuthProvider>
   );
 }

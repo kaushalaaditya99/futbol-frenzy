@@ -66,7 +66,7 @@ export async function getClasses(token: string): Promise<Array<Class>> {
 
 export async function getClassById(token: string, id: number): Promise<Class>
 {
-  const resClass = await fetch(`${API_URL}/classes/${id}`,
+  const resClass = await fetch(`${API_URL}/classes/${id}/`,
   {
       headers: {
           Authorization: `Token ${token}`,
@@ -86,6 +86,11 @@ export async function joinClass(token: string, classCode: string): Promise<boole
             "Content-Type": "application/json",
         },
     });
+    if (!response.ok) {
+        console.log("Class not found for code:", classCode);
+        return false;
+    }
+
     const data = await response.json();
     const classID = data["id"];
 
@@ -112,10 +117,12 @@ export async function joinClass(token: string, classCode: string): Promise<boole
         })
     });
 
-    const joinClassData = await joinClassResponse.json();
-    // console.log("Join Class Data", joinClassData);
+    if (!joinClassResponse.ok) {
+        console.log("Failed to join class:", await joinClassResponse.text());
+        return false;
+    }
 
-    return joinClassData;
+    return true;
 }
 
 export async function createClass(token: string, className: string, imageBackgroundColor: string, imageTextColor: string, imageText: string) {
@@ -145,4 +152,14 @@ export async function createClass(token: string, className: string, imageBackgro
     const data = await response.json();
     // console.log("Create Class", data);
     return data;
+}
+
+export async function deleteClass(token: string, classId: number): Promise<boolean> {
+    const response = await fetch(`${API_URL}/classes/${classId}/`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Token ${token}`,
+        },
+    });
+    return response.ok;
 }

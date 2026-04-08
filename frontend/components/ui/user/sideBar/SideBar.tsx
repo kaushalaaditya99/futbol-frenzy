@@ -7,10 +7,9 @@ import ThemedText from "../../ThemedText";
 import { SideBarLink } from "./SideBarLink";
 import { View } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/contexts/ProfileContext";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
-import { ExtendedUser, loadExtendedProfile, defaultExtendedUser } from "@/services/extendeduser";
-import { useState, useEffect } from "react";
 
 interface SideBarProps {
     targetWidth: number;
@@ -20,8 +19,8 @@ interface SideBarProps {
 }
 
 export default function SideBar(props: SideBarProps) {
-  const { logout, token, loaded, role } = useAuth();
-  const [profile, setProfile] = useState(defaultExtendedUser);
+  const { logout } = useAuth();
+  const { profile } = useProfile();
     const navigation = useNavigation();
 
     const logOut = async () => {
@@ -30,28 +29,6 @@ export default function SideBar(props: SideBarProps) {
             CommonActions.reset({ index: 0, routes: [{ name: "index" }] })
         );
     }
-
-
-    useEffect(() => {
-      if (!loaded || !token || !role) return;
-      async function loadProfile(escapedtoken: string)
-      {
-        try
-        {
-          const userProfile = await loadExtendedProfile(escapedtoken);
-          setProfile(userProfile);
-        }
-        catch(err)
-        {
-          console.log("Error retrieving user data: ", err)
-          throw err;
-        }
-      }
-      if (token != null)
-      {
-        loadProfile(token)
-      }
-    }, [loaded, token, role]);
 
 
     const router = useRouter();

@@ -91,7 +91,7 @@ export default function Index() {
 			flexGrow: 1,
 			justifyContent: "center",
 			alignItems: "center",
-			rowGap: padding.lg,
+			rowGap: padding.xl,
 			paddingVertical: 24,
 			paddingHorizontal: 36,
 		}}
@@ -186,11 +186,11 @@ export default function Index() {
           Forgot Password?
         </ThemedText>
     </View>
+    </View>
     <SimpleButton
         onPress={login}
         label="Log In"
     />
-    </View>
     <SeparatorText
       text="OR CONTINUE WITH"
     />

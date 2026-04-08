@@ -34,7 +34,7 @@ export async function getUser(token: string) {
 //calls /api/user/me, strictly for getting the user id, other method returns queryset whihc can cause issues
 export async function simpleGetUser(token: string)
 {
-  const response = await fetch(`${API_URL}/users/me`, {
+  const response = await fetch(`${API_URL}/users/me/`, {
       headers: {
           Authorization: `Token ${token}`,
           "Content-Type": "application/json",

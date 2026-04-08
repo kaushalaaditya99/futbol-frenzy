@@ -16,6 +16,7 @@ import Button from "@/components/ui/button/Button";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import InlineRadioGroup from "@/components/ui/input/InlineRadioGroup";
 import { useAuth } from "@/contexts/AuthContext";
+import { loadExtendedProfile, defaultExtendedUser } from "@/services/extendeduser";
 
 interface Errors {
     [inputName: string]: {
@@ -27,6 +28,7 @@ interface Errors {
 export default function CreateClass() {
     const [failed, setFailed] = useState(false);
     const [errors, setErrors] = useState<Errors>();
+    const [profile, setProfile] = useState(defaultExtendedUser);
 
     // Form
     const [className, setClassName] = useState("");
@@ -39,6 +41,12 @@ export default function CreateClass() {
 
     // Authentication
     const { token, loaded } = useAuth();
+
+    useEffect(() => {
+        if (token) {
+            loadExtendedProfile(token).then(setProfile).catch(() => {});
+        }
+    }, [token]);
 
 
     useEffect(() => {
@@ -75,7 +83,7 @@ export default function CreateClass() {
 
 
     const onCreateClass = async () => {
-        if (!token && !loaded) {
+        if (!token || !loaded) {
             setFailed(true);
             return;
         }
@@ -259,11 +267,11 @@ export default function CreateClass() {
                                 id={0}
                                 className={className || "Class Name"}
                                 coach={{
-                                    id: -1,
-                                    first_name: "FName",
-                                    last_name: "LName",
-                                    email: "",
-                                    username: ""
+                                    id: profile.id,
+                                    first_name: profile.first_name,
+                                    last_name: profile.last_name,
+                                    email: profile.email,
+                                    username: profile.username
                                 }}
                                 students={[]}
                                 imageText={imageText}

@@ -18,8 +18,8 @@ interface ManageStudentsProps {
 export default function ManageStudents(props: ManageStudentsProps) {
     const { search, setSearch, filtered } = useSearchBar(
         props.students,
-        (s: any) => `${s.fName} ${s.lName}`,
-        "fName"
+        (s: any) => `${s.first_name} ${s.last_name}`,
+        "first_name"
     );
 
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -113,7 +113,7 @@ export default function ManageStudents(props: ManageStudentsProps) {
                                         fontWeight: "700",
                                         color: "white",
                                     }}>
-                                        {student.fName[0]}{student.lName[0]}
+                                        {student.first_name[0]}{student.last_name[0]}
                                     </ThemedText>
                                 </View>
 
@@ -127,7 +127,7 @@ export default function ManageStudents(props: ManageStudentsProps) {
                                         fontWeight: "600",
                                         color: colors.schemes.light.onSurface,
                                     }}>
-                                        {student.fName} {student.lName}
+                                        {student.first_name} {student.last_name}
                                     </ThemedText>
                                     <ThemedText style={{
                                         fontSize: 12,
@@ -193,7 +193,7 @@ export default function ManageStudents(props: ManageStudentsProps) {
                                             fontWeight: "700",
                                             color: "white",
                                         }}>
-                                            {selectedStudent.fName[0]}{selectedStudent.lName[0]}
+                                            {selectedStudent.first_name[0]}{selectedStudent.last_name[0]}
                                         </ThemedText>
                                     </View>
                                     <View style={{ marginLeft: 12 }}>
@@ -202,7 +202,7 @@ export default function ManageStudents(props: ManageStudentsProps) {
                                             fontWeight: "600",
                                             color: colors.schemes.light.onSurface,
                                         }}>
-                                            {selectedStudent.fName} {selectedStudent.lName}
+                                            {selectedStudent.first_name} {selectedStudent.last_name}
                                         </ThemedText>
                                         <ThemedText style={{
                                             fontSize: 12,
@@ -321,7 +321,7 @@ export default function ManageStudents(props: ManageStudentsProps) {
                                 >
                                     Are you sure you want to remove{" "}
                                     <ThemedText style={{ fontWeight: "700", fontSize: 13 }}>
-                                        {selectedStudent.fName} {selectedStudent.lName}
+                                        {selectedStudent.first_name} {selectedStudent.last_name}
                                     </ThemedText>{" "}
                                     from this class?
                                 </ThemedText>

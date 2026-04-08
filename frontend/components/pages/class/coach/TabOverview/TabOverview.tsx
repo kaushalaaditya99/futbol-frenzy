@@ -20,6 +20,7 @@ interface TabOverviewProps {
     setShowShareClass: (shareClass: boolean) => void;
     sessionsToday: Session[];
     students: Student[];
+    classId?: number;
     className?: string;
     classCode?: string;
 }
@@ -34,6 +35,7 @@ export default function TabOverview(props: TabOverviewProps) {
             {props.showSettings &&
                 <Settings
                     onClose={() => props.setShowSettings(false)}
+                    classId={props.classId}
                     className={props.className}
                     classCode={props.classCode}
                     students={props.students}
