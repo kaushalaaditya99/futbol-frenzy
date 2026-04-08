@@ -146,3 +146,13 @@ export async function createClass(token: string, className: string, imageBackgro
     // console.log("Create Class", data);
     return data;
 }
+
+export async function deleteClass(token: string, classId: number): Promise<boolean> {
+    const response = await fetch(`${API_URL}/classes/${classId}/`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Token ${token}`,
+        },
+    });
+    return response.ok;
+}

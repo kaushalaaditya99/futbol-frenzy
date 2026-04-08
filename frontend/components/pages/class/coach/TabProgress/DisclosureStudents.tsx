@@ -131,7 +131,7 @@ export default function DisclosureStudents(props: DisclosureStudentsProps) {
                                         letterSpacing: letterSpacing.lg
                                     }}
                                 >
-                                    {student.fName} {student.lName}
+                                    {student.first_name} {student.last_name}
                                 </ThemedText>
                                 <ThemedText
                                     style={{

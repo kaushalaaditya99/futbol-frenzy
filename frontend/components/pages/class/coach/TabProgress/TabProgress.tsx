@@ -23,7 +23,7 @@ interface TabProgressProps {
     students: Array<Student>;
 }
 
-const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
+const getStudentFullName = (student: Student) => `${student.first_name} ${student.last_name}`;
 
 export default function TabProgress(props: TabProgressProps) {
     const lineData = [

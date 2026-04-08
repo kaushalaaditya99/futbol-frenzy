@@ -11,7 +11,7 @@ import { getStudents, Student } from "@/services/students";
 import StudentTabStudent from "./TabStudent/TabStudent";
 import StudentTabProgress from "./TabProgress/TabProgress";
 
-const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
+const getStudentFullName = (student: Student) => `${student.first_name} ${student.last_name}`;
 
 export default function StudentView() {
     const [tab, setTab] = useState("Overview");

@@ -8,9 +8,13 @@ import { Student } from "@/services/students";
 import * as Clipboard from "expo-clipboard";
 import { ChevronRight, Trash2, Archive } from "lucide-react-native";
 import ManageStudents from "./ManageStudents";
+import { deleteClass } from "@/services/classes";
+import { useAuth } from "@/contexts/AuthContext";
+import { router } from "expo-router";
 
 interface SettingsProps {
     onClose: () => void;
+    classId?: number;
     className?: string;
     description?: string;
     classCode?: string;
@@ -231,8 +235,10 @@ function DeleteConfirmationModal({
                         </ThemedText>
                         <TextInput
                             value={confirmText}
-                            onChangeText={setConfirmText}
+                            onChangeText={(text) => setConfirmText(text.toUpperCase())}
                             placeholder="DELETE"
+                            autoCapitalize="characters"
+                            autoCorrect={false}
                             style={{
                                 width: "100%",
                                 paddingVertical: padding.md,
@@ -319,13 +325,23 @@ export default function Settings(props: SettingsProps) {
         Alert.alert("Copied!", "Class code copied to clipboard.");
     };
 
-    const handleDelete = () => {
-        setShowDeleteConfirmation(false);
-        props.onClose();
+    const { token } = useAuth();
+
+    const handleDelete = async () => {
+        if (token && props.classId) {
+            const success = await deleteClass(token, props.classId);
+            if (success) {
+                setShowDeleteConfirmation(false);
+                props.onClose();
+                router.replace("/(tabs)/classes");
+            } else {
+                Alert.alert("Error", "Failed to delete class. Please try again.");
+            }
+        }
     };
 
     const getStudentInitials = (student: Student) =>
-        `${student.fName[0]}${student.lName[0]}`;
+        `${student.first_name[0]}${student.last_name[0]}`;
 
     const visibleStudents = students.slice(0, 4);
     const remainingCount = Math.max(0, students.length - 4);
@@ -505,18 +521,13 @@ export default function Settings(props: SettingsProps) {
                                 padding: 14,
                             }}
                         >
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    flex: 1,
-                                }}
-                            >
+                            {visibleStudents.length > 0 && (
                                 <View
                                     style={{
                                         flexDirection: "row",
                                         alignItems: "center",
                                         paddingLeft: 8,
+                                        marginRight: 12,
                                     }}
                                 >
                                     {visibleStudents.map((student, i) => (
@@ -552,12 +563,12 @@ export default function Settings(props: SettingsProps) {
                                         </View>
                                     )}
                                 </View>
-                            </View>
-                            <View style={{ alignItems: "flex-end", marginRight: 8 }}>
+                            )}
+                            <View style={{ flex: 1 }}>
                                 <ThemedText
                                     style={{
                                         fontSize: fontSize.md,
-                                        fontWeight: 600,
+                                        fontWeight: "600",
                                         color: colors.schemes.light.onSurface,
                                     }}
                                 >
@@ -569,7 +580,7 @@ export default function Settings(props: SettingsProps) {
                                         color: colors.schemes.light.outline,
                                     }}
                                 >
-                                    {students.length} students
+                                    {students.length === 0 ? "No students yet" : `${students.length} students`}
                                 </ThemedText>
                             </View>
                             <ChevronRight

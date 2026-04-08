@@ -93,7 +93,7 @@ function StudentRow({ student, checked, editMode, onToggle }: StudentRowProps) {
                             : colors.schemes.light.onSurfaceVariant,
                     }}
                 >
-                    {student.fName[0]}{student.lName[0]}
+                    {student.first_name[0]}{student.last_name[0]}
                 </ThemedText>
             </View>
 
@@ -108,7 +108,7 @@ function StudentRow({ student, checked, editMode, onToggle }: StudentRowProps) {
                             : colors.schemes.light.onSurfaceVariant,
                     }}
                 >
-                    {student.fName} {student.lName}
+                    {student.first_name} {student.last_name}
                 </ThemedText>
                 <ThemedText
                     style={{

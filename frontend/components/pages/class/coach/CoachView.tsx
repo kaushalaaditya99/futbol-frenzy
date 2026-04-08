@@ -17,7 +17,7 @@ import { Class, defaultClass } from "@/services/classes";
 interface CoachViewProps {
   param_class: Class;
 }
-const getStudentFullName = (student: Student) => `${student.fName} ${student.lName}`;
+const getStudentFullName = (student: Student) => `${student.first_name} ${student.last_name}`;
 
 export default function CoachView(props: CoachViewProps) {
     const [classID, setClassID] = useState(0);
@@ -166,6 +166,7 @@ export default function CoachView(props: CoachViewProps) {
                     setShowSettings={setShowSettings}
                     sessionsToday={sessionsToday}
                     students={students}
+                    classId={props.param_class.id}
                     className={props.param_class.className}
                     classCode={props.param_class.classCode}
                 />
