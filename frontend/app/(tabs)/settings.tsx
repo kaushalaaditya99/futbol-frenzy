@@ -17,6 +17,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { ExtendedUser, loadExtendedProfile, defaultExtendedUser, patchUserSettings } from "@/services/extendeduser";
 import ThemedText from "@/components/ui/ThemedText";
+import ProfilePicture from "@/components/ui/user/ProfilePicture";
 import { colors, fontSize, letterSpacing, borderRadius, margin, padding } from "@/theme";
 
 
@@ -83,20 +84,8 @@ export default function Settings() {
             marginBottom: margin.sm,
           }}
         >
-          <View
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              backgroundColor: colors.schemes.light.surfaceContainerHigh,
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: padding.lg,
-            }}
-          >
-            <ThemedText style={{ fontSize: fontSize.base, fontWeight: "700", color: colors.schemes.light.onSurfaceVariant }}>
-              AR
-            </ThemedText>
+          <View style={{ marginRight: padding.lg }}>
+            <ProfilePicture width={48} height={48} />
           </View>
 
           <View style={{ flex: 1 }}>

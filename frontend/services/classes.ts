@@ -86,6 +86,11 @@ export async function joinClass(token: string, classCode: string): Promise<boole
             "Content-Type": "application/json",
         },
     });
+    if (!response.ok) {
+        console.log("Class not found for code:", classCode);
+        return false;
+    }
+
     const data = await response.json();
     const classID = data["id"];
 
@@ -112,10 +117,12 @@ export async function joinClass(token: string, classCode: string): Promise<boole
         })
     });
 
-    const joinClassData = await joinClassResponse.json();
-    // console.log("Join Class Data", joinClassData);
+    if (!joinClassResponse.ok) {
+        console.log("Failed to join class:", await joinClassResponse.text());
+        return false;
+    }
 
-    return joinClassData;
+    return true;
 }
 
 export async function createClass(token: string, className: string, imageBackgroundColor: string, imageTextColor: string, imageText: string) {
