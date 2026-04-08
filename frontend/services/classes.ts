@@ -66,7 +66,7 @@ export async function getClasses(token: string): Promise<Array<Class>> {
 
 export async function getClassById(token: string, id: number): Promise<Class>
 {
-  const resClass = await fetch(`${API_URL}/classes/${id}`,
+  const resClass = await fetch(`${API_URL}/classes/${id}/`,
   {
       headers: {
           Authorization: `Token ${token}`,

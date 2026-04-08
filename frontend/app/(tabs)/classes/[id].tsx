@@ -46,7 +46,7 @@ export default function ClassPage() {
         >
             <HeaderWithBack
                 header= {soccerclass.className}
-                onBack={() => router.back()}
+                onBack={() => router.replace("/(tabs)/classes")}
                 containerStyle={{
                     paddingVertical: margin.xs,
                     paddingHorizontal: margin.sm,
