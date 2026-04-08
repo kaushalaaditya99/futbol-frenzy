@@ -119,8 +119,8 @@ function TabsLayout() {
                     tabBarLabel: ({color, focused}) => (
                         <ThemedText
                             style={{
-                                fontSize: fontSize.sm,
-                                letterSpacing: letterSpacing.lg,
+                                fontSize: fontSize.xs,
+                                letterSpacing: letterSpacing.base,
                                 fontWeight: 500,
                                 color: color
                             }}
@@ -128,7 +128,7 @@ function TabsLayout() {
                             Notifications
                         </ThemedText>
                     )
-                }} 
+                }}
             />
             <Tabs.Screen 
                 name="drills"
@@ -151,9 +151,23 @@ function TabsLayout() {
                     href: null,
                 }}
             />
-            <Tabs.Screen 
-                name="settings" 
-                options={{ 
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="demonstration"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="classes/[id]"
+                options={{
                     headerShown: false,
                     href: null,
                 }}
