@@ -97,7 +97,7 @@ export default function CreateClass() {
         );
 
         if (successful) {
-            router.back();
+            router.replace("/(tabs)/classes");
             return;
         }
 
