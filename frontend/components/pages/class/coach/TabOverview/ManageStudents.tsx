@@ -1,4 +1,4 @@
-import { View, Modal, ScrollView, Pressable, TextInput } from "react-native";
+import { View, Modal, ScrollView, Pressable, TextInput, Alert } from "react-native";
 import { useState } from "react";
 import { Student } from "@/services/students";
 import ThemedText from "@/components/ui/ThemedText";
@@ -6,6 +6,8 @@ import { colors, margin, fontSize, borderRadius } from "@/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeft, Search, MoreHorizontal, UserX } from "lucide-react-native";
 import useSearchBar from "@/hooks/useSearchBar";
+import { useAuth } from "@/contexts/AuthContext";
+import { removeStudentFromClass } from "@/services/classes";
 
 const AVATAR_COLORS = ["#3B82F6", "#F59E0B", "#8B5CF6", "#10B981"];
 
@@ -13,9 +15,12 @@ interface ManageStudentsProps {
     visible: boolean;
     onClose: () => void;
     students: Student[];
+    classId?: number;
+    onStudentRemoved?: () => void;
 }
 
 export default function ManageStudents(props: ManageStudentsProps) {
+    const { token } = useAuth();
     const { search, setSearch, filtered } = useSearchBar(
         props.students,
         (s: any) => `${s.first_name} ${s.last_name}`,
@@ -88,6 +93,18 @@ export default function ManageStudents(props: ManageStudentsProps) {
 
                     {/* Student List */}
                     <ScrollView style={{ flex: 1 }}>
+                        {filtered.length === 0 && (
+                            <ThemedText
+                                style={{
+                                    textAlign: "center",
+                                    color: colors.schemes.light.onSurfaceVariant,
+                                    fontSize: fontSize.md,
+                                    paddingVertical: margin.xl,
+                                }}
+                            >
+                                {search ? "No students found." : "No students in this class yet."}
+                            </ThemedText>
+                        )}
                         {filtered.map((student: any, index: number) => (
                             <View
                                 key={student.id}
@@ -362,8 +379,15 @@ export default function ManageStudents(props: ManageStudentsProps) {
                                         </ThemedText>
                                     </Pressable>
                                     <Pressable
-                                        onPress={() => {
-                                            // TODO: remove student from class
+                                        onPress={async () => {
+                                            if (token && props.classId && selectedStudent) {
+                                                const success = await removeStudentFromClass(token, props.classId, selectedStudent.id);
+                                                if (success) {
+                                                    props.onStudentRemoved?.();
+                                                } else {
+                                                    Alert.alert("Error", "Failed to remove student.");
+                                                }
+                                            }
                                             setShowRemoveConfirm(false);
                                             setSelectedStudent(null);
                                         }}

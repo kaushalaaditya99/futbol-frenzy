@@ -23,7 +23,7 @@ export default function BottomScreen(props: BottomScreenProps) {
             backdropColor={"#00000020"}
         >
             <SafeAreaView
-                edges={["top"]}
+                edges={["top", "bottom"]}
                 style={{
                     flex: 1,
                     justifyContent: "flex-end",
@@ -59,7 +59,10 @@ export default function BottomScreen(props: BottomScreenProps) {
                             minHeight: props.fitContent ? undefined : Dimensions.get("screen").height * 0.66,
                             maxHeight: props.fitContent ? undefined : Dimensions.get("screen").height * 0.66,
                             padding: margin.sm,
-                            backgroundColor: "white"
+                            paddingBottom: 50,
+                            backgroundColor: "white",
+                            borderTopLeftRadius: 20,
+                            borderTopRightRadius: 20,
                         }}
                     >
                         <HeaderWithCloseSpacious

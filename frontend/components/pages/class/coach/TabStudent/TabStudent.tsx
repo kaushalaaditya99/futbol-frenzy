@@ -36,6 +36,18 @@ export default function TabStudent(props: TabStudentProps) {
                     />
                 </Fragment>
             ))}
+            {props.students.length === 0 && (
+                <ThemedText
+                    style={{
+                        textAlign: "center",
+                        color: colors.schemes.light.onSurfaceVariant,
+                        fontSize: fontSize.md,
+                        paddingVertical: margin.xl,
+                    }}
+                >
+                    No students in this class yet.
+                </ThemedText>
+            )}
         </View>
     )
 }
