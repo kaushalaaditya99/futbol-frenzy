@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { ScrollView } from "react-native";
 import { MarkedDates } from "react-native-calendars/src/types";
 import Tabs from "../coach/Tabs";
@@ -17,7 +18,7 @@ export default function StudentView() {
     const [tab, setTab] = useState("Overview");
     const tabs = ["Overview", "Workout", "Students", "Progress"];
 
-    const [studentID] = useState(0);
+    const { token } = useAuth();
     const [classID] = useState(0);
 
     // Workout tab state
@@ -34,7 +35,7 @@ export default function StudentView() {
     const studentSearchBar = useSearchBar<Student>(students, getStudentFullName, getStudentFullName);
 
     useEffect(() => {
-        loadSessions(studentID);
+        loadSessions();
         loadStudents(classID);
     }, []);
 
@@ -52,8 +53,9 @@ export default function StudentView() {
         updateSessionsOnDateLabel(functionalDate.date);
     }, [functionalDate.date]);
 
-    const loadSessions = async (studentID: number) => {
-        const sessions = await getSessions(studentID);
+    const loadSessions = async () => {
+        if (!token) return;
+        const sessions = await getSessions(token);
         setSessions(sessions);
     };
 

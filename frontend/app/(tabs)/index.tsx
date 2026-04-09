@@ -30,7 +30,7 @@ export default function Home() {
     const sideBar = useSideBar();
     const functionalDate = useFunctionalDate();
 
-    const { role } = useAuth();
+    const { role, token } = useAuth();
 
     useEffect(() => {
         // We'd load the user's data in this function
@@ -57,8 +57,8 @@ export default function Home() {
 
 
     const loadSessions = async () => {
-        const studentID = 0;
-        const sessions = await getSessions(studentID);
+        if (!token) return;
+        const sessions = await getSessions(token);
         setSessions(sessions);
     }
 

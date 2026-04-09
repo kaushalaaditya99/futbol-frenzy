@@ -1,3 +1,5 @@
+import resolveEndpoint from "./resolveEndpoint";
+
 export interface Drill {
     id: number;
     url: string;
@@ -26,141 +28,82 @@ export interface Session {
     accessControl: string;
 }
 
-export const fakeData = [
-    {
-        id: 0,
-        date: new Date(2026, 2, 4),
-        name: "Cone Dribbling",
-        type: "Ball Control",
-        durationInMins: 5,
-        class: "U12 Boys",
-        isNew: true,
-        isDue: false,
-        imageBackgroundColor: "#1C1C1C",
-        imageText: "🏃‍♂️",
-        drills: [],
-        accessControl: "public",
-        bookmarked: false,
-        uploadedBy: "Coaching Academy"
-    },
-    {
-        id: 1,
-        date: new Date(2026, 2, 1),
-        name: "Wall Pass & Receive",
-        type: "Passing",
-        durationInMins: 8,
-        class: "U12 Boys",
-        isNew: true,
-        isDue: false,
-        imageBackgroundColor: "#000",
-        imageText: "⚽",
-        drills: [],
-        accessControl: "public",
-        bookmarked: false,
-        uploadedBy: "Coaching Academy"
-    },
-    {
-        id: 2,
-        date: new Date(2026, 2, 1),
-        name: "Shooting Accuracy",
-        type: "Shooting",
-        durationInMins: 10,
-        class: "U12 Boys",
-        isNew: false,
-        isDue: true,
-        imageBackgroundColor: "#e9e9e9",
-        imageText: "🥅",
-        drills: [],
-        accessControl: "public",
-        bookmarked: false,
-        uploadedBy: "Coaching Academy"
-    },
-    {
-        id: 10,
-        date: new Date(),
-        name: "Example 1",
-        type: "Example Type",
-        durationInMins: 60,
-        class: "Example",
-        isNew: false,
-        isDue: false,
-        imageBackgroundColor: "black",
-        imageText: "",
-        drills: [],
-        accessControl: "public",
-        bookmarked: false,
-        uploadedBy: "John Smith"
-    },
-    {
-        id: 3,
-        date: new Date(2026, 2, 1),
-        name: "Passing & Movement",
-        type: "Passing",
-        durationInMins: 60,
-        class: "U12 Boys",
-        isNew: false,
-        isDue: true,
-        imageBackgroundColor: "#e9e9e9",
-        imageText: "🙂",
-        accessControl: "public",
-        bookmarked: true,
-        uploadedBy: "Bob of the Sponge",
-        drills: [
-            {
-                id: 0,
-                url: "@/assets/videos/video.mp4",
-                name: "Rondo (Keep Away)",
-                type: "Possession",
-                time: 10,
-                level: "Beginner",
-                instructions: "Players form a circle with 2 defenders in the middle. The outer players must keep possession by passing quickly and moving to create passing lanes.",
+const API_URL = resolveEndpoint("/api");
+
+export async function getSessions(token: string): Promise<Array<Session>> {
+    try {
+        const response = await fetch(`${API_URL}/workouts/`, {
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
             },
-            {
-                id: 1,
-                url: "@/assets/videos/video2.mp4",
-                name: "Pass and Follow",
-                type: "Passing",
-                time: 10,
-                level: "Beginner",
-                instructions: "Players line up in two lines facing each other. The first player passes to the player opposite and then follows their pass, joining the back of the opposite line. Focus on weight and accuracy of the pass.",
+        });
 
-            },
-            {
-                id: 2,
-                url: "@/assets/videos/video3.mp4",
-                name: "Triangle Passing",
-                type: "Passing & Movement Off the Ball",
-                time: 15,
-                level: "Intermediate",
-                instructions: "Three players set up in a triangle. They pass in sequence around the triangle, then switch direction. Add a defender in the middle to increase difficulty.",
+        if (!response.ok) {
+            console.log("Failed to fetch workouts:", response.status);
+            return [];
+        }
 
-            },
-            {
-                id: 3,
-                url: "@/assets/videos/video4.mp4",
-                name: "Combination Play into Goal",
-                type: "Passing & Finishing",
-                time: 15,
-                level: "Beginner",
-                instructions: "Players practice a set combination — a wall pass followed by a through ball into a striker who finishes on goal. Rotate positions after each turn.",
+        const data = await response.json();
 
-            }
-        ]
-    },
-]
-
-export async function getSessions(id: number, role?: string): Promise<Array<Session>> {
-    // We'd contact the API here, but I don't think
-    // it's ready, so we can provide some fake data.
-    // But the focus is creating the skeleton structure,
-    // if that makes sense.
-    return fakeData;
+        return data.map((workout: any) => ({
+            id: workout.id,
+            date: workout.dueDate ? new Date(workout.dueDate) : new Date(),
+            name: workout.workoutName,
+            type: workout.workoutType,
+            durationInMins: 0,
+            class: "",
+            drills: [],
+            isNew: false,
+            isDue: workout.dueDate ? new Date(workout.dueDate) >= new Date() : false,
+            imageBackgroundColor: workout.imageBackgroundColor || "#1C1C1C",
+            imageTextColor: workout.imageTextColor,
+            imageText: workout.imageText || "",
+            uploadedBy: "",
+            bookmarked: false,
+            accessControl: workout.publicWorkout ? "public" : "private",
+        }));
+    } catch (err) {
+        console.error("Error fetching sessions:", err);
+        return [];
+    }
 }
 
-export async function getSession(sessionID: number, sestudentID: number): Promise<Session> {
-    return fakeData.find((s) => s.id === 3) ?? fakeData[4];
-}
+export async function getSession(token: string, sessionID: number): Promise<Session | null> {
+    try {
+        const response = await fetch(`${API_URL}/workouts/${sessionID}/`, {
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
 
+        if (!response.ok) return null;
+
+        const workout = await response.json();
+
+        return {
+            id: workout.id,
+            date: workout.dueDate ? new Date(workout.dueDate) : new Date(),
+            name: workout.workoutName,
+            type: workout.workoutType,
+            durationInMins: 0,
+            class: "",
+            drills: [],
+            isNew: false,
+            isDue: workout.dueDate ? new Date(workout.dueDate) >= new Date() : false,
+            imageBackgroundColor: workout.imageBackgroundColor || "#1C1C1C",
+            imageTextColor: workout.imageTextColor,
+            imageText: workout.imageText || "",
+            uploadedBy: "",
+            bookmarked: false,
+            accessControl: workout.publicWorkout ? "public" : "private",
+        };
+    } catch (err) {
+        console.error("Error fetching session:", err);
+        return null;
+    }
+}
 
 export async function submitSessionForGrading(sessionID: number, studentID: number, drills: {[drillID: number]: string}): Promise<boolean> {
     return true;

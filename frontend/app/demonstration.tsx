@@ -18,6 +18,7 @@ import { buttonTheme } from "@/components/ui/button/buttonTheme";
 import ButtonHalfWidth from "@/components/ui/button/ButtonHalfWidth";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, useMediaLibraryPermissions } from "expo-image-picker";
 import { createSubmission, uploadAndSubmitDrill } from "@/services/cloud";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Example
 // This is just a workaround so you can see the functionality.
@@ -37,6 +38,7 @@ interface Submission {
 interface Submissions {[drillIndex: number]: Submission};
 
 export default function Demonstration() {
+    const { token } = useAuth();
     const [session, setSession] = useState<Session>();
     const [drillIndex, setDrillIndex] = useState<number>(0);
     const [drill, setDrill] = useState<Drill>();
@@ -95,10 +97,9 @@ export default function Demonstration() {
     
 
     const loadSession = async () => {
-        const sessionID = 0;
-        const studentID = 0;
-        const session = await getSession(sessionID, studentID);
-        setSession(session);
+        if (!token) return;
+        const session = await getSession(token, 0);
+        if (session) setSession(session);
     }
 
 

@@ -1,4 +1,5 @@
 import Profile from "@/app/profile";
+import { useAuth } from "@/contexts/AuthContext";
 import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import ProfilePicture from "@/components/ui/user/ProfilePicture";
@@ -166,6 +167,7 @@ const lineData = [
 
 export default function StudentView() {
     const router = useRouter();
+    const { token } = useAuth();
 
     const [tab, setTab] = useState("Classes");
     const [tabs] = useState(["Classes", "Overview", "Your Drills", "Your Workouts"]);
@@ -185,9 +187,10 @@ export default function StudentView() {
 
     useEffect(() => {
         const load = async () => {
-            setClasses(await getClasses(0, ""));
-            setDrills(await getDrills(0));
-            setWorkouts(await getSessions(0, ""));
+            if (!token) return;
+            setClasses(await getClasses(token));
+            setDrills(await getDrills());
+            setWorkouts(await getSessions(token));
         }
         load();
     }, []);
