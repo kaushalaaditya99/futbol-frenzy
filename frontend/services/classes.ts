@@ -154,6 +154,34 @@ export async function createClass(token: string, className: string, imageBackgro
     return data;
 }
 
+export async function removeStudentFromClass(token: string, classId: number, studentId: number): Promise<boolean> {
+    // Find the ClassMember entry
+    const response = await fetch(`${API_URL}/classmembers/?classID=${classId}&studentID=${studentId}`, {
+        headers: {
+            Authorization: `Token ${token}`,
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!response.ok) return false;
+
+    const data = await response.json();
+    const members = Array.isArray(data) ? data : data.results ?? [];
+
+    if (members.length === 0) return false;
+
+    const memberId = members[0].id;
+
+    const deleteResponse = await fetch(`${API_URL}/classmembers/${memberId}/`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Token ${token}`,
+        },
+    });
+
+    return deleteResponse.ok;
+}
+
 export async function deleteClass(token: string, classId: number): Promise<boolean> {
     const response = await fetch(`${API_URL}/classes/${classId}/`, {
         method: "DELETE",

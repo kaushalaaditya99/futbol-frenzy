@@ -12,6 +12,7 @@ import { padding, shadow, theme } from "@/theme";
 import { router } from "expo-router";
 import { BookmarkIcon, CalendarIcon, PlusCircle, PlusCircleIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,23 +20,27 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // I am rushing
 
 export default function Workout() {
+    const { token } = useAuth();
     const [classes, setClasses] = useState<Array<Class>>([]);
     const [workout, setWorkout] = useState<Session>();
     const [drillIndex, setDrillIndex] = useState(0);
     const [showAssignWorkout, setShowAssignWorkout] = useState(false);
 
     useEffect(() => {
+        if (!token) return;
         loadWorkout();
         loadClasses();
-    }, []);
+    }, [token]);
 
     const loadWorkout = async () => {
-        const workout = await getSession(0, 0);
-        setWorkout(workout);
+        if (!token) return;
+        const workout = await getSession(token, 0);
+        if (workout) setWorkout(workout);
     }
 
     const loadClasses = async () => {
-        const classes = await getClasses(0, "");
+        if (!token) return;
+        const classes = await getClasses(token);
         setClasses(classes);
     }
 

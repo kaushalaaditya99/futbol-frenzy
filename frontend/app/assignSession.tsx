@@ -1,4 +1,5 @@
 import ThemedText from "@/components/ui/ThemedText";
+import { useAuth } from "@/contexts/AuthContext";
 import { getSessions, Session } from "@/services/sessions";
 import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
 import { router, useLocalSearchParams } from "expo-router";
@@ -145,13 +146,15 @@ function SessionCard({ session, onPress }: SessionCardProps) {
 }
 
 export default function AssignSession() {
+    const { token } = useAuth();
     const { date } = useLocalSearchParams<{ date: string }>();
     const selectedDate = date ? new Date(date) : new Date();
 
     const [sessions, setSessions] = useState<Session[]>([]);
 
     useEffect(() => {
-        getSessions(0).then((all) => {
+        if (!token) return;
+        getSessions(token).then((all) => {
             const filtered = all.filter((s) => {
                 return (
                     s.date.getFullYear() === selectedDate.getFullYear() &&

@@ -702,6 +702,10 @@ export default function Settings(props: SettingsProps) {
                 visible={showManageStudents}
                 onClose={() => setShowManageStudents(false)}
                 students={students}
+                classId={props.classId}
+                onStudentRemoved={() => {
+                    setShowManageStudents(false);
+                }}
             />
         </Modal>
     );

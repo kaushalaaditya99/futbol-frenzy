@@ -13,6 +13,7 @@ import Svg, { Circle, ClipPath, Defs, G, Image, Path, Pattern, Text, TextPath, T
 import RowCardClass from "../../classes/RowCardClass";
 import { BookTextIcon, ChartLineIcon, DumbbellIcon, MoveDownIcon, MoveUpIcon, StarIcon, ZapIcon } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
 import { CurveType, LineChart } from "react-native-gifted-charts";
 import CardMetric from "../../CardMetric";
 import DisclosureButton from "../../class/coach/TabProgress/DisclosureButton";
@@ -43,6 +44,7 @@ const lineData = [
 
 export default function CoachView() {
     const router = useRouter();
+    const { token } = useAuth();
 
     const [tab, setTab] = useState("Classes");
     const [tabs] = useState(["Classes", "Overview", "Your Drills", "Your Workouts"]);
@@ -62,9 +64,10 @@ export default function CoachView() {
 
     useEffect(() => {
         const load = async () => {
-            setClasses(await getClasses(0, ""));
-            setDrills(await getDrills(0));
-            setWorkouts(await getSessions(0, ""));
+            if (!token) return;
+            setClasses(await getClasses(token));
+            setDrills(await getDrills());
+            setWorkouts(await getSessions(token));
         }
         load();
     }, []);

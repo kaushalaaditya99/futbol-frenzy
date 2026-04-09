@@ -1,4 +1,5 @@
 import ThemedText from "@/components/ui/ThemedText";
+import { useAuth } from "@/contexts/AuthContext";
 import { getSession, Session } from "@/services/sessions";
 import { getStudents, Student } from "@/services/students";
 import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
@@ -127,6 +128,7 @@ function StudentRow({ student, checked, editMode, onToggle }: StudentRowProps) {
 }
 
 export default function AssignStudents() {
+    const { token } = useAuth();
     const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
     const sessionIdNum = sessionId ? Number(sessionId) : 0;
 
@@ -137,7 +139,8 @@ export default function AssignStudents() {
     const [draftIds, setDraftIds] = useState<Set<number>>(new Set(MOCK_ASSIGNED_IDS));
 
     useEffect(() => {
-        getSession(sessionIdNum, 0).then(setSession);
+        if (!token) return;
+        getSession(token, sessionIdNum).then((s) => { if (s) setSession(s); });
         getStudents(0).then(setStudents);
     }, []);
 

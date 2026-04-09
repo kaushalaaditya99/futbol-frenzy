@@ -1,6 +1,7 @@
 import useFunctionalDate from "@/hooks/useFunctionalDate";
 import { getSessions, Session } from "@/services/sessions";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { MarkedDates } from "react-native-calendars/src/types";
 import Tabs from "./Tabs";
 import TabOverview from "./TabOverview/TabOverview";
@@ -20,6 +21,7 @@ interface CoachViewProps {
 const getStudentFullName = (student: Student) => `${student.first_name} ${student.last_name}`;
 
 export default function CoachView(props: CoachViewProps) {
+    const { token } = useAuth();
     const [classID, setClassID] = useState(0);
     const [teacherID, setTeacherID] = useState(0);
 
@@ -55,7 +57,7 @@ export default function CoachView(props: CoachViewProps) {
   }, [props.param_class])
 
     useEffect(() => {
-        loadSessions(teacherID);
+        loadSessions();
         //loadStudents(classID);
         loadDrills(teacherID);
     }, []);
@@ -88,8 +90,9 @@ export default function CoachView(props: CoachViewProps) {
         setStudents(students);
     }
 
-    const loadSessions = async (teacherID: number) => {
-        const sessions = await getSessions(teacherID);
+    const loadSessions = async () => {
+        if (!token) return;
+        const sessions = await getSessions(token);
         setSessions(sessions);
     }
 
