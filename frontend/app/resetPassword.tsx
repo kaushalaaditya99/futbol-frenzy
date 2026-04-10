@@ -116,7 +116,7 @@ export default function ResetPassword() {
                             label="Send Reset Link"
                         />
                         <Pressable
-                            onPress={() => router.replace("/")}
+                            onPress={() => router.back()}
                             style={{
                                 display: "flex",
                                 flexDirection: "row",
