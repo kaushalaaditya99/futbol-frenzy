@@ -65,8 +65,8 @@ export default function TabProgress(props: TabProgressProps) {
 
     const drillSearchBar = useSearchBar<Drill>(
         props.drills, 
-        (drill: Drill) => `${drill.name}`, 
-        (drill: Drill) => `${drill.name}`
+        (drill: Drill) => `${drill.drillName}`, 
+        (drill: Drill) => `${drill.drillName}`
     );
 
     const sessionSearchBar = useSearchBar<Session>(

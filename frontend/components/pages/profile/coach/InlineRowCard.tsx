@@ -50,7 +50,7 @@ export default function InlineRowCard(props: InlineRowCardProps) {
             translateX.value = event.translationX;
         })
         .onEnd((event) => {
-            console.log(translateX.value)
+            // console.log(translateX.value)
             if (translateX.value <= -50) {
                 scheduleOnRN(props.deleteObject);
             }

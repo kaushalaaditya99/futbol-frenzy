@@ -107,7 +107,7 @@ export default function DrillCardGrid(props: DrillCardGridProps) {
                             color: theme.colors.schemes.light.onSurface
                         }}
                     >
-                        {props.name}
+                        {props.drillName}
                     </ThemedText>
                     <Bookmark
                         size={16}

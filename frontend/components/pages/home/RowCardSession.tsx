@@ -12,7 +12,7 @@ interface RowCardSessionProps extends Session {
 export default function RowCardSession(props: RowCardSessionProps) {
     return (
         <RowCard
-            onPress={() => router.push('/demonstration')}
+            onPress={() => 1}
             title={props.name}
             imageText={props["imageText"]}
             imageTextColor={"black"}

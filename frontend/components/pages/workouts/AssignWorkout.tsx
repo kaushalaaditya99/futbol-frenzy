@@ -43,7 +43,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
         for (const dString of Object.keys(classes)) {
             dates.push(dString.slice(0, 10));
         }
-        console.log(dates);
+        // console.log(dates);
 
         const marked: any = {};
         for (const aDate of dates) {
@@ -64,17 +64,17 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
             selectedColor: theme.colors.coreColors.primary
         };
 
-        console.log(marked);
+        // console.log(marked);
         setMarked(marked);
     }, [date, classes]);
 
     const toggleID = (classes: {[k: string]: Set<number>}, id: number, date: string, hour: number, minute: number, day: string) => {
-        console.log("input date", date);
+        // console.log("input date", date);
         const d = new Date(`${date}T01:00`);
-        console.log("hour", hour, minute, day);
+        // console.log("hour", hour, minute, day);
         d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
         const dString = d.toISOString().slice(0, -8);
-        console.log("toggleID dString", dString);
+        // console.log("toggleID dString", dString);
         const ids = classes[dString] || new Set();
 
         if (!ids.has(id)) 
@@ -89,8 +89,11 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
     }
 
     const getIDs = (classes: any, date: string, hour: number, minute: number, day: string) => {
+        if (!date)
+            return new Set();
+
         const d = new Date(`${date}T00:00`);
-        d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
+        d.setUTCHours(hour + ((day === "PM" && hour !== 12) ? 12 : 0), minute, 0, 0);
         const dString = d.toISOString().slice(0, -8);
         const ids = classes[dString] || new Set();
         return ids;

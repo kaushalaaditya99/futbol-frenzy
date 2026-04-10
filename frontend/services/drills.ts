@@ -1,31 +1,34 @@
-import { AccessControl } from "@/components/pages/drills/useDrillSearchBar";
-import axios from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import resolveEndpoint from "./resolveEndpoint";
+import { User } from "./user";
 
-export interface Drillv2 {
-  id: number;
-  videoURL: string;
-  name: string;
-  type: string;
-  //time: number;
-  level: string;
-  instructions: string;
-  accessControl: "public" | "private";
-  uploadedByID: number;
-  uploadedByName: string;
-  //bookmarked: boolean;
+export interface Drill {
+    id: number;
+    coachID: number;
+    url: string;
+    drillName: string;
+    drillType: string;
+    time: number;
+    minutes: number;
+    repetitions: number;
+    difficultyLevel: string;
+    instructions: string;
+    imageText?: string;
+    imageTextColor?: string;
+    imageBackgroundColor?: string;
+    publicDrill: boolean;
+    bookmarked: boolean;
+    coach: User;
 }
 
 const API_URL = resolveEndpoint("/api/");
 
-export async function getDrills(): Promise<Drillv2[]> {
+export async function getDrills(): Promise<Drill[]> {
   try {
     const res = await fetch(`${API_URL}drills/`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
 
-    console.log("backend drills:", data);
+    // console.log("backend drills:", data);
 
     return data.map((d: any) => ({
       id: d.id,
@@ -45,6 +48,7 @@ export async function getDrills(): Promise<Drillv2[]> {
     return [];
   }
 }
+
 
 export async function deleteDrill(token: string, drillID: number): Promise<boolean> {
     const response = await fetch(`${API_URL}/drills/${drillID}/`, {
@@ -398,35 +402,5 @@ export async function getDrills(id: number): Promise<Array<Drillv2>> {
     }
 }
 
-export async function getDrill(userID: number, drillID: number): Promise<Drillv2> {
-    const drills = await getDrills(userID);
-    const drill = drills.find(d => d.id === drillID);
-    if (drill) {
-        return drill;
-    }
-    // If not found, try directly from API
-    try {
-        const API_URL = resolveEndpoint(`/api/drills/${drillID}/`);
-        const token = await getAuthToken();
-        const headers = token ? { Authorization: `Token ${token}` } : {};
-        const response = await axios.get(API_URL, { headers });
-        const drill = response.data;
-        return {
-            id: drill.id,
-            videoURL: drill.url,
-            name: drill.drillName,
-            type: drill.drillType,
-            time: drill.time,
-            level: drill.difficultyLevel,
-            instructions: drill.instructions,
-            accessControl: drill.publicDrill ? "public" : "private",
-            uploadedByID: drill.coachID,
-            uploadedByName: drill.coachName || "Unknown",
-            bookmarked: false,
-        };
-    } catch (error) {
-        console.error("Failed to fetch drill:", error);
-        throw new Error(`Drill ${drillID} not found`);
-    }
-}
+
 */

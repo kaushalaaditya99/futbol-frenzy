@@ -31,7 +31,7 @@ export default function Settings() {
   const toggleDarkMode = async (currentSetting: boolean) => {
     if (!token)
     {
-      console.log("User hasn't been properly authenticated")
+      // console.log("User hasn't been properly authenticated")
       return;
     }
     setDarkMode(currentSetting);
@@ -50,7 +50,7 @@ export default function Settings() {
       }
       catch(err)
       {
-        console.log("Error retrieving user data: ", err)
+        // console.log("Error retrieving user data: ", err)
         throw err;
       }
     }

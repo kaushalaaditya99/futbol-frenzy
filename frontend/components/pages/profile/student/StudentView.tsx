@@ -226,7 +226,7 @@ export default function StudentView() {
                                     key={i}
                                 >
                                     <InlineRowCard
-                                        title={drill.name || ""}
+                                        title={drill.drillName || ""}
                                         imageBackgroundColor={"lightgray"}
                                         imageTextColor={"black"}
                                         imageText={""}

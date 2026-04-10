@@ -229,7 +229,7 @@ export default function CoachView() {
                                     key={i}
                                 >
                                     <InlineRowCard
-                                        title={drill.name || ""}
+                                        title={drill.drillName || ""}
                                         imageBackgroundColor={"lightgray"}
                                         imageTextColor={"black"}
                                         imageText={""}
@@ -272,8 +272,8 @@ export default function CoachView() {
                                             deleteWorkout(token, workout.id);
                                             setWorkouts([...workouts].filter(w => w.id != workout.id))
                                         }}
-                                        onPress={() => 1}
-                                        // onPress={() => router.push(`/workouts/${workout.id}`)}
+                                        // onPress={() => 1}
+                                        onPress={() => router.push(`/workouts/${workout.id}`)}
                                     />
                                 </View>
                             ))}
