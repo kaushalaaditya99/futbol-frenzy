@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Settings as SettingsIcon,
 } from "lucide-react-native";
+import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 import { ExtendedUser, loadExtendedProfile, defaultExtendedUser, patchUserSettings } from "@/services/extendeduser";
 import ThemedText from "@/components/ui/ThemedText";
@@ -27,6 +28,7 @@ export default function Settings() {
 
   const [id, setId] = useState("");
   const { token, loaded, role } = useAuth();
+  const router = useRouter();
 
   const toggleDarkMode = async (currentSetting: boolean) => {
     if (!token)
@@ -136,7 +138,7 @@ export default function Settings() {
             overflow: "hidden",
           }}
         >
-          <SettingsRow icon={User} label="Edit Profile" />
+          <SettingsRow icon={User} label="Edit Profile" onPress={() => router.push("/edit-profile")} />
           <Divider />
           <SettingsRow icon={Lock} label="Change Password" />
           <Divider />
