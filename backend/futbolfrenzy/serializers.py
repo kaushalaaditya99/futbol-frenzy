@@ -166,7 +166,7 @@ class SoccerClassSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SoccerClass
-        fields = ['id', 'className', 'classCode', 'coachID', 'assignments', 'students', 'coach', 'imageText', 'imageTextColor', 'imageBackgroundColor']
+        fields = ['id', 'className', 'classCode', 'coachID', 'description', 'assignments', 'students', 'coach', 'imageText', 'imageTextColor', 'imageBackgroundColor']
         read_only_fields = ['id', 'students', 'coach']
 
     def get_coach(self, obj):

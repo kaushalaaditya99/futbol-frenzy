@@ -46,6 +46,17 @@ export async function getDrills(): Promise<Drillv2[]> {
   }
 }
 
+export async function deleteDrill(token: string, drillID: number): Promise<boolean> {
+    const response = await fetch(`${API_URL}/drills/${drillID}/`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Token ${token}`,
+        },
+    });
+    return response.ok;
+}
+
+
 // the mock drill data, didn't wanna delete incase anyone wants to use it
 
 /*

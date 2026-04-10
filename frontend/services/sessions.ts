@@ -108,3 +108,13 @@ export async function getSession(token: string, sessionID: number): Promise<Sess
 export async function submitSessionForGrading(sessionID: number, studentID: number, drills: {[drillID: number]: string}): Promise<boolean> {
     return true;
 }
+
+export async function deleteWorkout(token: string, workoutID: number): Promise<boolean> {
+    const response = await fetch(`${API_URL}/workouts/${workoutID}/`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Token ${token}`,
+        },
+    });
+    return response.ok;
+}

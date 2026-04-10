@@ -1,8 +1,6 @@
 import SimpleButton from "@/components/ui/button/SimpleButton";
 import SimpleHalfWidthButton from "@/components/ui/button/SimpleHalfWidthButton";
-import SimpleInlineButton from "@/components/ui/button/SimpleInlineButton";
 import InputText from "@/components/ui/input/InputText";
-import Separator from "@/components/ui/Separator";
 import SeparatorText from "@/components/ui/SeparatorText";
 import ThemedText from "@/components/ui/ThemedText";
 import { fontSize, padding, theme } from "@/theme";
@@ -10,7 +8,7 @@ import { router } from "expo-router";
 import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import resolveEndpoint from '@/services/resolveEndpoint';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import useGoogleAuth from '@/hooks/useGoogleauth';
 
