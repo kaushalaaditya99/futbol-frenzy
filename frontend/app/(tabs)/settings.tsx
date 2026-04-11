@@ -140,7 +140,7 @@ export default function Settings() {
         >
           <SettingsRow icon={User} label="Edit Profile" onPress={() => router.push("/edit-profile")} />
           <Divider />
-          <SettingsRow icon={Lock} label="Change Password" />
+          <SettingsRow icon={Lock} label="Change Password" onPress={() => router.push("/change-password")} />
           <Divider />
           <SettingsRow icon={Link} label="Connected Accounts" rightText="G" />
         </View>

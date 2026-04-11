@@ -179,6 +179,13 @@ function TabsLayout() {
                     href: null,
                 }}
             />
+            <Tabs.Screen
+                name="change-password"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
         </Tabs>
   );
 }

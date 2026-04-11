@@ -63,7 +63,7 @@ export default function EditProfile() {
 
       await refreshProfile();
       Alert.alert("Success", "Profile updated successfully.", [
-        { text: "OK", onPress: () => router.back() },
+        { text: "OK", onPress: () => router.replace("/settings") },
       ]);
     } catch (err) {
       console.error("Failed to update profile:", err);
@@ -83,7 +83,7 @@ export default function EditProfile() {
           paddingVertical: padding.lg,
         }}
       >
-        <Pressable onPress={() => router.back()} style={{ marginRight: padding.lg }}>
+        <Pressable onPress={() => router.replace("/settings")} style={{ marginRight: padding.lg }}>
           <ArrowLeft size={24} color={colors.schemes.light.onBackground} />
         </Pressable>
         <ThemedText style={{ fontSize: fontSize.xl, fontWeight: "700", color: colors.schemes.light.onBackground, flex: 1 }}>

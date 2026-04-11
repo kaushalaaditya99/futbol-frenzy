@@ -40,6 +40,12 @@ export default function CreateAccount() {
             return;
         }
 
+        if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password))
+        {
+            alert("Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.")
+            return;
+        }
+
         try {
             const response = await fetch(`${API_URL}user/`, {
             method: 'POST',
@@ -157,6 +163,16 @@ export default function CreateAccount() {
                         onChangeText={setPasswordConfirm}
                         secureTextEntry={true}
                     />
+                    <ThemedText
+                        style={{
+                            fontSize: fontSize.sm,
+                            letterSpacing: letterSpacing.lg,
+                            color: colors.schemes.light.onSurfaceVariant,
+                            lineHeight: 18,
+                        }}
+                    >
+                        Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.
+                    </ThemedText>
                     <View
                         style={{
                             display: "flex",

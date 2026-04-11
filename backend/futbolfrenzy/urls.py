@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from . import views
 from . import viewsets
-from .views import me, detailed_user_info
+from .views import me, detailed_user_info, change_password
 
 api_router = DefaultRouter()
 api_router.register(r'user', viewsets.UserViewSet)
@@ -28,6 +28,7 @@ urlpatterns = [
     # The Router will define the paths that ultimately
     # allow us to access /api/drills and /api/enrollments.
     path('api/', include(api_router.urls)),
+    path('api/users/change-password/', change_password, name='change-password'),
     path('api/google-auth/', views.google_auth),
     path('api/set-role/', views.set_role),
     path('', views.home, name='test-home'),

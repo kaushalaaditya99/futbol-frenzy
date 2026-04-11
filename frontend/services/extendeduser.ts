@@ -88,6 +88,23 @@ export async function patchUserSettings(id: number, token: string, payload: any)
 }
 
 
+export async function changePassword(token: string, currentPassword: string, newPassword: string) {
+  const res = await fetch(`${API_URL}users/change-password/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
 export const defaultExtendedUser: ExtendedUser = {
   id: 0,
   username: 'alexrivera',
