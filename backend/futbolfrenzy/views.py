@@ -60,6 +60,41 @@ def detailed_user_info(request):
         'isDarkMode': extended_settings.isDarkMode,
     })
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    user = request.user
+    current_password = request.data.get('current_password')
+    new_password = request.data.get('new_password')
+
+    if not current_password or not new_password:
+        return Response({'error': 'Both current_password and new_password are required.'}, status=400)
+
+    if not user.check_password(current_password):
+        return Response({'error': 'Current password is incorrect.'}, status=400)
+
+    if len(new_password) < 8:
+        return Response({'error': 'New password must be at least 8 characters.'}, status=400)
+
+    import re
+    if not re.search(r'[A-Z]', new_password):
+        return Response({'error': 'Password must contain at least one uppercase letter.'}, status=400)
+    if not re.search(r'[a-z]', new_password):
+        return Response({'error': 'Password must contain at least one lowercase letter.'}, status=400)
+    if not re.search(r'[0-9]', new_password):
+        return Response({'error': 'Password must contain at least one number.'}, status=400)
+    if not re.search(r'[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>/?`~]', new_password):
+        return Response({'error': 'Password must contain at least one special character.'}, status=400)
+
+    user.set_password(new_password)
+    user.save()
+
+    # Re-create the auth token so the user stays logged in
+    Token.objects.filter(user=user).delete()
+    new_token = Token.objects.create(user=user)
+
+    return Response({'message': 'Password changed successfully.', 'token': new_token.key})
+
+@api_view(['POST'])
 @permission_classes([AllowAny])
 def google_auth(request):
     token = request.data.get('idToken')
