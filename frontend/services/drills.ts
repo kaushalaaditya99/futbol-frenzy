@@ -5,6 +5,7 @@ export interface Drill {
     id: number;
     coachID: number;
     url: string;
+    name: string; // Same as drillName cba
     drillName: string;
     drillType: string;
     time: number;
@@ -31,6 +32,7 @@ export async function getDrills(): Promise<Drill[]> {
     // console.log("backend drills:", data);
 
     return data.map((d: any) => ({
+        ...d,
       id: d.id,
       videoURL: d.url,
       name: d.drillName,

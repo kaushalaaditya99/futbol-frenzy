@@ -2,7 +2,7 @@ import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import ProfilePicture from "@/components/ui/user/ProfilePicture";
 import { Class, deleteClass, getClasses } from "@/services/classes";
-import { deleteDrill, Drillv2 as Drill, getDrills } from "@/services/drills";
+import { deleteDrill, Drill, getDrills } from "@/services/drills";
 import { deleteWorkout, getSessions, Session } from "@/services/sessions";
 import { shadow, theme } from "@/theme";
 import { Fragment, useEffect, useState } from "react";
@@ -220,8 +220,7 @@ export default function CoachView() {
                     {tab === "Your Drills" &&
                         <View
                             style={{
-                                flex: 1,
-                                rowGap: theme.padding.md
+                                flex: 1
                             }}
                         >
                             {drills.map((drill, i) => (
@@ -229,7 +228,7 @@ export default function CoachView() {
                                     key={i}
                                 >
                                     <InlineRowCard
-                                        title={drill.drillName || ""}
+                                        title={drill.name || ""}
                                         imageBackgroundColor={"lightgray"}
                                         imageTextColor={"black"}
                                         imageText={""}
@@ -251,8 +250,7 @@ export default function CoachView() {
                     {tab === "Your Workouts" &&
                         <View
                             style={{
-                                flex: 1,
-                                rowGap: theme.padding.md
+                                flex: 1
                             }}
                         >
                             {workouts.map((workout, i) => (
@@ -280,11 +278,7 @@ export default function CoachView() {
                         </View>
                     }
                     {tab === "Your Classes" &&
-                        <View
-                            style={{
-                                rowGap: theme.padding.md,
-                            }}
-                        >
+                        <View>
                             {classes.map((class_, i) => (
                                 <View
                                     key={i}
