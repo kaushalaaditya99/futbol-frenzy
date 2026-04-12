@@ -20,7 +20,7 @@ export default function ButtonBack(props: ButtonBackProps) {
                 alignItems: "center",
                 justifyContent: "center",
                 borderRadius: 100,
-                backgroundColor: colors.schemes.light.surfaceContainer,
+                backgroundColor: colors.schemes.light.surfaceContainerHigh,
                 ...props.buttonStyle
             }}
         >

@@ -1,15 +1,17 @@
 import BottomScreen from "@/components/ui/BottomScreen";
 import Button from "@/components/ui/button/Button";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
+import IconButton from "@/components/ui/button/IconButton";
 import InlineButton from "@/components/ui/button/InlineButton";
 import Calendar from "@/components/ui/calendar/Calendar";
 import InputCheckbox from "@/components/ui/input/InputCheckbox";
 import InputDropdown from "@/components/ui/input/InputDropdown";
 import InputDropdownV2 from "@/components/ui/input/InputDropdownV2";
+import InputDropdownV3 from "@/components/ui/input/InputDropdownV3";
 import ThemedText from "@/components/ui/ThemedText";
 import { Class } from "@/services/classes"
-import { theme } from "@/theme";
-import { CalendarIcon, CheckIcon, ClockIcon } from "lucide-react-native";
+import { shadow, theme } from "@/theme";
+import { CalendarIcon, CheckIcon, ClockIcon, PlusIcon, Trash2Icon, UsersRoundIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import { DateData } from "react-native-calendars";
@@ -31,6 +33,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
     const [minute, setMinute] = useState(0);
     const [day, setDay] = useState("PM");
     const [marked, setMarked] = useState<any>({});
+    const [selectedClasses, setSelectedClasses] = useState<number[]>([]);
 
     useEffect(() => {
         const today = new Date();
@@ -43,7 +46,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
         for (const dString of Object.keys(classes)) {
             dates.push(dString.slice(0, 10));
         }
-        console.log(dates);
+        // console.log(dates);
 
         const marked: any = {};
         for (const aDate of dates) {
@@ -64,17 +67,17 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
             selectedColor: theme.colors.coreColors.primary
         };
 
-        console.log(marked);
+        // console.log(marked);
         setMarked(marked);
     }, [date, classes]);
 
     const toggleID = (classes: {[k: string]: Set<number>}, id: number, date: string, hour: number, minute: number, day: string) => {
-        console.log("input date", date);
+        // console.log("input date", date);
         const d = new Date(`${date}T01:00`);
-        console.log("hour", hour, minute, day);
+        // console.log("hour", hour, minute, day);
         d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
         const dString = d.toISOString().slice(0, -8);
-        console.log("toggleID dString", dString);
+        // console.log("toggleID dString", dString);
         const ids = classes[dString] || new Set();
 
         if (!ids.has(id)) 
@@ -88,12 +91,60 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
         });
     }
 
+    useEffect(() => {
+        console.log('ok', classes)
+    }, [classes])
+
+    const addID = (classes: {[k: string]: Set<number>}, id: number, date: string, hour: number, minute: number, day: string) => {
+        setClasses(prevClasses => {
+            const d = new Date(`${date}T01:00`);
+            d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
+            const dString = d.toISOString().slice(0, -8);
+            const ids = new Set(prevClasses[dString] || []);  // new Set!
+
+            if (!ids.has(id)) ids.add(id);
+
+            return { ...prevClasses, [dString]: ids };
+        });
+    }
+
+    const delID = (classes: {[k: string]: Set<number>}, id: number, date: string, hour: number, minute: number, day: string) => {
+        setClasses(prevClasses => {
+            const d = new Date(`${date}T01:00`);
+            d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
+            const dString = d.toISOString().slice(0, -8);
+            const ids = new Set(prevClasses[dString] || []);  // new Set!
+
+            ids.delete(id);
+
+            return { ...prevClasses, [dString]: ids };
+        });
+    }
+
     const getIDs = (classes: any, date: string, hour: number, minute: number, day: string) => {
+        if (!date)
+            return new Set();
+
         const d = new Date(`${date}T00:00`);
-        d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
+        d.setUTCHours(hour + ((day === "PM" && hour !== 12) ? 12 : 0), minute, 0, 0);
         const dString = d.toISOString().slice(0, -8);
         const ids = classes[dString] || new Set();
         return ids;
+    }
+
+    const parseDateTime = (dString: string) => {
+        const [datePart, timePart] = dString.split('T');
+        const [rawHour, minute] = timePart.split(':').map(Number);
+        const day = rawHour >= 12 ? "PM" : "AM";
+        const hour = rawHour > 12 ? rawHour - 12 : rawHour === 0 ? 12 : rawHour;
+
+        return { date: datePart, hour, minute, day };
+    }
+
+    const formatDate = (datePart: string) => {
+        const [year, month, day] = datePart.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
+        return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
     }
 
     return (
@@ -133,49 +184,153 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
                     />
                     <View
                         style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            columnGap: theme.padding.md
+                            // flexDirection: "row",
+                            // flex: 1,
+                            // alignItems: "center",
+                            rowGap: theme.padding.md
                         }}
                     >
-                        <ClockIcon
-                            size={20}
-                        />
                         <View
                             style={{
                                 flexDirection: "row",
                                 alignItems: "center",
-                                columnGap: theme.padding.sm
+                                columnGap: theme.padding.md,
+                                minHeight: 32,
+                                maxHeight: 32,
+                                height: 32,
+                                // backgroundColor: "yellow"
                             }}
                         >
-                            <InputDropdownV2
-                                value={hour}
-                                options={hours as [number, string][]}
-                                onChange={setHour}
-                                svgStyle={{
-                                    display: "none"
+                            {/* <ClockIcon
+                                size={20}
+                                style={{
+                                    // backgroundColor: "red"
                                 }}
-                            />
-                            <ThemedText>
-                                :
-                            </ThemedText>
-                            <InputDropdownV2
-                                value={minute}
-                                options={minutes as [number, string][]}
-                                onChange={setMinute}
-                                svgStyle={{
-                                    display: "none"
+                            /> */}
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    columnGap: theme.padding.sm
                                 }}
-                            />
-                            <InputDropdownV2
-                                value={day}
-                                options={[["AM", "AM"], ["PM", "PM"]]}
-                                onChange={setDay}
-                                svgStyle={{
-                                    display: "none"
+                            >
+                                <InputDropdownV2
+                                    value={hour}
+                                    options={hours as [number, string][]}
+                                    onChange={setHour}
+                                    containerStyle={{
+                                        minHeight: 32,
+                                        maxHeight: 32,
+                                        height: 32,
+                                        // backgroundColor: "orange"
+                                    }}
+                                    buttonStyle={{
+                                        minHeight: 32,
+                                        maxHeight: 32,
+                                        height: 32,
+                                        // backgroundColor: "orange"
+                                    }}
+                                    svgStyle={{
+                                        display: "none"
+                                    }}
+                                />
+                                <ThemedText
+                                    // style={{
+                                    //     minHeight: 24,
+                                    //     maxHeight: 24,
+                                    //     height: 24
+                                    // }}
+                                >
+                                    :
+                                </ThemedText>
+                                <InputDropdownV2
+                                    value={minute}
+                                    options={minutes as [number, string][]}
+                                    onChange={setMinute}
+                                    containerStyle={{
+                                        minHeight: 32,
+                                        maxHeight: 32,
+                                        height: 32
+                                    }}
+                                    buttonStyle={{
+                                        minHeight: 32,
+                                        maxHeight: 32,
+                                        height: 32,
+                                        // backgroundColor: "orange"
+                                    }}
+                                    svgStyle={{
+                                        display: "none"
+                                    }}
+                                />
+                                <InputDropdownV2
+                                    value={day}
+                                    options={[["AM", "AM"], ["PM", "PM"]]}
+                                    onChange={setDay}
+                                    containerStyle={{
+                                        minHeight: 32,
+                                        maxHeight: 32,
+                                        height: 32
+                                    }}
+                                    buttonStyle={{
+                                        minHeight: 32,
+                                        maxHeight: 32,
+                                        height: 32,
+                                        // backgroundColor: "orange"
+                                    }}
+                                    svgStyle={{
+                                        display: "none"
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                // flexShrink: 1,
+                                flex: 1,
+                                alignItems: "center",
+                                columnGap: theme.padding.md,
+                                // backgroundColor: "red"
+                            }}
+                        >
+                            {/* <UsersRoundIcon
+                                size={20}
+                            /> */}
+                            <InputDropdownV3
+                                values={selectedClasses}
+                                options={props.classes.map((c, i) => [c.id, c.className])}
+                                labelPrefix=""
+                                setValues={setSelectedClasses}
+                                defaultLabel="Select Classes"
+                                containerStyle={{
+                                    minHeight: 32,
+                                    maxHeight: 32,
+                                    height: 32,
+                                    paddingVertical: 0,
+                                    // width: 144,
+                                    // flexDirection: "row",
+                                    // alignItems: "center",
+                                    // justifyContent: "center"
                                 }}
                             />
                         </View>
+                        <Button
+                            {...buttonTheme.white}
+                            outerStyle={{
+                                height: 32,
+                                minHeight: 32,
+                                maxHeight: 32
+                            }}
+                            onPress={() => {
+                                for (const classID of selectedClasses)
+                                    addID(classes, classID, date, hour, minute, day)
+                                console.log('here')
+                            }}
+                        >
+                            <PlusIcon
+                                size={20}
+                            />
+                        </Button>
                     </View>
                     <View
                         style={{
@@ -184,7 +339,87 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
                             borderColor: theme.colors.schemes.light.outlineVariant,
                         }}
                     >
-                        <View
+                        {Object.entries(classes).map(([date, dateClasses], i) => {
+                            const dateData = parseDateTime(date);
+
+                            if (!dateClasses.size) {
+                                return (
+                                    <></>
+                                )
+                            }
+
+                            return (
+                                <View key={i}>
+                                    <View>
+                                        <ThemedText
+                                            style={{
+                                                fontSize: 16,
+                                                fontWeight: 500,
+                                                letterSpacing: theme.letterSpacing.xl * 1,
+                                                marginBottom: 12
+                                            }}
+                                        >
+                                            {`${formatDate(parseDateTime(date)['date'])} at ${parseDateTime(date)['hour'].toString().padStart(2, '0')}:${parseDateTime(date)['minute'].toString().padStart(2, '0')} ${parseDateTime(date)['day']}`}
+                                        </ThemedText>
+                                    </View>
+                                    {props.classes.filter(c => dateClasses.has(c.id)).map((c, i) => (
+                                        <View 
+                                            key={i}
+                                            style={{
+                                                // height: 32,
+                                                paddingHorizontal: theme.padding.sm,
+                                                paddingLeft: theme.padding.lg,
+                                                paddingVertical: theme.padding.sm,
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                columnGap: theme.padding.lg,
+                                                borderRadius: theme.borderRadius.base,
+                                                borderWidth: 1,
+                                                borderColor: theme.colors.schemes.light.outlineVariant,
+                                                ...shadow.md,
+                                                backgroundColor: 'white'
+                                            }}
+                                        >
+                                            <ThemedText
+                                                style={{
+                                                    fontSize: 14,
+                                                    letterSpacing: theme.letterSpacing.xl * 2
+                                                }}
+                                            >
+                                                {c.className}
+                                            </ThemedText>
+                                            <IconButton
+                                                {...buttonTheme.white}
+                                                outerStyle={{
+                                                    height: 32,
+                                                    maxHeight: 32,
+                                                    minHeight: 32
+                                                }}
+                                                tintColor='#ffd1d1'
+                                                borderColor='#ffd1d1'
+                                                innerMostStyle={{
+                                                    backgroundColor: '#ffd1d1'
+                                                }}
+                                                onPress={() => delID(classes, c.id, dateData['date'], dateData['hour'], dateData['minute'], dateData['day'])}
+                                            >
+                                                <Trash2Icon
+                                                    size={18}
+                                                    color='#e43131'
+                                                />
+                                            </IconButton>
+                                        </View>
+                                    ))}
+                                    <ThemedText>
+                                    </ThemedText>
+                                </View>
+                            )
+                        })}
+                        {/* <ThemedText>
+                            {JSON.stringify(selectedClasses)} 
+                            {JSON.stringify(classes)} 
+                        </ThemedText> */}
+                        {/* <View
                             style={{
                                 flexDirection: "row",
                                 flexWrap: "wrap",
@@ -225,7 +460,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
                                     </ThemedText>
                                 </Pressable>
                             ))}
-                        </View>
+                        </View> */}
                     </View>
                 </View>
                 <Button

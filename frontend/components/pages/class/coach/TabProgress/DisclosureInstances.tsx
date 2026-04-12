@@ -116,7 +116,7 @@ export default function DisclosureInstances(props: DisclosureInstancesProps) {
                                     letterSpacing: letterSpacing.lg
                                 }}
                             >
-                                {instance.name}
+                                {instance.drillName}
                             </ThemedText>
                             <ThemedText
                                 style={{

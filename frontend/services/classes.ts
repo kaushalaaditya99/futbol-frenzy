@@ -87,7 +87,7 @@ export async function joinClass(token: string, classCode: string): Promise<boole
         },
     });
     if (!response.ok) {
-        console.log("Class not found for code:", classCode);
+        // console.log("Class not found for code:", classCode);
         return false;
     }
 
@@ -101,8 +101,8 @@ export async function joinClass(token: string, classCode: string): Promise<boole
 
     const userID = user.id;
 
-    console.log("Class ID", classID);
-    console.log("User ID", userID);
+    // console.log("Class ID", classID);
+    // console.log("User ID", userID);
 
     // Join Class
     const joinClassResponse = await fetch(`${API_URL}/classmembers/`, {
@@ -131,8 +131,8 @@ export async function createClass(token: string, className: string, imageBackgro
         return false;
 
     const coachID = user.id;
-    console.log("User", user);
-    console.log("Coach ID", coachID);
+    // console.log("User", user);
+    // console.log("Coach ID", coachID);
 
     const response = await fetch(`${API_URL}/classes/`, {
         method: "POST",

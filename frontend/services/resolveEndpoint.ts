@@ -7,8 +7,8 @@ export default function resolveEndpoint(endpoint: string) {
     // So, I've added localhost as it refers to the device.
     const computerIPV4Address = Constants.expoConfig?.hostUri?.split(':')[0] || "localhost";
     const URL = `http://${computerIPV4Address}:8000${endpoint}`;
-    console.log("Computer's IPV4 Address: ", computerIPV4Address);
-    console.log("URL: ", URL);
+    // console.log("Computer's IPV4 Address: ", computerIPV4Address);
+    // console.log("URL: ", URL);
     return URL;
 }
 

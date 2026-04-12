@@ -19,7 +19,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
             const data = await loadExtendedProfile(token);
             setProfile(data);
         } catch (err) {
-            console.log("ProfileContext: failed to load profile", err);
+            // console.log("ProfileContext: failed to load profile", err);
         }
     };
 

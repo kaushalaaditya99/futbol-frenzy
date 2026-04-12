@@ -1,14 +1,6 @@
+import { Drill } from "./drills";
 import resolveEndpoint from "./resolveEndpoint";
-
-export interface Drill {
-    id: number;
-    url: string;
-    name: string;
-    type: string;
-    time: number;
-    level: string;
-    instructions: string;
-}
+import { User } from "./user";
 
 export interface Session {
     id: number;
@@ -26,6 +18,7 @@ export interface Session {
     imageText: string;
     bookmarked: boolean;
     accessControl: string;
+    coach: User;
 }
 
 const API_URL = resolveEndpoint("/api");
@@ -40,7 +33,7 @@ export async function getSessions(token: string): Promise<Array<Session>> {
         });
 
         if (!response.ok) {
-            console.log("Failed to fetch workouts:", response.status);
+            // console.log("Failed to fetch workouts:", response.status);
             return [];
         }
 
@@ -88,8 +81,9 @@ export async function getSession(token: string, sessionID: number): Promise<Sess
             name: workout.workoutName,
             type: workout.workoutType,
             durationInMins: 0,
+            coach: workout.coach,
             class: "",
-            drills: [],
+            drills: workout.drills,
             isNew: false,
             isDue: workout.dueDate ? new Date(workout.dueDate) >= new Date() : false,
             imageBackgroundColor: workout.imageBackgroundColor || "#1C1C1C",
@@ -107,4 +101,14 @@ export async function getSession(token: string, sessionID: number): Promise<Sess
 
 export async function submitSessionForGrading(sessionID: number, studentID: number, drills: {[drillID: number]: string}): Promise<boolean> {
     return true;
+}
+
+export async function deleteWorkout(token: string, workoutID: number): Promise<boolean> {
+    const response = await fetch(`${API_URL}/workouts/${workoutID}/`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Token ${token}`,
+        },
+    });
+    return response.ok;
 }

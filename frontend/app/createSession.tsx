@@ -119,7 +119,7 @@ function DraggableDrillRow(props: DraggableDrillRowProps) {
                         color: colors.schemes.light.onSurface,
                     }}
                 >
-                    {props.drill.name}
+                    {props.drill.drillName}
                 </ThemedText>
                 <ThemedText
                     style={{

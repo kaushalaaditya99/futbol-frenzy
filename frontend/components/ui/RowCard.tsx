@@ -15,10 +15,10 @@ interface RowCardProps {
 
 export default function RowCard(props: RowCardProps) {
     const fontSizes = {
-        0: fontSize.sm,
-        1: fontSize.xl,
+        0: fontSize.md,
+        1: fontSize.md,
         2: fontSize.md,
-        3: fontSize.sm,
+        3: fontSize.md,
     }
 
     return (
@@ -54,11 +54,11 @@ export default function RowCard(props: RowCardProps) {
                     numberLines={1}
                     style={{
                         fontSize: fontSizes[((!props.imageText ? 0 : props.imageText.length) % 4 || 0) as 0|1|2|3],
-                        fontWeight: 500,
+                        fontWeight: 600,
                         color: props.imageTextColor || "black"
                     }}
                 >
-                    {props.imageText && props.imageText.toUpperCase().slice(0, 3)}
+                    {props.imageText && props.imageText.toUpperCase().slice(0, 2)}
                 </ThemedText>
             </View>
             <View

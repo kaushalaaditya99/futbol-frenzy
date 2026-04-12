@@ -5,6 +5,7 @@ import { ChevronDown, LucideProps, LucideTableCellsMerge } from 'lucide-react-na
 import { useEffect, useState } from 'react';
 import { Pressable, TextStyle, View, ViewStyle } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 export interface InputDropdownV2Props<T> {
     value: T;
@@ -63,7 +64,7 @@ export default function InputDropdownV2<T>(props: InputDropdownV2Props<T>) {
                     <ThemedText
                         style={{
                             fontSize: 14,
-                            fontWeight: 500,
+                            fontWeight: 400,
                             letterSpacing: theme.letterSpacing.xl,
                             color: theme.colors.schemes.light.onSurface,
                             ...props.textStyle
