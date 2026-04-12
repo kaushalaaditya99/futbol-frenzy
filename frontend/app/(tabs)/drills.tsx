@@ -9,7 +9,7 @@ import Header from "@/components/ui/user/Header";
 import SideBar from "@/components/ui/user/sideBar/SideBar";
 import SideBarDim from "@/components/ui/user/sideBar/SideBarDim";
 import useSideBar from "@/components/ui/user/sideBar/useSideBar";
-import { Drillv2 as Drill, getDrills } from "@/services/drills";
+import { Drill, getDrills } from "@/services/drills";
 import { fontSize, letterSpacing, margin, padding, theme } from "@/theme";
 import { router } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
@@ -28,18 +28,18 @@ export default function Drills() {
     const [feed, setFeed] = useState("library");
     const [viewType, setViewType] = useState("list");
 
-    const { role } = useAuth();
+    const { role, token } = useAuth();
     const sideBar = useSideBar();
     const [drills, setDrills] = useState<Array<Drill>>([]);
     const drillSearchBar = useDrillSearchBar(drills);
 
     useEffect(() => {
         const id = 0;
-        loadDrills(id);
-    }, []);
+        loadDrills(id, token);
+    }, [token]);
 
     const loadDrills = async (id: number) => {
-        const drills = await getDrills();
+        const drills = await getDrills(token);
         setDrills(drills);
     }
 

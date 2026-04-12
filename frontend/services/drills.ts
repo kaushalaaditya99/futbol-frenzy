@@ -23,9 +23,16 @@ export interface Drill {
 
 const API_URL = resolveEndpoint("/api/");
 
-export async function getDrills(): Promise<Drill[]> {
+export async function getDrills(token: string): Promise<Drill[]> {
   try {
-    const res = await fetch(`${API_URL}drills/`);
+    const res = await fetch(`${API_URL}drills/`,
+      {
+        headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "application/json",
+
+        },
+      });
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
 
