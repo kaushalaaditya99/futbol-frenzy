@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass
+from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 import os
 import boto3
 from rest_framework.decorators import api_view
@@ -93,6 +93,156 @@ def change_password(request):
     new_token = Token.objects.create(user=user)
 
     return Response({'message': 'Password changed successfully.', 'token': new_token.key})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def coach_submissions(request):
+    from django.utils import timezone
+    coach = request.user
+
+    # Get all classes this coach owns
+    coach_classes = SoccerClass.objects.filter(coachID=coach)
+
+    # Get all assignment IDs across those classes
+    assignment_ids = set()
+    class_by_assignment = {}  # assignment_id -> class_name
+    for sc in coach_classes:
+        for assignment in sc.assignments.all():
+            assignment_ids.add(assignment.id)
+            class_by_assignment[assignment.id] = sc.className
+
+    # Filter by today if ?today=true
+    submissions = Submission.objects.filter(
+        assignmentID__in=assignment_ids
+    ).select_related('studentID', 'assignmentID', 'assignmentID__workoutID').order_by('-dateSubmitted')
+
+    today_only = request.query_params.get('today', '').lower() == 'true'
+    if today_only:
+        now = timezone.now()
+        submissions = submissions.filter(
+            dateSubmitted__date=now.date()
+        )
+
+    limit = request.query_params.get('limit')
+    if limit:
+        submissions = submissions[:int(limit)]
+
+    results = []
+    for sub in submissions:
+        workout = sub.assignmentID.workoutID
+        results.append({
+            'id': sub.id,
+            'studentName': f"{sub.studentID.first_name} {sub.studentID.last_name}",
+            'studentID': sub.studentID.id,
+            'drillName': workout.workoutName if workout else '',
+            'className': class_by_assignment.get(sub.assignmentID.id, ''),
+            'dateSubmitted': sub.dateSubmitted.isoformat(),
+            'grade': sub.grade,
+        })
+
+    return Response(results)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def coach_stats(request):
+    coach = request.user
+
+    # Get all classes this coach owns
+    coach_classes = SoccerClass.objects.filter(coachID=coach)
+
+    # To Review: ungraded submissions across coach's assignments
+    assignment_ids = set()
+    for sc in coach_classes:
+        for assignment in sc.assignments.all():
+            assignment_ids.add(assignment.id)
+
+    to_review = Submission.objects.filter(
+        assignmentID__in=assignment_ids,
+        grade__isnull=True,
+    ).count()
+
+    # Students: unique students across all coach's classes
+    total_students = ClassMember.objects.filter(
+        classID__in=coach_classes
+    ).values('studentID').distinct().count()
+
+    # Completion: average today's completion across classes
+    from django.utils import timezone
+    today = timezone.now().date()
+    completion_values = []
+    for sc in coach_classes:
+        todays_assignments = sc.assignments.filter(dueDate__date=today)
+        num_students = ClassMember.objects.filter(classID=sc).count()
+        if num_students == 0 or todays_assignments.count() == 0:
+            continue
+        assignment_ids_today = list(todays_assignments.values_list('id', flat=True))
+        total_expected = num_students * len(assignment_ids_today)
+        class_student_ids = ClassMember.objects.filter(classID=sc).values_list('studentID', flat=True)
+        submissions_count = Submission.objects.filter(
+            assignmentID__in=assignment_ids_today,
+            studentID__in=class_student_ids,
+        ).count()
+        completion_values.append(round((submissions_count / total_expected) * 100))
+
+    avg_completion = round(sum(completion_values) / len(completion_values)) if completion_values else 0
+
+    return Response({
+        'toReview': to_review,
+        'totalStudents': total_students,
+        'completion': avg_completion,
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def coach_class_progress(request):
+    from django.utils import timezone
+    coach = request.user
+    today = timezone.now().date()
+
+    coach_classes = SoccerClass.objects.filter(coachID=coach)
+    results = []
+
+    for sc in coach_classes:
+        # Get assignments due today for this class
+        todays_assignments = sc.assignments.filter(dueDate__date=today)
+
+        # Total students in the class
+        total_students = ClassMember.objects.filter(classID=sc).count()
+
+        if total_students == 0 or todays_assignments.count() == 0:
+            results.append({
+                'id': sc.id,
+                'name': sc.className,
+                'completion': 0,
+                'assignmentsToday': todays_assignments.count(),
+                'studentsCompleted': 0,
+                'totalStudents': total_students,
+            })
+            continue
+
+        # Count how many unique students have submitted for ALL of today's assignments
+        assignment_ids = list(todays_assignments.values_list('id', flat=True))
+        total_expected = total_students * len(assignment_ids)
+
+        # Count total submissions from class members for today's assignments
+        class_student_ids = ClassMember.objects.filter(classID=sc).values_list('studentID', flat=True)
+        submissions_count = Submission.objects.filter(
+            assignmentID__in=assignment_ids,
+            studentID__in=class_student_ids,
+        ).count()
+
+        completion = round((submissions_count / total_expected) * 100) if total_expected > 0 else 0
+
+        results.append({
+            'id': sc.id,
+            'name': sc.className,
+            'completion': completion,
+            'assignmentsToday': len(assignment_ids),
+            'studentsCompleted': submissions_count,
+            'totalStudents': total_students,
+        })
+
+    return Response(results)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

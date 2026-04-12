@@ -2,6 +2,7 @@ import { Dimensions, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
+import { useState, useEffect } from "react";
 import { colors, fontSize, letterSpacing, borderRadius, margin, padding } from "@/theme";
 import { Zap, Calendar, PlusCircle } from "lucide-react-native";
 import ThemedText from "@/components/ui/ThemedText";
@@ -11,24 +12,17 @@ import Header from "@/components/ui/user/Header";
 import SideBar from "@/components/ui/user/sideBar/SideBar";
 import SideBarDim from "@/components/ui/user/sideBar/SideBarDim";
 import useSideBar from "@/components/ui/user/sideBar/useSideBar";
+import { useAuth } from "@/contexts/AuthContext";
+import { getCoachSubmissions, getCoachClassProgress, getCoachStats, CoachSubmission, ClassProgress, CoachStats } from "@/services/coachSubmissions";
 
-const MOCK_SUBMISSIONS = [
-    { id: 1, studentName: "Alex Rivera", drillName: "Cone Dribbling", time: "25 min ago" },
-    { id: 2, studentName: "Mia Johnson", drillName: "Wall Pass & Receive", time: "1h ago" },
-    { id: 3, studentName: "Noah Park", drillName: "Shooting Accuracy", time: "2h ago" },
-];
-
-const MOCK_CLASSES = [
-    { id: 1, name: "U12 Boys A-Team", completion: 78, session: 20, activeStudents: 14, totalStudents: 18 },
-    { id: 2, name: "U14 Girls Select", completion: 45, session: 15, activeStudents: 19, totalStudents: 22 },
-];
-
-const MOCK_ACTIVITY = [
-    { id: 1, text: "Alex Rivera submitted Cone Dribbling", time: "25 min ago", color: colors.coreColors.tertiary },
-    { id: 2, text: "Mia Johnson submitted Wall Pass & Receive", time: "1h ago", color: colors.coreColors.tertiary },
-    { id: 3, text: "Noah Park completed Session #20", time: "2h ago", color: colors.coreColors.primary },
-    { id: 4, text: "Carlos Diaz scored 5/10 on Shooting Accuracy", time: "3h ago", color: "#FF9800" },
-];
+// TODO: Activity feed commented out — too similar to recent submissions,
+// need to define what constitutes a loggable activity before implementing.
+// const MOCK_ACTIVITY = [
+//     { id: 1, text: "Alex Rivera submitted Cone Dribbling", time: "25 min ago", color: colors.coreColors.tertiary },
+//     { id: 2, text: "Mia Johnson submitted Wall Pass & Receive", time: "1h ago", color: colors.coreColors.tertiary },
+//     { id: 3, text: "Noah Park completed Session #20", time: "2h ago", color: colors.coreColors.primary },
+//     { id: 4, text: "Carlos Diaz scored 5/10 on Shooting Accuracy", time: "3h ago", color: "#FF9800" },
+// ];
 
 function SectionTitle({ title }: { title: string }) {
     return (
@@ -45,8 +39,38 @@ function SectionTitle({ title }: { title: string }) {
     );
 }
 
+function formatTimeAgo(dateString: string): string {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now.getTime() - date.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return "Just now";
+    if (diffMin < 60) return `${diffMin} min ago`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return `${diffHr}h ago`;
+    const diffDays = Math.floor(diffHr / 24);
+    return `${diffDays}d ago`;
+}
+
 export default function CoachHome() {
     const sideBar = useSideBar();
+    const { token, loaded } = useAuth();
+    const [submissions, setSubmissions] = useState<CoachSubmission[]>([]);
+    const [classProgress, setClassProgress] = useState<ClassProgress[]>([]);
+    const [stats, setStats] = useState<CoachStats>({ toReview: 0, totalStudents: 0, completion: 0 });
+
+    useEffect(() => {
+        if (!loaded || !token) return;
+        getCoachSubmissions(token, { limit: 3 })
+            .then(setSubmissions)
+            .catch((err) => console.log("Failed to load submissions:", err));
+        getCoachClassProgress(token)
+            .then(setClassProgress)
+            .catch((err) => console.log("Failed to load class progress:", err));
+        getCoachStats(token)
+            .then(setStats)
+            .catch((err) => console.log("Failed to load stats:", err));
+    }, [loaded, token]);
 
     return (
         <>
@@ -96,114 +120,131 @@ export default function CoachHome() {
                 >
                     <CardMetric
                         label="To Review"
-                        value="8"
+                        value={String(stats.toReview)}
                     />
                     <CardMetric
                         label="Students"
-                        value="54"
+                        value={String(stats.totalStudents)}
                     />
                     <CardMetric
                         label="Completion"
-                        value="78%"
+                        value={`${stats.completion}%`}
                     />
                 </View>
 
                 {/* Recent Submissions */}
-                <View style={{ paddingVertical: padding.xl, paddingHorizontal: margin.sm, rowGap: padding.lg }}>
+                <View style={{ paddingTop: padding.xl, paddingBottom: padding.lg, paddingHorizontal: margin.sm, rowGap: padding.lg }}>
                     <SectionTitle title="Recent Submissions" />
                     <View style={{ rowGap: padding.lg }}>
-                        {MOCK_SUBMISSIONS.map((submission) => (
-                            <Pressable
-                                key={submission.id}
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    gap: padding.lg,
-                                    backgroundColor: colors.schemes.light.surfaceContainerLowest,
-                                    borderRadius: borderRadius.base,
-                                    padding: padding.lg,
-                                    borderWidth: 1,
-                                    borderColor: colors.schemes.light.outlineVariant,
-                                }}
-                            >
-                                <View style={{ flex: 1 }}>
-                                    <ThemedText style={{ fontSize: fontSize.md, fontWeight: "600", color: colors.schemes.light.onSurface }}>
-                                        {submission.studentName}
-                                    </ThemedText>
-                                    <ThemedText style={{ fontSize: fontSize.sm, color: colors.schemes.light.outline, marginTop: padding.xs }}>
-                                        {submission.drillName} · {submission.time}
-                                    </ThemedText>
-                                </View>
-                            </Pressable>
-                        ))}
+                        {submissions.length === 0 ? (
+                            <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.outline }}>
+                                No recent submissions.
+                            </ThemedText>
+                        ) : (
+                            submissions.map((submission) => (
+                                <Pressable
+                                    key={submission.id}
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: padding.lg,
+                                        backgroundColor: colors.schemes.light.surfaceContainerLowest,
+                                        borderRadius: borderRadius.base,
+                                        padding: padding.lg,
+                                        borderWidth: 1,
+                                        borderColor: colors.schemes.light.outlineVariant,
+                                    }}
+                                >
+                                    <View style={{ flex: 1 }}>
+                                        <ThemedText style={{ fontSize: fontSize.md, fontWeight: "600", color: colors.schemes.light.onSurface }}>
+                                            {submission.studentName}
+                                        </ThemedText>
+                                        <ThemedText style={{ fontSize: fontSize.sm, color: colors.schemes.light.outline, marginTop: padding.xs }}>
+                                            {submission.drillName} · {formatTimeAgo(submission.dateSubmitted)}
+                                        </ThemedText>
+                                        <ThemedText style={{ fontSize: fontSize.xs, color: colors.schemes.light.onSurfaceVariant, marginTop: padding.xs }}>
+                                            {submission.className}
+                                        </ThemedText>
+                                    </View>
+                                </Pressable>
+                            ))
+                        )}
                     </View>
-                    <ViewAllButton />
+                    <View style={{ height: 50 }}>
+                        <ViewAllButton onPress={() => router.push("/all-submissions")} />
+                    </View>
                 </View>
 
                 {/* Class Progress */}
-                <View style={{ paddingBottom: padding.xl, paddingHorizontal: margin.sm, rowGap: padding.lg }}>
+                <View style={{ paddingTop: padding.xl, paddingBottom: padding.xl, paddingHorizontal: margin.sm, rowGap: padding.lg }}>
                     <SectionTitle title="Class Progress" />
                     <View style={{ rowGap: padding.lg }}>
-                        {MOCK_CLASSES.map((cls) => (
-                            <Pressable
-                                key={cls.id}
-                                style={{
-                                    backgroundColor: colors.schemes.light.surfaceContainerLowest,
-                                    borderRadius: borderRadius.base,
-                                    padding: padding.xl,
-                                    borderWidth: 1,
-                                    borderColor: colors.schemes.light.outlineVariant,
-                                }}
-                            >
-                                <View
+                        {classProgress.length === 0 ? (
+                            <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.outline }}>
+                                No classes found.
+                            </ThemedText>
+                        ) : (
+                            classProgress.map((cls) => (
+                                <Pressable
+                                    key={cls.id}
                                     style={{
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        marginBottom: padding.md,
-                                    }}
-                                >
-                                    <ThemedText style={{ fontSize: fontSize.md, fontWeight: "600", color: colors.schemes.light.onSurface }}>
-                                        {cls.name}
-                                    </ThemedText>
-                                    <ThemedText
-                                        style={{
-                                            fontSize: fontSize.md,
-                                            fontWeight: "700",
-                                            color: cls.completion >= 70 ? colors.coreColors.tertiary : "#FF9800",
-                                        }}
-                                    >
-                                        {cls.completion}%
-                                    </ThemedText>
-                                </View>
-                                <View
-                                    style={{
-                                        width: "100%",
-                                        height: 6,
-                                        backgroundColor: colors.schemes.light.outlineVariant,
-                                        borderRadius: 3,
-                                        overflow: "hidden",
+                                        backgroundColor: colors.schemes.light.surfaceContainerLowest,
+                                        borderRadius: borderRadius.base,
+                                        padding: padding.xl,
+                                        borderWidth: 1,
+                                        borderColor: colors.schemes.light.outlineVariant,
                                     }}
                                 >
                                     <View
                                         style={{
-                                            width: `${cls.completion}%`,
-                                            height: "100%",
-                                            borderRadius: 3,
-                                            backgroundColor: cls.completion >= 70 ? colors.coreColors.tertiary : "#FF9800",
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            marginBottom: padding.md,
                                         }}
-                                    />
-                                </View>
-                                <ThemedText style={{ fontSize: fontSize.xs, color: colors.schemes.light.outline, marginTop: padding.md }}>
-                                    Session #{cls.session} · {cls.activeStudents}/{cls.totalStudents} students active
-                                </ThemedText>
-                            </Pressable>
-                        ))}
+                                    >
+                                        <ThemedText style={{ fontSize: fontSize.md, fontWeight: "600", color: colors.schemes.light.onSurface }}>
+                                            {cls.name}
+                                        </ThemedText>
+                                        <ThemedText
+                                            style={{
+                                                fontSize: fontSize.md,
+                                                fontWeight: "700",
+                                                color: cls.completion >= 70 ? colors.coreColors.tertiary : "#FF9800",
+                                            }}
+                                        >
+                                            {cls.completion}%
+                                        </ThemedText>
+                                    </View>
+                                    <View
+                                        style={{
+                                            width: "100%",
+                                            height: 6,
+                                            backgroundColor: colors.schemes.light.outlineVariant,
+                                            borderRadius: 3,
+                                            overflow: "hidden",
+                                        }}
+                                    >
+                                        <View
+                                            style={{
+                                                width: `${cls.completion}%`,
+                                                height: "100%",
+                                                borderRadius: 3,
+                                                backgroundColor: cls.completion >= 70 ? colors.coreColors.tertiary : "#FF9800",
+                                            }}
+                                        />
+                                    </View>
+                                    <ThemedText style={{ fontSize: fontSize.xs, color: colors.schemes.light.outline, marginTop: padding.md }}>
+                                        {cls.assignmentsToday} assignment{cls.assignmentsToday !== 1 ? "s" : ""} today · {cls.studentsCompleted}/{cls.totalStudents} submitted
+                                    </ThemedText>
+                                </Pressable>
+                            ))
+                        )}
                     </View>
                 </View>
 
                 {/* Quick Actions */}
-                <View style={{ paddingBottom: padding.xl, paddingHorizontal: margin.sm, rowGap: padding.lg }}>
+                <View style={{ paddingVertical: padding.xl, paddingHorizontal: margin.sm, rowGap: padding.lg }}>
                     <SectionTitle title="Quick Actions" />
                     <View style={{ flexDirection: "row", gap: padding.md }}>
                         <Pressable
@@ -298,43 +339,7 @@ export default function CoachHome() {
                     </View>
                 </View>
 
-                {/* Activity Feed */}
-                <View style={{ paddingBottom: margin.sm, paddingHorizontal: margin.sm, rowGap: padding.lg }}>
-                    <SectionTitle title="Activity" />
-                    <View>
-                        {MOCK_ACTIVITY.map((item) => (
-                            <View
-                                key={item.id}
-                                style={{
-                                    flexDirection: "row",
-                                    gap: padding.lg,
-                                    paddingVertical: padding.lg,
-                                    borderBottomWidth: 1,
-                                    borderBottomColor: colors.schemes.light.outlineVariant,
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius: 4,
-                                        backgroundColor: item.color,
-                                        marginTop: 5,
-                                    }}
-                                />
-                                <View style={{ flex: 1 }}>
-                                    <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.onSurface, lineHeight: 18 }}>
-                                        {item.text}
-                                    </ThemedText>
-                                    <ThemedText style={{ fontSize: fontSize.xs, color: colors.schemes.light.outline, marginTop: padding.xs }}>
-                                        {item.time}
-                                    </ThemedText>
-                                </View>
-                            </View>
-                        ))}
-                    </View>
-                    <ViewAllButton />
-                </View>
+                {/* Activity Feed — commented out, see TODO above */}
                         </ScrollView>
                     </Pressable>
                 </SafeAreaView>

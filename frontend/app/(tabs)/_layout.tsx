@@ -186,6 +186,13 @@ function TabsLayout() {
                     href: null,
                 }}
             />
+            <Tabs.Screen
+                name="all-submissions"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
         </Tabs>
   );
 }
