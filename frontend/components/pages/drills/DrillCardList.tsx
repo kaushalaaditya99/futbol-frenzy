@@ -1,5 +1,5 @@
 import ThemedText from "@/components/ui/ThemedText";
-import { Drillv2 as Drill } from "@/services/drills";
+import { Drill } from "@/services/drills";
 import { padding, theme } from "@/theme";
 import { Asset } from "expo-asset";
 import { useVideoPlayer, VideoView } from "expo-video";
@@ -33,9 +33,9 @@ export default function DrillCardList(props: DrillCardListProps) {
     });
 
     useEffect(() => {
-        loadVideo(props.videoURL);
+        loadVideo(props.url);
     }, []);
-    
+
     const loadVideo = async (url: string) => {
         const resolvedURL = await resolveURL(url);
         videoPlayer.replaceAsync(resolvedURL);
@@ -66,7 +66,7 @@ export default function DrillCardList(props: DrillCardListProps) {
         >
             <VideoView
                 player={videoPlayer}
-                style={{  
+                style={{
                     height: "100%",
                     aspectRatio: 1,
                     backgroundColor: "lightgray",
@@ -77,7 +77,7 @@ export default function DrillCardList(props: DrillCardListProps) {
             <Pressable
                 onPress={() => router.push("/drill")}
                 style={{
-                    flex: 1, 
+                    flex: 1,
                     paddingVertical: padding.sm,
                     paddingHorizontal: padding.sm,
                     rowGap: padding.sm
@@ -90,7 +90,7 @@ export default function DrillCardList(props: DrillCardListProps) {
                         color: theme.colors.schemes.light.onSurfaceVariant
                     }}
                 >
-                    {props.uploadedByName}
+                    {props.coach.first_name} {}
                 </ThemedText>
                 <View
                     style={{
@@ -138,7 +138,7 @@ export default function DrillCardList(props: DrillCardListProps) {
                         columnGap: padding.md,
                     }}
                 >
-                    {[props.time, props.level].map((tag, i) => (
+                    {[props.time, props.difficultyLevel].map((tag, i) => (
                         <Fragment
                             key={i}
                         >
