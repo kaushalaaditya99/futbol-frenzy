@@ -26,7 +26,7 @@ export default function CoachView(props: CoachViewProps) {
     const [teacherID, setTeacherID] = useState(0);
 
     const [tab, setTab] = useState("Overview");
-    const tabs = ["Overview", "Workout", "Students", "Progress"];
+    const tabs = ["Overview", "Assignments", "Students", "Progress"];
 
     const functionalDate = useFunctionalDate();
     const [markedDatesAndSessions, setMarkedDatesAndSessions] = useState<MarkedDates>({});
@@ -174,7 +174,7 @@ export default function CoachView(props: CoachViewProps) {
                     classCode={props.param_class.classCode}
                 />
             }
-            {tab === "Workout" &&
+            {tab === "Assignments" &&
                 <TabWorkout
                     onAssignPress={() => router.push({
                         pathname: "/assignSession",
