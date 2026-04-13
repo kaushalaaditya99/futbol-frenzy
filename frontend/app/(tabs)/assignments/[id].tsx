@@ -24,7 +24,7 @@ export default function Page() {
                 containerStyle={{
                     paddingVertical: theme.margin.xs,
                     paddingHorizontal: theme.margin.sm,
-                    borderBottomWidth: 0,
+                    borderBottomWidth: 1,
                 }}
                 buttonStyle={{
                     backgroundColor: "#00000010"

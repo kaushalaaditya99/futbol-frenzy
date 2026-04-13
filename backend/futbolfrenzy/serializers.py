@@ -142,8 +142,20 @@ class WorkoutSerializer(serializers.ModelSerializer):
     def get_coach(self, obj):
         return UserSerializer(obj.coachID).data
 
+class SubmittedDrillSerializer(serializers.ModelSerializer):
+    drill = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SubmittedDrill
+        fields = ["id", "submissionID", "drillID", "videoURL", "grade", "touchCount", 'drill']
+        read_only_fields = ["id", 'drill']
+    
+    def get_drill(self, obj):
+        return DrillSerializer(obj.drillID).data
+
 class SubmissionSerializer(serializers.ModelSerializer):
     student = serializers.SerializerMethodField()
+    submitted_drills = serializers.SerializerMethodField()
 
     class Meta:
         model = Submission
@@ -157,12 +169,21 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "imageBackgroundColor",
             "imageText",
             "imageTextColor",
-            'student'
+            'student',
+            'submitted_drills'
         ]
-        read_only_fields = ["id", 'student']
+        read_only_fields = [
+            "id", 
+            'student',
+            'submitted_drills'
+        ]
     
     def get_student(self, obj):
         return StudentSerializer(obj.studentID).data
+    
+    def get_submitted_drills(self, obj):
+        submitted_drills = obj.submitteddrill_set.all()
+        return SubmittedDrillSerializer(submitted_drills, many=True).data
 
 class AssignmentSerializer(serializers.ModelSerializer):
     workout = serializers.SerializerMethodField()
@@ -188,13 +209,6 @@ class AssignmentSerializer(serializers.ModelSerializer):
     def get_submissions(self, obj):
         submissions = obj.submission_set.all()
         return SubmissionSerializer(submissions, many=True).data
-
-class SubmittedDrillSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubmittedDrill
-        fields = ["id", "submissionID", "drillID", "videoURL", "grade", "touchCount"]
-        read_only_fields = ["id"]
-
 
 class SoccerClassSerializer(serializers.ModelSerializer):
     coach = serializers.SerializerMethodField()

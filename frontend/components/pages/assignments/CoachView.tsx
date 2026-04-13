@@ -1,10 +1,14 @@
 import RowCard from "@/components/ui/RowCard";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
-import { Assignment, getAssignment, getClassByAssignment } from "@/services/assignments";
+import { Assignment, getAssignment, getClassByAssignment, Submission } from "@/services/assignments";
 import { Class } from "@/services/classes";
+import { theme } from "@/theme";
+import { ArrowRight, ArrowRightIcon, BookCheckIcon, CheckCircleIcon, ClipboardCheckIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 
 interface CoachViewProps {
     assignmentID: number;
@@ -14,10 +18,15 @@ export default function CoachView(props: CoachViewProps) {
     const { token } = useAuth();
     const [soccerClass, setSoccerClass] = useState<Class>();
     const [assignment, setAssignment] = useState<Assignment>();
+    const [extendedSubmissions, setExtendedSubmissions] = useState<Submission[]>([]);
 
     useEffect(() => {
         loadAssignment();
     }, [token]);
+
+    useEffect(() => {
+        loadExtendedSubmissions();
+    }, [token, soccerClass, assignment]);
 
     const loadAssignment = async () => {
         if (!token)
@@ -25,39 +34,194 @@ export default function CoachView(props: CoachViewProps) {
         const assignment = await getAssignment(token, props.assignmentID);
         if (!assignment)
             return;
-        // console.log(assignment);
         setAssignment(assignment);
 
         const soccerClass = await getClassByAssignment(token, props.assignmentID);
-        console.log('Here Not');
         if (!soccerClass)
             return;
-        console.log('Here');
-        console.log(soccerClass);
         setSoccerClass(soccerClass);
     }
 
+    const loadExtendedSubmissions = () => {
+        if (!soccerClass || !assignment)
+            return;
+
+        const extendedSubmissions: Submission[] = [];
+
+        for (const student of soccerClass.students) {
+            const submission = assignment.submissions.find(a => a.studentID === student.id);
+            if (submission) {
+                extendedSubmissions.push(submission);
+            }
+            else {
+                extendedSubmissions.push({
+                    id: -1,
+                    studentID: student.id,
+                    assignmentID: -1,
+                    grade: -1,
+                    dateGraded: '',
+                    dateSubmitted: '',
+                    imageBackgroundColor: '',
+                    imageText: '',
+                    imageTextColor: '',
+                    student: {
+                        ...student,
+                        username: '',
+                        email: ''
+                    },
+                    submitted_drills: []
+                })
+            }
+        }
+
+        setExtendedSubmissions(extendedSubmissions);
+    }
+
+
     return (
         <ScrollView>
-            {soccerClass && soccerClass.students.map((student, i) => (
-                <View key={i}>
-                    <RowCard
-                        title="ok"
-                        onPress={() => null}
-                        descriptions={[]}
-                        imageText=""
-                        imageBackgroundColor=""
-                        imageTextColor=""
-                    />
-                </View>
-            ))}
-            {/* {assignment?.submissions && assignment.submissions.map((submission, i) => (
-                <View key={i}>
-                    <ThemedText>
-                        {JSON.stringify(submission)} ok
-                    </ThemedText>
-                </View>
-            ))} */}
+            <View
+                style={{
+                    paddingVertical: theme.margin.xs,
+                    paddingHorizontal: theme.margin.xs,
+                    rowGap: theme.margin.xs
+                }}
+            >
+                {extendedSubmissions.map((submission, i) => (
+                    <View key={i}>
+                        <RowCard
+                            title={`${submission.student.first_name} ${submission.student.last_name}`}
+                            onPress={() => (submission.id !== null && submission.id !== -1) && router.push(`/(tabs)/submissions/${submission.id}`)}
+                            descriptions={[]}
+                            titleTagClose={true}
+                            titleTag={(
+                                <>
+                                    {submission.dateSubmitted &&
+                                        <View
+                                            style={{
+                                                // width: 72,
+                                                // height: 16,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                // borderRadius: 1000,
+                                                // borderWidth: 1,
+                                                // borderColor: "#32a852",
+                                                // backgroundColor: "#b1f0c2"
+                                            }}
+                                        >
+                                            {/* <ThemedText
+                                                style={{
+                                                    fontSize: 10,
+                                                    fontWeight: 500,
+                                                    letterSpacing: theme.letterSpacing.xl * 0,
+                                                    color: "#32a852"
+                                                }}
+                                            >
+                                                COMPLETED
+                                            </ThemedText> */}
+                                            <BookCheckIcon
+                                                // strokeWidth={1.5}
+                                                size={16}
+                                                color={theme.colors.schemes.light.outlineVariant}
+                                            />
+                                        </View>
+                                    }
+                                </>
+                            )}
+                            imageText={`${submission.student.first_name[0]}${submission.student.last_name[0]}`}
+                            imageBackgroundColor=''
+                            imageTextColor=''
+                            rightElement={(
+                                <View
+                                    style={{
+                                        width: 48,
+                                        height: 48,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    {[null, -1].includes(submission.grade) 
+                                        ?
+                                        (<View
+                                            style={{
+                                                width: 36,
+                                                height: 36,
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                borderRadius: 1000,
+                                                borderWidth: 1,
+                                                borderStyle: 'dashed',
+                                                borderColor: theme.colors.schemes.light.outlineVariant,
+                                                backgroundColor: theme.colors.schemes.light.background
+                                            }}
+                                        >
+                                           
+                                        </View>)
+                                        :
+                                        (<View
+                                            style={{
+                                                width: 36,
+                                                height: 36,
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                borderRadius: 1000,
+                                                borderWidth: 1,
+                                                borderColor: submission.grade > 80 ? '#32a852' : submission.grade > 60 ? '#e0a928' : '#e02828',
+                                                backgroundColor: submission.grade > 80 ? '#32a852' : submission.grade > 60 ? '#e0a928' : '#e02828'
+                                            }}
+                                        >
+                                            <LinearGradient
+                                                colors={[
+                                                    submission.grade > 80 ? '#ffffff' : submission.grade > 60 ? '#e0a928' : '#e02828',
+                                                    submission.grade > 80 ? '#b1f0c2' : submission.grade > 60 ? '#e0a928' : '#e02828'
+                                                ]}
+                                                start={{ 
+                                                    x: 0, 
+                                                    y: 0
+                                                }}
+                                                end={{ 
+                                                    x: 0, 
+                                                    y: 1
+                                                }}
+                                                style={{
+                                                    width: 34,
+                                                    height: 34,
+                                                    borderRadius: 1000,
+                                                    justifyContent: "center",
+                                                    alignItems: "center"
+                                                }}
+                                            >
+                                                <View
+                                                    style={{
+                                                        width: 32,
+                                                        height: 32,
+                                                        justifyContent: "center",
+                                                        alignItems: "center",
+                                                        borderRadius: 1000,
+                                                        backgroundColor: "#b1f0c2"
+                                                    }}
+                                                >
+                                                    <ThemedText
+                                                        style={{
+                                                            fontSize: 14,
+                                                            fontWeight: 500,
+                                                            letterSpacing: -0.1,
+                                                            textAlignVertical: 'center',
+                                                            color: submission.grade > 80 ? '#32a852' : submission.grade > 60 ? '#e0a928' : '#e02828',
+                                                        }}
+                                                    >
+                                                        {submission.grade}
+                                                    </ThemedText>
+                                                </View>
+                                            </LinearGradient>
+                                        </View>)
+                                    }
+                                </View>
+                            )}
+                        />
+                    </View>
+                ))}
+            </View>
         </ScrollView>
     )
 }

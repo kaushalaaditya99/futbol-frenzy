@@ -6,11 +6,13 @@ import { Fragment, ReactNode } from "react";
 interface RowCardProps {
     onPress: () => void;
     title: string;
+    titleTagClose?: boolean;
     titleTag?: ReactNode;
     descriptions: Array<string>;
     imageText: string;
     imageTextColor: string;
     imageBackgroundColor: string;
+    rightElement?: ReactNode;
 }
 
 export default function RowCard(props: RowCardProps) {
@@ -30,97 +32,109 @@ export default function RowCard(props: RowCardProps) {
                 display: "flex",
                 flexDirection: "row",
                 columnGap: 8,
+                justifyContent: "space-between",
                 backgroundColor: colors.schemes.light.surfaceContainerLowest,
                 borderWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
                 borderStyle: "solid",
                 borderRadius: borderRadius.base,
-                ...shadow.md
+                // ...shadow.xs
             }}   
         >
             <View
                 style={{
-                    width: 48,
-                    height: 48,
                     display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: padding.md,
-                    borderRadius: borderRadius.base - 2,
-                    backgroundColor: props.imageBackgroundColor || colors.palettes.neutral[90],
-                }}
-            >
-                <ThemedText
-                    numberLines={1}
-                    style={{
-                        fontSize: fontSizes[((!props.imageText ? 0 : props.imageText.length) % 4 || 0) as 0|1|2|3],
-                        fontWeight: 600,
-                        color: props.imageTextColor || "black"
-                    }}
-                >
-                    {props.imageText && props.imageText.toUpperCase().slice(0, 2)}
-                </ThemedText>
-            </View>
-            <View
-                style={{
                     flex: 1,
-                    rowGap: 2
+                    flexDirection: "row",
+                    columnGap: 8,
                 }}
             >
                 <View
                     style={{
+                        width: 48,
+                        height: 48,
                         display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between"
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: padding.md,
+                        borderRadius: borderRadius.base - 2,
+                        backgroundColor: props.imageBackgroundColor || colors.palettes.neutral[90],
                     }}
                 >
                     <ThemedText
+                        numberLines={1}
                         style={{
-                            fontSize: fontSize.base - 1,
-                            fontWeight: 500,
-                            letterSpacing: letterSpacing.base,
-                            color: colors.schemes.light.onSurface
+                            fontSize: fontSizes[((!props.imageText ? 0 : props.imageText.length) % 4 || 0) as 0|1|2|3],
+                            fontWeight: 600,
+                            color: props.imageTextColor || "black"
                         }}
                     >
-                        {props.title}
+                        {props.imageText && props.imageText.toUpperCase().slice(0, 2)}
                     </ThemedText>
-                    {props.titleTag}
                 </View>
                 <View
                     style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        columnGap: 8
+                        flex: 1,
+                        rowGap: 2
                     }}
                 >
-                    {props.descriptions.map((description, i) => (
-                        <Fragment
-                            key={i}
+                    <View
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            columnGap: 8,
+                            justifyContent: props.titleTagClose ? 'flex-start' : "space-between"
+                        }}
+                    >
+                        <ThemedText
+                            style={{
+                                fontSize: fontSize.base - 1,
+                                fontWeight: 500,
+                                letterSpacing: letterSpacing.base,
+                                color: colors.schemes.light.onSurface
+                            }}
                         >
-                            <ThemedText
-                                style={{
-                                    fontSize: fontSize.md,
-                                    letterSpacing: letterSpacing["xl"],
-                                    color: colors.schemes.light.onSurfaceVariant
-                                }}
+                            {props.title}
+                        </ThemedText>
+                        {props.titleTag}
+                    </View>
+                    <View
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            columnGap: 8
+                        }}
+                    >
+                        {props.descriptions.map((description, i) => (
+                            <Fragment
+                                key={i}
                             >
-                                {description}
-                            </ThemedText>
-                            {(props.descriptions && i !== props.descriptions.length - 1) &&
-                                <View
+                                <ThemedText
                                     style={{
-                                        width: 3,
-                                        height: 3,
-                                        borderRadius: 100,
-                                        backgroundColor: colors.schemes.light.onSurfaceVariant
+                                        fontSize: fontSize.md,
+                                        letterSpacing: letterSpacing["xl"],
+                                        color: colors.schemes.light.onSurfaceVariant
                                     }}
-                                />
-                            }
-                        </Fragment>
-                    ))}
+                                >
+                                    {description}
+                                </ThemedText>
+                                {(props.descriptions && i !== props.descriptions.length - 1) &&
+                                    <View
+                                        style={{
+                                            width: 3,
+                                            height: 3,
+                                            borderRadius: 100,
+                                            backgroundColor: colors.schemes.light.onSurfaceVariant
+                                        }}
+                                    />
+                                }
+                            </Fragment>
+                        ))}
+                    </View>
                 </View>
             </View>
+            {props.rightElement}
         </Pressable>
     )
 }

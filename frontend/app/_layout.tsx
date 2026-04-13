@@ -1,9 +1,11 @@
 import { Stack } from "expo-router";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProfileProvider } from "@/contexts/ProfileContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   return (
+    <GestureHandlerRootView>
     <AuthProvider>
     <ProfileProvider>
     <Stack
@@ -105,5 +107,6 @@ export default function RootLayout() {
     </Stack>
     </ProfileProvider>
     </AuthProvider>
+    </GestureHandlerRootView>
   );
 }

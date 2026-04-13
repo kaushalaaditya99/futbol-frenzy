@@ -25,6 +25,16 @@ export interface Assignment {
     submissions: Submission[];
 }
 
+export interface SubmittedDrill {
+    id: number;
+    submissionID: number;
+    drillID: number;
+    drill: Drill,
+    videoURL: string;
+    grade: number | null;
+    touchCount: number;
+}
+
 export interface Submission {
     id: number;
     studentID: number;
@@ -36,6 +46,7 @@ export interface Submission {
     imageText: string;
     imageTextColor: string;
     student: User;
+    submitted_drills: SubmittedDrill[]
 }
 
 const API_URL = resolveEndpoint("/api");
@@ -91,7 +102,8 @@ export async function getAssignment(token: string, assignmentID: number): Promis
 
 export async function getClassByAssignment(token: string, assignmentID: number): Promise<Class|null> {
     try {
-        const response = await fetch(`${API_URL}/assignments/${assignmentID}/class`, {
+        console.log(`${API_URL}/assignments/${assignmentID}/class`);
+        const response = await fetch(`${API_URL}/assignments/${assignmentID}/class/`, {
             headers: {
                 Authorization: `Token ${token}`,
                 "Content-Type": "application/json",
