@@ -13,7 +13,9 @@ interface CameraControlsProps {
     onCancel: () => void;
     onSubmit: () => void;
     onRetake?: () => void;
-    maxDuration?: number; // in seconds
+    onCountdownComplete?: () => void;
+    maxDuration?: number;
+    countdownDuration?: number;
 }
 
 export function CameraControls({
@@ -26,27 +28,32 @@ export function CameraControls({
     onCancel,
     onSubmit,
     onRetake,
+    onCountdownComplete,
     maxDuration = 60, // Default 60 seconds
+    countdownDuration = 10, // Default 10 second countdown
 }: CameraControlsProps) {
     const [recordingTime, setRecordingTime] = useState(0);
+    const [countdownTime, setCountdownTime] = useState(countdownDuration);
     const timerInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+    const countdownInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+    const hasAutoStopped = useRef(false);
     const pulseAnim = useRef(new Animated.Value(1)).current;
+    const countdownPulseAnim = useRef(new Animated.Value(1)).current;
 
     // Timer for recording duration
     useEffect(() => {
         if (recordingState === 'recording') {
+            // reset recording time and auto-stop flag when starting
+            setRecordingTime(0);
+            hasAutoStopped.current = false;
+
             timerInterval.current = setInterval(() => {
-                setRecordingTime(prev => {
-                    if (prev >= maxDuration) {
-                        onStopRecording();
-                        return prev;
-                    }
-                    return prev + 1;
-                });
+                setRecordingTime(prev => prev + 1);
             }, 1000);
         } else {
             if (timerInterval.current) {
                 clearInterval(timerInterval.current);
+                timerInterval.current = null;
             }
             if (recordingState === 'idle') {
                 setRecordingTime(0);
@@ -56,11 +63,55 @@ export function CameraControls({
         return () => {
             if (timerInterval.current) {
                 clearInterval(timerInterval.current);
+                timerInterval.current = null;
             }
         };
-    }, [recordingState, maxDuration, onStopRecording]);
+    }, [recordingState]);
 
-    // Pulse animation for recording indicator
+    // Auto-stop when max duration reached
+    useEffect(() => {
+        if (
+            recordingState === 'recording' &&
+            recordingTime >= maxDuration &&
+            !hasAutoStopped.current
+        ) {
+            hasAutoStopped.current = true;
+            onStopRecording();
+        }
+    }, [recordingTime, recordingState, maxDuration, onStopRecording]);
+
+    // Countdown timer before recording
+    useEffect(() => {
+        if (recordingState === 'countdown') {
+            setCountdownTime(countdownDuration);
+            countdownInterval.current = setInterval(() => {
+                setCountdownTime(prev => {
+                    if (prev <= 1) {
+                        // Countdown finished, trigger callback
+                        clearInterval(countdownInterval.current!);
+                        onCountdownComplete?.();
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } else {
+            if (countdownInterval.current) {
+                clearInterval(countdownInterval.current);
+            }
+            if (recordingState === 'idle') {
+                setCountdownTime(countdownDuration);
+            }
+        }
+
+        return () => {
+            if (countdownInterval.current) {
+                clearInterval(countdownInterval.current);
+            }
+        };
+    }, [recordingState, countdownDuration, onCountdownComplete]);
+
+    
     useEffect(() => {
         if (recordingState === 'recording') {
             Animated.loop(
@@ -82,6 +133,28 @@ export function CameraControls({
         }
     }, [recordingState, pulseAnim]);
 
+    // Pulse animation for countdown
+    useEffect(() => {
+        if (recordingState === 'countdown') {
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(countdownPulseAnim, {
+                        toValue: 1.3,
+                        duration: 300,
+                        useNativeDriver: false,
+                    }),
+                    Animated.timing(countdownPulseAnim, {
+                        toValue: 1,
+                        duration: 300,
+                        useNativeDriver: false,
+                    }),
+                ])
+            ).start();
+        } else {
+            countdownPulseAnim.setValue(1);
+        }
+    }, [recordingState, countdownPulseAnim]);
+
     // Format time as MM:SS
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);
@@ -90,12 +163,28 @@ export function CameraControls({
     };
 
     const isIdle = recordingState === 'idle';
+    const isCountdown = recordingState === 'countdown';
     const isRecording = recordingState === 'recording';
     const isProcessing = recordingState === 'processing';
     const isComplete = recordingState === 'complete';
 
     return (
         <View style={styles.container}>
+            {/* Countdown display */}
+            {isCountdown && (
+                <View style={styles.countdownContainer}>
+                    <Animated.Text
+                        style={[
+                            styles.countdownText,
+                            { transform: [{ scale: countdownPulseAnim }] },
+                        ]}
+                    >
+                        {countdownTime}
+                    </Animated.Text>
+                    <Text style={styles.countdownSubtext}>Get ready...</Text>
+                </View>
+            )}
+
             {/* Timer display when recording */}
             {(isRecording || isComplete) && (
                 <View style={styles.timerContainer}>
@@ -122,7 +211,7 @@ export function CameraControls({
             {/* Controls row */}
             <View style={styles.controlsRow}>
                 {/* Cancel button (left) */}
-                {isIdle ? (
+                {(isIdle || isCountdown) ? (
                     <Pressable
                         style={styles.sideButton}
                         onPress={onCancel}
@@ -155,6 +244,12 @@ export function CameraControls({
                     </Pressable>
                 )}
 
+                {isCountdown && (
+                    <View style={styles.countdownButton}>
+                        <Text style={styles.countdownButtonText}>Starting...</Text>
+                    </View>
+                )}
+
                 {isRecording && (
                     <Pressable
                         style={styles.stopButton}
@@ -185,12 +280,16 @@ export function CameraControls({
                     </View>
                 )}
 
-                {/* Flip camera button (right) */}
-                {(isIdle || isRecording) && (
+                {/* Flip camera button (right)*/}
+                {isIdle && (
                     <Pressable style={styles.sideButton} onPress={onFlipCamera}>
                         <SwitchCamera size={24} color="white" />
                         <Text style={styles.sideButtonText}>Flip</Text>
                     </Pressable>
+                )}
+
+                {(isCountdown || isRecording || isProcessing) && (
+                    <View style={styles.sideButtonPlaceholder} />
                 )}
 
                 {isComplete && (
@@ -314,5 +413,35 @@ const styles = StyleSheet.create({
     processingText: {
         color: 'white',
         fontSize: 14,
+    },
+    countdownContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
+    countdownText: {
+        color: '#00FF88',
+        fontSize: 72,
+        fontWeight: '700',
+    },
+    countdownSubtext: {
+        color: 'white',
+        fontSize: 18,
+        marginTop: 8,
+    },
+    countdownButton: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: 'rgba(0, 255, 136, 0.3)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 4,
+        borderColor: '#00FF88',
+    },
+    countdownButtonText: {
+        color: '#00FF88',
+        fontSize: 12,
+        fontWeight: '600',
     },
 });

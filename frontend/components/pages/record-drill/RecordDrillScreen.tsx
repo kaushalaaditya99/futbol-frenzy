@@ -50,6 +50,10 @@ export function RecordDrillScreen({
     const [instructorPose, setInstructorPose] = useState<PoseLandmark[]>([]);
     const [studentPose, setStudentPose] = useState<PoseLandmark[]>([]);
     const [similarityScore, setSimilarityScore] = useState<number | null>(null);
+    const [finalScore, setFinalScore] = useState<number | null>(null); // Frozen score after recording
+
+    // track all scores during recording for averaging
+    const scoreSamplesRef = useRef<number[]>([]);
 
     // Submission tracking
     const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -99,20 +103,34 @@ export function RecordDrillScreen({
         if (instructorPose.length > 0 && studentPose.length > 0) {
             const result = comparePoses(instructorPose, studentPose);
             setSimilarityScore(result.score);
+
+            // collect score samples during recording for averaging
+            if (recordingState === 'recording') {
+                scoreSamplesRef.current.push(result.score);
+            }
         }
-    }, [instructorPose, studentPose]);
+    }, [instructorPose, studentPose, recordingState]);
 
     // Update score when poses change
     React.useEffect(() => {
         updateSimilarityScore();
     }, [instructorPose, studentPose, updateSimilarityScore]);
 
-    // Handle recording start
+    // handle recording start (initiates countdown)
     const handleStartRecording = useCallback(async () => {
         const hasPermission = await ensureCameraPermission();
         if (!hasPermission) return;
 
+        // start countdown
+        setRecordingState('countdown');
+    }, [ensureCameraPermission]);
+
+    // handle when countdown completes, actually start recording
+    const handleCountdownComplete = useCallback(() => {
         try {
+            // reset score samples for new recording
+            scoreSamplesRef.current = [];
+
             setRecordingState('recording');
 
             // Start camera recording (both web and mobile)
@@ -127,12 +145,23 @@ export function RecordDrillScreen({
             setRecordingState('error');
             Alert.alert('Recording Error', 'Failed to start recording. Please try again.');
         }
-    }, [ensureCameraPermission]);
+    }, []);
 
     // Handle recording stop
     const handleStopRecording = useCallback(async () => {
         try {
             setRecordingState('processing');
+
+            // calculate average score from all samples collected during recording
+            const samples = scoreSamplesRef.current;
+            if (samples.length > 0) {
+                const averageScore = samples.reduce((sum, score) => sum + score, 0) / samples.length;
+                setFinalScore(Math.round(averageScore * 100) / 100); // Round to 2 decimal places
+                console.log(`Final score: ${averageScore.toFixed(2)} (from ${samples.length} samples)`);
+            } else {
+                // fallback to current score if no samples collected
+                setFinalScore(similarityScore);
+            }
 
             // Stop recording and get video URI
             if (cameraRef.current) {
@@ -152,7 +181,7 @@ export function RecordDrillScreen({
             setRecordingState('error');
             Alert.alert('Recording Error', 'Failed to stop recording. Please try again.');
         }
-    }, []);
+    }, [similarityScore]);
 
     // Handle camera flip
     const handleFlipCamera = useCallback(() => {
@@ -164,8 +193,10 @@ export function RecordDrillScreen({
         setRecordingState('idle');
         setRecordedVideoUri(null);
         setSimilarityScore(null);
+        setFinalScore(null);
         setInstructorPose([]);
         setStudentPose([]);
+        scoreSamplesRef.current = [];
     }, []);
 
     // Handle cancel - go back or navigate to demonstration
@@ -240,8 +271,8 @@ export function RecordDrillScreen({
             // Upload video to S3
             const { videoUrl } = await uploadVideo(recordedVideoUri);
 
-            // Calculate final score (round to integer for grade)
-            const finalGrade = similarityScore !== null ? Math.round(similarityScore) : undefined;
+            // use frozen score from when recording stopped (round to integer for grade)
+            const finalGrade = finalScore !== null ? Math.round(finalScore) : undefined;
 
             // Save submitted drill record with grade
             await saveSubmittedDrillWithUrl({
@@ -273,7 +304,7 @@ export function RecordDrillScreen({
                 Alert.alert('Submission Failed', 'Could not submit your video. Please try again.');
             }
         }
-    }, [recordedVideoUri, assignmentId, drillId, drillName, similarityScore, router]);
+    }, [recordedVideoUri, assignmentId, drillId, drillName, finalScore, router]);
 
     // Show permission request if not granted
     if (!hasCameraPermission) {
@@ -335,8 +366,8 @@ export function RecordDrillScreen({
 
             {/* Final score display after recording */}
             <ScoreDisplay
-                score={similarityScore}
-                isVisible={recordingState === 'complete' && similarityScore !== null}
+                score={finalScore}
+                isVisible={recordingState === 'complete' && finalScore !== null}
                 showDetails={true}
             />
 
@@ -350,6 +381,7 @@ export function RecordDrillScreen({
                 onCancel={handleCancel}
                 onSubmit={handleSubmit}
                 onRetake={handleRetake}
+                onCountdownComplete={handleCountdownComplete}
                 maxDuration={60}
             />
         </View>

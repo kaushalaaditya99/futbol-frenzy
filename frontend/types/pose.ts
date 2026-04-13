@@ -28,7 +28,7 @@ export interface VideoPoseResult {
 }
 
 // Recording state machine
-export type RecordingState = 'idle' | 'preparing' | 'recording' | 'processing' | 'complete' | 'error';
+export type RecordingState = 'idle' | 'countdown' | 'preparing' | 'recording' | 'processing' | 'complete' | 'error';
 
 // Camera facing mode
 export type CameraFacing = 'front' | 'back';
