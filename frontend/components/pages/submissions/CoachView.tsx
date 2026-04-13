@@ -5,7 +5,8 @@ import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment, Submission } from "@/services/assignments";
 import { getSubmission } from "@/services/submissions";
-import { theme } from "@/theme";
+import { borderRadius, shadow, theme } from "@/theme";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useState } from "react";
@@ -99,7 +100,7 @@ export default function CoachView(props: ViewProps) {
                         style={{
                             // fontFamily: 'Silkscreen',
                             fontSize: 16,
-                            fontWeight: 500,
+                            fontWeight: 400,
                             letterSpacing: theme.letterSpacing.sm
                         }}
                     >
@@ -125,7 +126,7 @@ export default function CoachView(props: ViewProps) {
                     <ThemedText
                         style={{
                             fontSize: 16,
-                            fontWeight: 500,
+                            fontWeight: 400,
                             letterSpacing: theme.letterSpacing.sm,
                         }}
                     >
@@ -155,27 +156,91 @@ export default function CoachView(props: ViewProps) {
                                 borderColor: theme.colors.schemes.light.outlineVariant
                             }}    
                         >
-                            <View>
-                                <ThemedText
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between'
+                                }}
+                            >
+                                <View>
+                                    <ThemedText
+                                        style={{
+                                            fontSize: 18,
+                                            fontWeight: 600,
+                                            letterSpacing: theme.letterSpacing.sm,
+                                            // color: theme.colors.schemes.light.onSurface
+                                        }}
+                                    >
+                                        Drill {i + 1}
+                                    </ThemedText>
+                                    <ThemedText
+                                        style={{
+                                            fontSize: 17,
+                                            fontWeight: 400,
+                                            letterSpacing: theme.letterSpacing.base,
+                                            color: theme.colors.schemes.light.onSurfaceVariant
+                                        }}
+                                    >
+                                        {drill.drill.drillName}
+                                    </ThemedText>
+                                </View>
+                                <View
                                     style={{
-                                        fontSize: 18,
-                                        fontWeight: 600,
-                                        letterSpacing: theme.letterSpacing.sm,
-                                        // color: theme.colors.schemes.light.onSurface
+                                        width: 40,
+                                        height: 40,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        borderRadius: theme.borderRadius.base,
+                                        borderWidth: 1,
+                                        borderColor: drill.grade === null ? '' : drill.grade > 80 ? '#32a852' : drill.grade > 60 ? '#e0a928' : '#e02828',
+                                        backgroundColor: drill.grade === null ? '' : drill.grade > 80 ? '#32a852' : drill.grade > 60 ? '#e0a928' : '#e02828'
                                     }}
                                 >
-                                    Drill {i + 1}
-                                </ThemedText>
-                                <ThemedText
-                                    style={{
-                                        fontSize: 17,
-                                        fontWeight: 400,
-                                        letterSpacing: theme.letterSpacing.base,
-                                        color: theme.colors.schemes.light.onSurfaceVariant
-                                    }}
-                                >
-                                    {drill.drill.drillName}
-                                </ThemedText>
+                                    <LinearGradient
+                                        colors={[
+                                            drill.grade === null ? '' : drill.grade > 80 ? '#ffffff' : drill.grade > 60 ? '#ffffff' : '#e02828',
+                                            drill.grade === null ? '' : drill.grade > 80 ? '#b1f0c2' : drill.grade > 60 ? '#f9ca5d' : '#e02828'
+                                        ]}
+                                        start={{ 
+                                            x: 0, 
+                                            y: 0
+                                        }}
+                                        end={{ 
+                                            x: 0, 
+                                            y: 1
+                                        }}
+                                        style={{
+                                            width: 38,
+                                            height: 38,
+                                            borderRadius: theme.borderRadius.base - 1,
+                                            justifyContent: "center",
+                                            alignItems: "center"
+                                        }}
+                                    >
+                                        <View
+                                            style={{
+                                                width: 34,
+                                                height: 34,
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                borderRadius: theme.borderRadius.base - 2,
+                                                backgroundColor: drill.grade === null ? '' : drill.grade > 80 ? "#b1f0c2" : drill.grade > 60 ? '#ffe5a8' : '#e02828'
+                                            }}
+                                        >
+                                            <ThemedText
+                                                style={{
+                                                    fontSize: 14,
+                                                    fontWeight: 500,
+                                                    letterSpacing: -0.1,
+                                                    textAlignVertical: 'center',
+                                                    color: drill.grade === null ? '' : drill.grade > 80 ? '#32a852' : drill.grade > 60 ? '#c7900e' : '#e02828',
+                                                }}
+                                            >
+                                                {drill.grade}
+                                            </ThemedText>
+                                        </View>
+                                    </LinearGradient>
+                                </View>
                             </View>
                             <View
                                 style={{
@@ -197,34 +262,6 @@ export default function CoachView(props: ViewProps) {
                                         backgroundColor: 'white',
                                     }}
                                 />
-                                <View
-                                    style={{
-                                        position: 'absolute',
-                                        top: 6,
-                                        right: 6,
-                                        width: 48,
-                                        height: 48,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        borderWidth: 1,
-                                        borderRadius: theme.borderRadius.base - 2,
-                                        borderColor: drill.grade === null ? 'gray' : drill.grade >= 80 ? '#32a852' : drill.grade >= 60 ? '#f4bc3c' : '#e02828',
-                                        backgroundColor: 'white',
-                                    }}
-                                >
-                                    <ThemedText
-                                        style={{
-                                            // fontFamily: 'Silkscreen',
-                                            fontSize: 18,
-                                            fontWeight: 500,
-                                            letterSpacing: -0.1,
-                                            textAlignVertical: 'center',
-                                            color: drill.grade === null ? 'gray' : drill.grade >= 80 ? '#32a852' : drill.grade >= 60 ? '#f4bc3c' : '#e02828',
-                                        }}
-                                    >
-                                        {drill.grade}
-                                    </ThemedText>
-                                </View>
                             </View>
                         </View>
                     )
