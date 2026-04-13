@@ -144,6 +144,132 @@ def coach_submissions(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def student_stats(request):
+    from django.utils import timezone
+    from datetime import timedelta
+    student = request.user
+    today = timezone.now().date()
+
+    # Get all classes this student is in
+    student_classes = SoccerClass.objects.filter(members__studentID=student)
+
+    # Due Today: assignments due today across all student's classes
+    due_today = Assignment.objects.filter(
+        soccer_classes__in=student_classes,
+        dueDate__date=today,
+    ).distinct().count()
+
+    # This Week: submissions the student made this week (Mon-Sun)
+    start_of_week = today - timedelta(days=today.weekday())
+    this_week = Submission.objects.filter(
+        studentID=student,
+        dateSubmitted__date__gte=start_of_week,
+        dateSubmitted__date__lte=today,
+    ).count()
+
+    # Days Streak: consecutive days with at least one submission
+    streak = 0
+    check_date = today
+    while True:
+        has_submission = Submission.objects.filter(
+            studentID=student,
+            dateSubmitted__date=check_date,
+        ).exists()
+        if has_submission:
+            streak += 1
+            check_date -= timedelta(days=1)
+        else:
+            break
+
+    return Response({
+        'daysStreak': streak,
+        'thisWeek': this_week,
+        'dueToday': due_today,
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_schedule(request):
+    from django.utils import timezone
+    student = request.user
+    date_str = request.query_params.get('date')
+
+    if date_str:
+        from datetime import datetime
+        target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    else:
+        target_date = timezone.now().date()
+
+    # Get classes the student is in
+    student_classes = SoccerClass.objects.filter(members__studentID=student)
+
+    # Get assignments due on target date
+    assignments = Assignment.objects.filter(
+        soccer_classes__in=student_classes,
+        dueDate__date=target_date,
+    ).select_related('workoutID').distinct()
+
+    # Check which assignments the student has already submitted
+    submitted_assignment_ids = set(
+        Submission.objects.filter(
+            studentID=student,
+            assignmentID__in=assignments,
+        ).values_list('assignmentID', flat=True)
+    )
+
+    results = []
+    for assignment in assignments:
+        workout = assignment.workoutID
+        # Find which class this assignment belongs to for this student
+        class_name = ''
+        for sc in student_classes:
+            if sc.assignments.filter(id=assignment.id).exists():
+                class_name = sc.className
+                break
+
+        results.append({
+            'id': assignment.id,
+            'workoutId': workout.id,
+            'name': workout.workoutName,
+            'type': workout.workoutType,
+            'dueDate': assignment.dueDate.isoformat() if assignment.dueDate else None,
+            'className': class_name,
+            'submitted': assignment.id in submitted_assignment_ids,
+            'imageBackgroundColor': assignment.imageBackgroundColor or workout.imageBackgroundColor,
+            'imageText': assignment.imageText or workout.imageText,
+            'imageTextColor': assignment.imageTextColor or workout.imageTextColor,
+        })
+
+    return Response(results)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_results(request):
+    student = request.user
+
+    # Get graded submissions for this student
+    submissions = Submission.objects.filter(
+        studentID=student,
+        grade__isnull=False,
+    ).select_related('assignmentID', 'assignmentID__workoutID').order_by('-dateGraded')[:10]
+
+    results = []
+    for sub in submissions:
+        workout = sub.assignmentID.workoutID
+        results.append({
+            'id': sub.id,
+            'name': workout.workoutName,
+            'type': workout.workoutType,
+            'score': sub.grade,
+            'date': sub.dateGraded.strftime('%b %d') if sub.dateGraded else sub.dateSubmitted.strftime('%b %d'),
+            'imageBackgroundColor': sub.imageBackgroundColor or '#1C1C1C',
+            'imageTextColor': sub.imageTextColor or '#FFFFFF',
+        })
+
+    return Response(results)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def coach_stats(request):
     coach = request.user
 
