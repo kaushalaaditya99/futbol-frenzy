@@ -143,6 +143,8 @@ class WorkoutSerializer(serializers.ModelSerializer):
         return UserSerializer(obj.coachID).data
 
 class AssignmentSerializer(serializers.ModelSerializer):
+    workout = serializers.SerializerMethodField()
+
     class Meta:
         model = Assignment
         fields = [
@@ -152,8 +154,12 @@ class AssignmentSerializer(serializers.ModelSerializer):
             "imageBackgroundColor",
             "imageText",
             "imageTextColor",
+            'workout'
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", 'workout']
+    
+    def get_workout(self, obj):
+        return WorkoutSerializer(obj.workoutID).data
 
 
 class SubmissionSerializer(serializers.ModelSerializer):

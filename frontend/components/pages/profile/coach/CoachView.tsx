@@ -35,7 +35,7 @@ export default function CoachView() {
             
             setUser(await simpleGetUser(token))
             setClasses(await getClasses(token));
-            setDrills(await getDrills());
+            setDrills(await getDrills(token));
             setWorkouts(await getSessions(token));
         }
         load();

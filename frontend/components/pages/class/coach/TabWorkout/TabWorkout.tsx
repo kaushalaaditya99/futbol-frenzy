@@ -1,6 +1,6 @@
 import useFunctionalDate from "@/hooks/useFunctionalDate";
 import { Session } from "@/services/sessions";
-import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
+import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow, theme } from "@/theme";
 import { View } from "react-native";
 import ButtonAssignSession from "../ButtonAssignSession";
 import ButtonCreateSession from "../ButtonCreateSession";
@@ -14,14 +14,16 @@ import RowCardSession from "@/components/pages/home/RowCardSession";
 import { TreePalm } from "lucide-react-native";
 import useSearchBar from "@/hooks/useSearchBar";
 import NoSessions from "../../NoSessions";
+import { Assignment } from "@/services/assignments";
+import RowCardAssignment from "@/components/pages/home/RowCardAssignment";
 
 interface TabWorkoutProps {
     onAssignPress: () => void;
     onCreatePress: () => void;
-    searchBar: ReturnType<typeof useSearchBar<Session>>;
+    searchBar: ReturnType<typeof useSearchBar<Assignment>>;
     viewType: string;
     setViewType: (viewType: string) => void;
-    sessionsOnDate: Array<Session>;
+    sessionsOnDate: Array<Assignment>;
     sessionsOnDateLabel: string;
     functionalDate: ReturnType<typeof useFunctionalDate>;
     markedDatesAndSessions: MarkedDates;
@@ -76,7 +78,7 @@ export default function TabWorkout(props: TabWorkoutProps) {
                     enableSort={true}
                     sortDirection={props.searchBar.sortDirection}
                     setSortDirection={props.searchBar.setSortDirection}
-                    placeholder="Search Sessions..."
+                    placeholder="Search Assignments..."
                     viewType={props.viewType}
                     setViewType={props.setViewType}
                 />
@@ -138,16 +140,17 @@ export default function TabWorkout(props: TabWorkoutProps) {
                                 fontSize: fontSize.lg,
                                 textAlign: "center",
                                 color: colors.schemes.light.onBackground,
+                                letterSpacing: letterSpacing.base,
                             }}
                         >
                             {props.sessionsOnDateLabel}
                         </ThemedText>
                     </View>
                 }
-                {props.sessionsOnDate.map((session: any, i: number) => (
+                {props.sessionsOnDate.map((assignment: Assignment, i: number) => (
                     <Fragment key={i}>
-                        <RowCardSession
-                            {...session}
+                        <RowCardAssignment
+                            {...assignment}
                         />
                     </Fragment>
                 ))}

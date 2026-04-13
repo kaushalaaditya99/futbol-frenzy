@@ -12,13 +12,16 @@ import TabStudent from "./TabStudent/TabStudent";
 import { getStudents, Student } from "@/services/students";
 import TabProgress from "./TabProgress/TabProgress";
 import { router } from "expo-router";
-import { Drillv2 as Drill, getDrills } from "@/services/drills";
+import { Drill, getDrills } from "@/services/drills";
 import { Class, defaultClass } from "@/services/classes";
+import { Assignment, getAssignments } from "@/services/assignments";
 
 interface CoachViewProps {
   param_class: Class;
 }
+
 const getStudentFullName = (student: Student) => `${student.first_name} ${student.last_name}`;
+const getAssignmentName = (assignment: Assignment) => assignment.workout.workoutName;
 
 export default function CoachView(props: CoachViewProps) {
     const { token } = useAuth();
@@ -29,16 +32,20 @@ export default function CoachView(props: CoachViewProps) {
     const tabs = ["Overview", "Assignments", "Students", "Progress"];
 
     const functionalDate = useFunctionalDate();
-    const [markedDatesAndSessions, setMarkedDatesAndSessions] = useState<MarkedDates>({});
+    const [markedDatesAndAssignments, setMarkedDatesAndAssignments] = useState<MarkedDates>({});
 
-    const [sessions, setSessions] = useState<Array<Session>>([]);
-    const [sessionsViewType, setSessionsViewType] = useState("Big");
+    const [assignments, setAssignments] = useState<Array<Assignment>>([]);
+    const [assignmentsViewType, setAssignmentsViewType] = useState("Big");
 
-    const [sessionsToday, setSessionsToday] = useState<Array<Session>>([]);
+    const [assignmentsToday, setAssignmentsToday] = useState<Array<Assignment>>([]);
 
-    const [sessionsOnDate, setSessionsOnDate] =  useState<Array<Session>>([]);
-    const [sessionsOnDateLabel, setSessionsOnDateLabel] = useState("");
-    const sessionsOnDateSearchBar = useSearchBar<Session>(sessionsOnDate, "name", "name");
+    const [assignmentsOnDate, setAssignmentsOnDate] =  useState<Array<Assignment>>([]);
+    const [assignmentsOnDateLabel, setAssignmentsOnDateLabel] = useState("");
+    const assignmentsOnDateSearchBar = useSearchBar<Assignment>(
+        assignmentsOnDate, 
+        getAssignmentName, 
+        getAssignmentName
+    );
 
     const [students, setStudents] = useState<Array<Student>>([]);
     const studentSearchBar = useSearchBar<Student>(
@@ -57,27 +64,26 @@ export default function CoachView(props: CoachViewProps) {
   }, [props.param_class])
 
     useEffect(() => {
-        loadSessions();
+        loadAssignments();
         //loadStudents(classID);
-        loadDrills(teacherID);
     }, []);
 
 
     useEffect(() => {
-        loadSessionsToday(sessions);
-    }, [sessions]);
+        loadSessionsToday(assignments);
+    }, [assignments]);
 
 
     useEffect(() => {
         const markedDates = functionalDate.getMarkedDates();
-        const markedDatesAndSessions = functionalDate.markSessionsOnCalendar(markedDates, sessions);
-        setMarkedDatesAndSessions(markedDatesAndSessions);
-    }, [sessions, functionalDate.date]);
+        const markedDatesAndSessions = functionalDate.markAssignmentsOnCalendar(markedDates, assignments);
+        setMarkedDatesAndAssignments(markedDatesAndSessions);
+    }, [assignments, functionalDate.date]);
 
 
     useEffect(() => {
-        getSessionsOnDate(functionalDate.date, sessions);
-    }, [sessions, functionalDate.date]);
+        getAssignmentsOnDate(functionalDate.date, assignments);
+    }, [assignments, functionalDate.date]);
 
 
     useEffect(() => {
@@ -85,63 +91,57 @@ export default function CoachView(props: CoachViewProps) {
     }, [functionalDate.date]);
 
 
-    const loadStudents = async (classID: number) => {
-        const students = await getStudents(classID);
-        setStudents(students);
+    // const loadStudents = async (classID: number) => {
+    //     const students = await getStudents(classID);
+    //     setStudents(students);
+    // }
+
+    const loadAssignments = async () => {
+        if (!token) 
+            return;
+        const assignments = await getAssignments(token);
+        setAssignments(assignments);
     }
 
-    const loadSessions = async () => {
-        if (!token) return;
-        const sessions = await getSessions(token);
-        setSessions(sessions);
-    }
-
-
-    const loadDrills = async (teacherID: number) => {
-        const drills = await getDrills(teacherID);
-        setDrills(drills);
-    }
-
-
-    const loadSessionsToday = (sessions: Array<Session>) => {
-        const todaysSessions: Array<Session> = [];
+    const loadSessionsToday = (assignments: Array<Assignment>) => {
+        const todaysSessions: Array<Assignment> = [];
         const today = new Date();
         const todayDate = today.getDate();
         const todayMonth = today.getMonth();
         const todayFullYear = today.getFullYear();
 
-        for (const session of sessions) {
-            const sameDayAsToday = session.date.getDate() === todayDate && session.date.getMonth() === todayMonth &&  session.date.getFullYear() === todayFullYear;
+        for (const assignment of assignments) {
+            const sameDayAsToday = assignment.dueDate.getDate() === todayDate && assignment.dueDate.getMonth() === todayMonth &&  assignment.dueDate.getFullYear() === todayFullYear;
             if (sameDayAsToday) {
-                todaysSessions.push(session);
+                todaysSessions.push(assignment);
             }
         }
 
-        setSessionsToday(todaysSessions);
+        setAssignmentsToday(todaysSessions);
     }
 
 
-    const getSessionsOnDate = (date: Date, sessions: Array<Session>) => {
+    const getAssignmentsOnDate = (date: Date, assignments: Array<Assignment>) => {
         const dateShortISOString = functionalDate.getShortISOString(date);
-        const sessionsOnDate: Array<Session> = [];
+        const assignmentsOnDate: Array<Assignment> = [];
 
-        for (const session of sessions)
-            if (functionalDate.getShortISOString(session.date) === dateShortISOString)
-                sessionsOnDate.push(session);
+        for (const assignment of assignments)
+            if (functionalDate.getShortISOString(assignment.dueDate) === dateShortISOString)
+                assignmentsOnDate.push(assignment);
 
-        setSessionsOnDate(sessionsOnDate);
+        setAssignmentsOnDate(assignmentsOnDate);
     }
 
 
     const updateSessionsOnDateLabel = (date: Date) => {
         if (functionalDate.isToday(date)) {
-            setSessionsOnDateLabel("Today's Sessions");
+            setAssignmentsOnDateLabel("Today's Assignments");
         }
         else if (functionalDate.isYesterday(date)) {
-            setSessionsOnDateLabel("Yesterday's Sessions");
+            setAssignmentsOnDateLabel("Yesterday's Assignments");
         }
         else if (functionalDate.isTomorrow(date)) {
-            setSessionsOnDateLabel("Tomorrow's Sessions");
+            setAssignmentsOnDateLabel("Tomorrow's Assignments");
         }
         else {
             const dateLabel = functionalDate.date.toLocaleDateString("en-US", {
@@ -149,7 +149,7 @@ export default function CoachView(props: CoachViewProps) {
                 month: "long",
                 day: "2-digit",
             });
-            setSessionsOnDateLabel(`Sessions on ${dateLabel}`);
+            setAssignmentsOnDateLabel(`Assignments on ${dateLabel}`);
         }
     }
 
@@ -167,7 +167,7 @@ export default function CoachView(props: CoachViewProps) {
                     setShowShareClass={setShowShareClass}
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
-                    sessionsToday={sessionsToday}
+                    assignmentsToday={assignmentsToday}
                     students={students}
                     classId={props.param_class.id}
                     className={props.param_class.className}
@@ -184,13 +184,13 @@ export default function CoachView(props: CoachViewProps) {
                         pathname: "/createSession",
                         params: { date: functionalDate.date.toISOString() }
                     })}
-                    searchBar={sessionsOnDateSearchBar}
-                    viewType={sessionsViewType}
-                    setViewType={setSessionsViewType}
-                    sessionsOnDate={sessionsOnDateSearchBar.filtered}
-                    sessionsOnDateLabel={sessionsOnDateLabel}
+                    searchBar={assignmentsOnDateSearchBar}
+                    viewType={assignmentsViewType}
+                    setViewType={setAssignmentsViewType}
+                    sessionsOnDate={assignmentsOnDateSearchBar.filtered}
+                    sessionsOnDateLabel={assignmentsOnDateLabel}
                     functionalDate={functionalDate}
-                    markedDatesAndSessions={markedDatesAndSessions}
+                    markedDatesAndSessions={markedDatesAndAssignments}
                 />
             }
             {tab === "Students" &&
@@ -202,7 +202,7 @@ export default function CoachView(props: CoachViewProps) {
             {tab === "Progress" &&
                 <TabProgress
                     drills={drills}
-                    sessions={sessions}
+                    assignments={assignments}
                     students={students}
                 />
             }

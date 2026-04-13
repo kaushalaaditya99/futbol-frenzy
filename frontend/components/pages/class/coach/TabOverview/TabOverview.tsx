@@ -2,9 +2,6 @@ import { View } from "react-native";
 import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import CardMetric from "@/components/pages/CardMetric";
 import { Fragment } from "react";
-import RowCardSession from "@/components/pages/home/RowCardSession";
-import ViewAllButton from "@/components/pages/home/ViewAllButton";
-import { Session } from "@/services/sessions";
 import { Student } from "@/services/students";
 import ButtonShare from "../ButtonShare";
 import ButtonSettings from "../ButtonSettings";
@@ -12,13 +9,15 @@ import ThemedText from "@/components/ui/ThemedText";
 import NoSessions from "../../NoSessions";
 import ShareClass from "./ShareClass";
 import Settings from "./Settings";
+import { Assignment } from "@/services/assignments";
+import RowCardAssignment from "@/components/pages/home/RowCardAssignment";
 
 interface TabOverviewProps {
     showShareClass: boolean;
     showSettings: boolean;
     setShowSettings: (settings: boolean) => void;
     setShowShareClass: (shareClass: boolean) => void;
-    sessionsToday: Session[];
+    assignmentsToday: Assignment[];
     students: Student[];
     classId?: number;
     className?: string;
@@ -80,8 +79,8 @@ export default function TabOverview(props: TabOverviewProps) {
                     value={props.students.length.toString()}
                 />
                 <CardMetric
-                    label={props.sessionsToday.length === 1 ? "Session\nToday" : "Sessions\nToday"}
-                    value={""+props.sessionsToday.length}
+                    label={props.assignmentsToday.length === 1 ? "Session\nToday" : "Sessions\nToday"}
+                    value={""+props.assignmentsToday.length}
                 />
                 <CardMetric
                     label={"Sessions\nUngraded"}
@@ -99,11 +98,11 @@ export default function TabOverview(props: TabOverviewProps) {
                     style={{
                         fontWeight: 500,
                         fontSize: fontSize.lg,
-                        letterSpacing: letterSpacing.xs,
+                        letterSpacing: letterSpacing.base,
                         color: colors.schemes.light.onBackground,
                     }}
                 >
-                    Today's Scheduled Sessions
+                    Today's Assignments
                 </ThemedText>
                 <View
                     style={{
@@ -111,15 +110,15 @@ export default function TabOverview(props: TabOverviewProps) {
                         rowGap: padding.lg
                     }}
                 >
-                    {props.sessionsToday.map((session: any, i: number) => (
+                    {props.assignmentsToday.map((assignment: Assignment, i: number) => (
                         <Fragment key={i}>
-                            <RowCardSession
-                                {...session}
+                            <RowCardAssignment
+                                {...assignment}
                                 showTag={false}
                             />
                         </Fragment>
                     ))}
-                    {!props.sessionsToday.length &&
+                    {!props.assignmentsToday.length &&
                         <NoSessions/>
                     }
                 </View>

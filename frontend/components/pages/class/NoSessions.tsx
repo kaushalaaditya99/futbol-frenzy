@@ -14,7 +14,7 @@ export default function NoSessions() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                rowGap: padding.xs,
+                rowGap: padding.sm,
                 borderWidth: 1,
                 borderStyle: "dashed",
                 borderColor: colors.schemes.light.outlineVariant,
@@ -39,7 +39,7 @@ export default function NoSessions() {
                     textAlign: "center"
                 }}
             >
-                No Sessions
+                No Assignments
             </ThemedText>
             <ThemedText
                 style={{
@@ -47,11 +47,11 @@ export default function NoSessions() {
                     fontSize: 14,
                     fontWeight: 400,
                     color: colors.schemes.light.onSurfaceVariant,
-                    letterSpacing: letterSpacing.xl,
+                    letterSpacing: letterSpacing.xl * 2,
                     textAlign: "center"
                 }}
             >
-                There are no sessions scheduled for today.
+                There are no assignments scheduled for today.
             </ThemedText>
         </View>
     )
