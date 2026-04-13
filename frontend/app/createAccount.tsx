@@ -6,7 +6,7 @@ import SeparatorText from "@/components/ui/SeparatorText";
 import ThemedText from "@/components/ui/ThemedText";
 import { colors, fontSize, letterSpacing, margin, padding, theme } from "@/theme";
 import { router } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import resolveEndpoint from '@/services/resolveEndpoint';
 import React, { useState, useEffect } from 'react';
@@ -36,13 +36,13 @@ export default function CreateAccount() {
         //check if password matches confirm_password field, return early if so
         if (password != password_confirm)
         {
-            alert("Passwords don't match.")
+            Alert.alert("Error", "Passwords don't match.")
             return;
         }
 
         if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password))
         {
-            alert("Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.")
+            Alert.alert("Error", "Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.")
             return;
         }
 
@@ -57,17 +57,17 @@ export default function CreateAccount() {
 
         if (response.ok) {
             //console.log('Login successful! Token:', data.token);
-            alert('Account created successfully!');
+            Alert.alert("Success", "Account created successfully!");
             router.back();
         } else {
             // error on backend
-            console.error('Account Creation failed:', data);
-            alert(`Account creation failed: ${data.error || JSON.stringify(data)}`);
+            console.log('Account Creation failed:', data);
+            Alert.alert("Account Creation Failed", "Please check your information and try again.");
         }
         } catch (error) {
             // network error
-            console.error('Network/Account Creation error:', error);
-            alert('Account creation error! See console for details.');
+            console.log('Network/Account Creation error:', error);
+            Alert.alert("Connection Error", "Unable to connect to the server. Please check your internet connection.");
         }
     }
     return (

@@ -93,7 +93,7 @@ export default function CreateDrill() {
         if (!cameraPermission?.granted) {
             const ask = await requestCameraPermission();
             if (!ask.granted) {
-                alert("No Camera Permission");
+                Alert.alert("Permission Required", "Camera access is needed to record a video.");
                 return;
             }
         }
@@ -110,7 +110,7 @@ export default function CreateDrill() {
         if (!mediaLibraryPermission?.granted) {
             const ask = await requestMediaLibraryPermission();
             if (!ask.granted) {
-                alert("No Media Library Permission");
+                Alert.alert("Permission Required", "Media library access is needed to select a video.");
                 return;
             }
         }
@@ -157,7 +157,7 @@ export default function CreateDrill() {
             
             router.back();
             } catch (error) {
-                console.error("Error uploading drill:", error);
+                console.log("Error uploading drill:", error);
                 Alert.alert("Upload Failed", "There was a problem uploading your video and creating the drill. Please try again.");
             } finally {
                 setIsSubmitting(false);

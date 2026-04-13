@@ -7,7 +7,7 @@ import SeparatorText from "@/components/ui/SeparatorText";
 import ThemedText from "@/components/ui/ThemedText";
 import { fontSize, padding, theme } from "@/theme";
 import { router } from "expo-router";
-import { Pressable, ScrollView, View } from 'react-native';
+import { Alert, Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import resolveEndpoint from '@/services/resolveEndpoint';
 import React, { useState, useEffect } from 'react';
@@ -39,7 +39,7 @@ export default function Index() {
         headers: { Authorization: `Token ${authToken}` },
       });
       if (!response.ok) {
-        console.error(
+        console.log(
           "Failed to fetch user:",
           response.status,
           response.statusText,
@@ -52,7 +52,7 @@ export default function Index() {
       if (data.groups.includes("Student")) return "Student" as const;
       return null;
     } catch (error) {
-      console.error("Error determining user type:", error);
+      console.log("Error determining user type:", error);
       return null;
     }
   };
@@ -70,12 +70,12 @@ export default function Index() {
         const role = await determineUserType(data.token);
         setAuth(data.token, role);
       } else {
-        console.error("Login failed:", data);
-        alert(`Login failed: ${data.error || JSON.stringify(data)}`);
+        console.log("Login failed:", data);
+        Alert.alert("Login Failed", "Invalid username or password. Please try again.");
       }
     } catch (error) {
-      console.error("Network/Login error:", error);
-      alert("Login error! See console for details.");
+      console.log("Network/Login error:", error);
+      Alert.alert("Connection Error", "Unable to connect to the server. Please check your internet connection.");
     }
   };
 

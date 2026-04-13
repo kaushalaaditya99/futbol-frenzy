@@ -10,15 +10,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getClassById, Class, defaultClass } from "@/services/classes";
 
 export default function ClassPage() {
-    const [isTeacher, setIsTeacher] = useState(true);
-  const { token, loaded } = useAuth();
+  const { token, loaded, role } = useAuth();
+  const isTeacher = role === "Coach";
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const jojo_id  = Number(id);
-    const loadIsTeacher = () => {
-        // is this user a teacher
-        setIsTeacher(false);
-    }
     const [soccerclass, setSoccerClass] = useState(defaultClass);
 
   async function fetchClass(in_token: string, in_id: number)

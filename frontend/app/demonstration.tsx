@@ -1,5 +1,5 @@
 import { Camera, Check, FolderOpen, MoveLeft, MoveRight, NotepadText, Sparkle } from "lucide-react-native";
-import { ActivityIndicator, Dimensions, Pressable, ScrollView, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
@@ -159,7 +159,7 @@ export default function Demonstration() {
         if (!cameraPermission?.granted) {
             const ask = await requestCameraPermission();
             if (!ask.granted) {
-                alert("No Camera Permission");
+                Alert.alert("Permission Required", "Camera access is needed to record a video.");
                 return;
             }
         }
@@ -176,7 +176,7 @@ export default function Demonstration() {
         if (!mediaLibraryPermission?.granted) {
             const ask = await requestMediaLibraryPermission();
             if (!ask.granted) {
-                alert("No Media Library Permission");
+                Alert.alert("Permission Required", "Media library access is needed to select a video.");
                 return;
             }
         }
@@ -251,8 +251,8 @@ export default function Demonstration() {
             }, 500);
         } catch (error) {
             setSendingSubmission(false);
-            alert("Error in Drill Submission!");
-            console.error("Error submitting session:", error);
+            Alert.alert("Submission Failed", "There was a problem submitting your drills. Please try again.");
+            console.log("Error submitting session:", error);
         }
         // Error (Missing Video)
         // if (Object.keys(drills).length !== session.drills.length) {

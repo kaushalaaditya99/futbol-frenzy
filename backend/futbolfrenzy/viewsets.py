@@ -181,19 +181,20 @@ class AssignmentViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-        # notifies student when assigned an assignment
-        def perform_create(self, serializer):
-            instance = serializer.save()
+    # Notifies students when a new assignment is created for their class
+    def perform_create(self, serializer):
+        instance = serializer.save()
 
-            for member in instance.soccer_classes.first().members.all():
-                student = member.studentID
-                notify_student(
-                    student,
-                    title="New Session Assigned",
-                    description=f"Coach {instance.soccer_classes.first().coachID.username} assigned Session #{instance.id} with {instance.drills.count()} drills. Due {instance.dueDate}.",
+        # Assignment is linked to classes via M2M, notify all students in those classes
+        for soccer_class in instance.soccer_classes.all():
+            coach_name = f"{soccer_class.coachID.first_name} {soccer_class.coachID.last_name}".strip() or soccer_class.coachID.username
+            for member in soccer_class.members.all():
+                notify_user(
+                    member.studentID,
+                    title="New Assignment",
+                    description=f"{coach_name} assigned a new session in {soccer_class.className}.",
                     icon="session",
                     iconBackground="#6db1ff",
-                    url=f"/sessions/{instance.id}"
                 )
 
 
@@ -220,6 +221,25 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(assignmentID=assignment_id)
 
         return queryset
+
+    # Notifies coach when a student submits an assignment
+    def perform_create(self, serializer):
+        instance = serializer.save()
+
+        student = instance.studentID
+        student_name = f"{student.first_name} {student.last_name}".strip() or student.username
+        assignment = instance.assignmentID
+        workout_name = assignment.workoutID.workoutName
+
+        # Find which class this assignment belongs to and notify the coach
+        for soccer_class in assignment.soccer_classes.all():
+            notify_user(
+                soccer_class.coachID,
+                title="New Submission",
+                description=f"{student_name} submitted {workout_name} in {soccer_class.className}.",
+                icon="session",
+                iconBackground="#c3f7c8",
+            )
 
 
 
@@ -252,8 +272,8 @@ class SubmittedDrillViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-    # if coach grades on API, notifies student
-    def grade_update(self, serializer):
+    # Notifies student when coach grades a drill
+    def perform_update(self, serializer):
         instance = serializer.save()
 
         if 'grade' in serializer.validated_data:
@@ -262,10 +282,9 @@ class SubmittedDrillViewSet(viewsets.ModelViewSet):
             notify_user(
                 student,
                 title="Drill Graded!",
-                description=f"You scored {instance.grade}/100 on {drill.name}. Tap to see feedback",
+                description=f"You scored {instance.grade}/10 on {drill.drillName}.",
                 icon="graded",
                 iconBackground="#c3f7c8",
-                url=f"/drills/{drill.id}/submission/{instance.submissionID.id}"
             )
 
 
@@ -348,3 +367,19 @@ class ClassMemberViewSet(viewsets.ModelViewSet):
     queryset = ClassMember.objects.all()
     serializer_class = ClassMemberSerializer
     permission_classes = [AllowAny]
+
+    # Notifies coach when a student joins their class
+    def perform_create(self, serializer):
+        instance = serializer.save()
+
+        student = instance.studentID
+        student_name = f"{student.first_name} {student.last_name}".strip() or student.username
+        soccer_class = instance.classID
+
+        notify_user(
+            soccer_class.coachID,
+            title="New Student",
+            description=f"{student_name} joined {soccer_class.className}.",
+            icon="chat",
+            iconBackground="#E8DEF8",
+        )

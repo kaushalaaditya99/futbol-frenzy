@@ -66,7 +66,7 @@ export default function EditProfile() {
         { text: "OK", onPress: () => router.replace("/settings") },
       ]);
     } catch (err) {
-      console.error("Failed to update profile:", err);
+      console.log("Failed to update profile:", err);
       Alert.alert("Error", "Failed to update profile. Please try again.");
     } finally {
       setSaving(false);
