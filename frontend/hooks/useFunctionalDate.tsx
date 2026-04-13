@@ -95,8 +95,8 @@ export default function useFunctionalDate() {
     }
 
 
-    const markSessionsOnCalendar = (markedDates: MarkedDates, sessions: Array<Session>) => {
-        const markedDatesAndSessions: MarkedDates = {}
+    const markSessionsOnCalendar = (markedDates: MarkedDates, sessions: Array<Session>, maxNumDots: number = 3) => {
+        const markedDatesAndSessions: MarkedDates = markedDates;
 
         for (const session of sessions) {
             const shortISOString = getShortISOString(session.date);
@@ -106,6 +106,9 @@ export default function useFunctionalDate() {
 
             if (!markedDatesAndSessions[shortISOString].dots)
                 markedDatesAndSessions[shortISOString].dots = [];
+
+            if (markedDatesAndSessions[shortISOString].dots.length >= maxNumDots)
+                continue;
 
             markedDatesAndSessions[shortISOString].dots.push({
                 color: colors.coreColors.primary, 
