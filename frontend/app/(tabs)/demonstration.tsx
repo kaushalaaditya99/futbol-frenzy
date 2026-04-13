@@ -8,6 +8,7 @@ import "expo-document-picker";
 import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
+import { router } from "expo-router";
 
 export default function Demonstration() {
     // State for video upload and submission
@@ -337,6 +338,7 @@ export default function Demonstration() {
                         }}
                     >
                         <Pressable
+                            onPress={() => router.push(`/record-drill?drillId=${drillID}&assignmentId=${assignmentID}` as any)}
                             style={{
                                 flex: 1,
                                 backgroundColor: "white",

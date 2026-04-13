@@ -183,8 +183,9 @@ export async function createSubmittedDrill(submittedDrillData: {
     submissionID: number;
     drillID: number;
     videoURL: string;
+    grade?: number;
     touchCount?: number;
-}): Promise<{ id: number; videoURL: string }> {
+}): Promise<{ id: number; videoURL: string; grade?: number }> {
     const API_URL = resolveEndpoint("/api/");
     const headers = await authHeaders();
 
@@ -202,12 +203,14 @@ export async function saveSubmittedDrillWithUrl(params: {
     submissionID: number;
     drillID: number;
     s3VideoUrl: string;
+    grade?: number;
     touchCount?: number;
-}): Promise<{ id: number; videoURL: string }> {
+}): Promise<{ id: number; videoURL: string; grade?: number }> {
     return createSubmittedDrill({
         submissionID: params.submissionID,
         drillID: params.drillID,
         videoURL: params.s3VideoUrl,
+        grade: params.grade,
         touchCount: params.touchCount || -1
     });
 }
