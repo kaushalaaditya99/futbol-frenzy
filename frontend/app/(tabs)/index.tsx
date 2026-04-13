@@ -38,7 +38,7 @@ export default function Home() {
         // The studentID would likely be defined elsewhere,
         // but I hope I'm getting my point across.
         //router.push("/(tabs)/classes");
-        // router.push("/ui")
+        // router.push("/demonstration")
         loadResults();
         loadSessions();
     }, []);
