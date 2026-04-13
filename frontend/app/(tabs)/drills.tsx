@@ -35,7 +35,8 @@ export default function Drills() {
 
     useEffect(() => {
         const id = 0;
-        loadDrills(id, token);
+        loadDrills(id);
+        console.log("Drills loaded")
     }, [token]);
 
     const loadDrills = async (id: number) => {

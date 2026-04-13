@@ -23,7 +23,7 @@ export default function useDrillSearchBar(drills: Array<Drill>) {
 
     const [sort, setSort] = useState<0|1|2>(0);
     const [sortKey, setSortKey] = useState("name");
-    const [isPublic, setIsPublic] = useState(false);
+    const [isPublic, setIsPublic] = useState(true);
 
     const [search, setSearch] = useState("");
     const [searchKey, setSearchKey] = useState("name");
@@ -42,12 +42,10 @@ export default function useDrillSearchBar(drills: Array<Drill>) {
 
   const searchDrillsByAccessControl = (accessControl: AccessControl, drills: Array<Drill>) => {
     //absolutely disgusting logic to set IsPublic and match with accessControl
-    if (accessControl == 'private')
-      setIsPublic(false);
-    else if (accessControl == 'public')
-      setIsPublic(true)
-
-    const fDrills = drills.filter((drill) => drill.publicDrill === isPublic);
+    const wantPublic = accessControl === 'public';
+    console.log("Current Public State is: ")
+    console.log(wantPublic)
+    const fDrills = drills.filter((drill) => drill.publicDrill === wantPublic);
         return fDrills;
     }
 
