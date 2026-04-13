@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from . import views
 from . import viewsets
-from .views import me, detailed_user_info, change_password, coach_submissions, coach_stats, coach_class_progress
+from .views import get_class_by_assignment, me, detailed_user_info, change_password, coach_submissions, coach_stats, coach_class_progress
 
 api_router = DefaultRouter()
 api_router.register(r'user', viewsets.UserViewSet)
@@ -36,4 +36,5 @@ urlpatterns = [
     path('api/set-role/', views.set_role),
     path('', views.home, name='test-home'),
     path('get_presigned_url/', views.get_presigned_url, name='get_presigned_url'),
+    path('api/assignments/<int:assignment_id>/class/', get_class_by_assignment),
 ]

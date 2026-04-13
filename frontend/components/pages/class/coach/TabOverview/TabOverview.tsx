@@ -75,15 +75,15 @@ export default function TabOverview(props: TabOverviewProps) {
                 }}
             >
                 <CardMetric
-                    label={"Students\nIn Class"}
+                    label={"Students\nin Class"}
                     value={props.students.length.toString()}
                 />
                 <CardMetric
-                    label={props.assignmentsToday.length === 1 ? "Session\nToday" : "Sessions\nToday"}
+                    label={props.assignmentsToday.length === 1 ? "Assignments\nToday" : "Assignments\nToday"}
                     value={""+props.assignmentsToday.length}
                 />
                 <CardMetric
-                    label={"Sessions\nUngraded"}
+                    label={"Assignments\nUngraded"}
                     value="5"
                 />
             </View>

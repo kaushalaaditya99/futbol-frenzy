@@ -142,27 +142,9 @@ class WorkoutSerializer(serializers.ModelSerializer):
     def get_coach(self, obj):
         return UserSerializer(obj.coachID).data
 
-class AssignmentSerializer(serializers.ModelSerializer):
-    workout = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Assignment
-        fields = [
-            "id",
-            "workoutID",
-            "dueDate",
-            "imageBackgroundColor",
-            "imageText",
-            "imageTextColor",
-            'workout'
-        ]
-        read_only_fields = ["id", 'workout']
-    
-    def get_workout(self, obj):
-        return WorkoutSerializer(obj.workoutID).data
-
-
 class SubmissionSerializer(serializers.ModelSerializer):
+    student = serializers.SerializerMethodField()
+
     class Meta:
         model = Submission
         fields = [
@@ -175,9 +157,37 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "imageBackgroundColor",
             "imageText",
             "imageTextColor",
+            'student'
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", 'student']
+    
+    def get_student(self, obj):
+        return StudentSerializer(obj.studentID).data
 
+class AssignmentSerializer(serializers.ModelSerializer):
+    workout = serializers.SerializerMethodField()
+    submissions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Assignment
+        fields = [
+            "id",
+            "workoutID",
+            "dueDate",
+            "imageBackgroundColor",
+            "imageText",
+            "imageTextColor",
+            'workout',
+            'submissions'
+        ]
+        read_only_fields = ["id", 'workout', 'submissions']
+    
+    def get_workout(self, obj):
+        return WorkoutSerializer(obj.workoutID).data
+    
+    def get_submissions(self, obj):
+        submissions = obj.submission_set.all()
+        return SubmissionSerializer(submissions, many=True).data
 
 class SubmittedDrillSerializer(serializers.ModelSerializer):
     class Meta:

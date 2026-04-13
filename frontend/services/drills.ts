@@ -58,6 +58,28 @@ export async function getDrills(token: string): Promise<Drill[]> {
   }
 }
 
+export async function getDrill(token: string, drillID: number): Promise<Drill|null> {
+  try {
+    const res = await fetch(`${API_URL}drills/${drillID}`,
+    {
+        headers: {
+            Authorization: `Token ${token}`,
+            "Content-Type": "application/json",
+        }
+    });
+    
+    if (!res.ok) 
+        throw new Error(`HTTP Error! Status: ${res.status}`);
+
+    const data = await res.json();
+    return data;
+
+  } 
+  catch (err) {
+    console.error("Failed to fetch drills:", err);
+    return null;
+  }
+}
 
 export async function deleteDrill(token: string, drillID: number): Promise<boolean> {
     const response = await fetch(`${API_URL}/drills/${drillID}/`, {

@@ -76,7 +76,7 @@ export default function RowCard(props: RowCardProps) {
                 >
                     <ThemedText
                         style={{
-                            fontSize: fontSize.md,
+                            fontSize: fontSize.base - 1,
                             fontWeight: 500,
                             letterSpacing: letterSpacing.base,
                             color: colors.schemes.light.onSurface
@@ -100,7 +100,7 @@ export default function RowCard(props: RowCardProps) {
                         >
                             <ThemedText
                                 style={{
-                                    fontSize: fontSize.sm,
+                                    fontSize: fontSize.md,
                                     letterSpacing: letterSpacing["xl"],
                                     color: colors.schemes.light.onSurfaceVariant
                                 }}

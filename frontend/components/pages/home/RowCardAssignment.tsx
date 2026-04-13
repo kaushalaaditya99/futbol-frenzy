@@ -12,7 +12,7 @@ interface RowCardAssignmentProps extends Assignment {
 export default function RowCardAssignment(props: RowCardAssignmentProps) {
     return (
         <RowCard
-            onPress={() => 1}
+            onPress={() => router.push(`/assignments/${props.id}`)}
             title={props.workout.workoutName}
             imageText={props["imageText"]}
             imageTextColor={"black"}

@@ -119,8 +119,8 @@ function TabsLayout() {
                     tabBarLabel: ({color, focused}) => (
                         <ThemedText
                             style={{
-                                fontSize: fontSize.xs,
-                                letterSpacing: letterSpacing.base,
+                                fontSize: fontSize.sm,
+                                letterSpacing: letterSpacing.lg,
                                 fontWeight: 500,
                                 color: color
                             }}
@@ -188,6 +188,27 @@ function TabsLayout() {
             />
             <Tabs.Screen
                 name="all-submissions"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="assignments/[id]"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="drills/[id]"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="workouts/[id]"
                 options={{
                     headerShown: false,
                     href: null,
