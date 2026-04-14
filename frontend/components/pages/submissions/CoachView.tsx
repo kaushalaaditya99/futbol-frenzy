@@ -300,9 +300,10 @@ export default function CoachView(props: ViewProps) {
                     )
                 })}
                 <Button
+                    onPress={() => router.push(`/(tabs)/gradeSubmission/${props.submission.id}`)}
                     {...buttonTheme.blue}
                     outerStyle={{
-                        marginTop: theme.margin.xs
+                        marginVertical: theme.margin.xs
                     }}
                 >
                     <ThemedText
