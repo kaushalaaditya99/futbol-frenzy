@@ -125,9 +125,11 @@ export default function Classes() {
                                         onPress={() => router.push("/createClass")}
                                     />
                                 }
-                                <JoinClassButton
+                                {role !== "Coach" &&
+                                  <JoinClassButton
                                     onPress={() => router.push("/joinClass")}
-                                />
+                                  />
+                                }
                             </View>
                         </View>
                         <SearchBar
