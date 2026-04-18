@@ -7,8 +7,7 @@ import CardMetric from "@/components/pages/CardMetric";
 import RowCardSession from "@/components/pages/home/RowCardSession";
 import ViewAllButton from "@/components/pages/home/ViewAllButton";
 import CardResult from "@/components/pages/home/RowCardResult";
-import { getSessions, Session } from "@/services/sessions";
-import { getResults, Result } from "@/services/results";
+import { Session } from "@/services/sessions";
 import { StatusBar } from "expo-status-bar";
 import SideBar from "@/components/ui/user/sideBar/SideBar";
 import CalendarModal from "@/components/ui/calendar/CalendarModal";
@@ -22,10 +21,12 @@ import WeekButtonGroup from "@/components/ui/calendar/WeekButtonGroup";
 import CoachHome from "@/components/pages/home/CoachHome";
 import { useAuth } from "@/contexts/AuthContext";
 import { router } from "expo-router";
+import { getStudentStats, getStudentSchedule, getStudentResults, StudentStats, ScheduleItem, StudentResult } from "@/services/studentHome";
 
 export default function Home() {
-    const [results, setResults] = useState<Array<Result>>([]);
-    const [sessions, setSessions] = useState<Array<Session>>([]);
+    const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+    const [results, setResults] = useState<StudentResult[]>([]);
+    const [stats, setStats] = useState<StudentStats>({ daysStreak: 0, thisWeek: 0, dueToday: 0 });
 
     const sideBar = useSideBar();
     const functionalDate = useFunctionalDate();
@@ -33,34 +34,41 @@ export default function Home() {
     const { role, token } = useAuth();
 
     useEffect(() => {
-        // We'd load the user's data in this function
-        // as it is called when the component loads.
-        // The studentID would likely be defined elsewhere,
-        // but I hope I'm getting my point across.
-        //router.push("/(tabs)/classes");
-        // router.push("/ui")
-        loadResults();
-        loadSessions();
-    }, []);
-
+        if (!token) return;
+        getStudentStats(token)
+            .then(setStats)
+            .catch((err) => console.log("Failed to load student stats:", err));
+        getStudentResults(token)
+            .then(setResults)
+            .catch((err) => console.log("Failed to load student results:", err));
+    }, [token]);
 
     useEffect(() => {
-        loadSessions();
-    }, [functionalDate.date]);
-
-
-    const loadResults = async () => {
-        const studentID = 0;
-        const results = getResults(studentID);
-        setResults(results);
-    }
-
-
-    const loadSessions = async () => {
         if (!token) return;
-        const sessions = await getSessions(token);
-        setSessions(sessions);
-    }
+        const dateStr = functionalDate.date.toISOString().split('T')[0];
+        getStudentSchedule(token, dateStr)
+            .then(setSchedule)
+            .catch((err) => console.log("Failed to load schedule:", err));
+    }, [token, functionalDate.date]);
+
+    // Map ScheduleItem to Session props for RowCardSession
+    const sessions: Session[] = schedule.map((item) => ({
+        id: item.id,
+        date: item.dueDate ? new Date(item.dueDate) : new Date(),
+        name: item.name,
+        type: item.type,
+        durationInMins: 0,
+        class: item.className,
+        drills: [],
+        isNew: false,
+        isDue: !item.submitted,
+        imageBackgroundColor: item.imageBackgroundColor || "#1C1C1C",
+        imageTextColor: item.imageTextColor,
+        imageText: item.imageText || "",
+        uploadedBy: "",
+        bookmarked: false,
+        accessControl: "private",
+    }));
 
     if (role === "Coach") return <CoachHome />;
 
@@ -130,7 +138,7 @@ export default function Home() {
                             >
                                 <CardMetric
                                     label="Days Streak"
-                                    value="7"
+                                    value={String(stats.daysStreak)}
                                     valueIcon={
                                         <Flame
                                             size={14}
@@ -141,11 +149,11 @@ export default function Home() {
                                 />
                                 <CardMetric
                                     label="This Week"
-                                    value="12"
+                                    value={String(stats.thisWeek)}
                                 />
                                 <CardMetric
                                     label="Due Today"
-                                    value="3"
+                                    value={String(stats.dueToday)}
                                 />
                             </View>
                             <View
@@ -231,7 +239,12 @@ export default function Home() {
                                     {results.map((result, i) => (
                                         <Fragment key={i}>
                                             <CardResult
-                                                {...result}
+                                                name={result.name}
+                                                date={result.date}
+                                                type={result.type}
+                                                score={result.score}
+                                                imageBackgroundColor={result.imageBackgroundColor}
+                                                imageColor={result.imageTextColor}
                                             />
                                         </Fragment>
                                     ))}

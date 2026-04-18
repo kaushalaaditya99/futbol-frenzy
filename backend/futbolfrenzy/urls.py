@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from . import views
 from . import viewsets
-from .views import me, detailed_user_info, change_password
+from .views import me, detailed_user_info, change_password, student_stats, student_schedule, student_results, coach_submissions, coach_stats, coach_class_progress
 
 api_router = DefaultRouter()
 api_router.register(r'user', viewsets.UserViewSet)
@@ -29,6 +29,12 @@ urlpatterns = [
     # allow us to access /api/drills and /api/enrollments.
     path('api/', include(api_router.urls)),
     path('api/users/change-password/', change_password, name='change-password'),
+    path('api/student/stats/', student_stats, name='student-stats'),
+    path('api/student/schedule/', student_schedule, name='student-schedule'),
+    path('api/student/results/', student_results, name='student-results'),
+    path('api/coach/submissions/', coach_submissions, name='coach-submissions'),
+    path('api/coach/stats/', coach_stats, name='coach-stats'),
+    path('api/coach/class-progress/', coach_class_progress, name='coach-class-progress'),
     path('api/google-auth/', views.google_auth),
     path('api/set-role/', views.set_role),
     path('', views.home, name='test-home'),

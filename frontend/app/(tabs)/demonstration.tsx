@@ -42,7 +42,7 @@ export default function Demonstration() {
                 setVideoSource(videoUrl); // Show the uploaded video
             }
         } catch (e) {
-            console.error('upload failed', e);
+            console.log('upload failed', e);
             Alert.alert("Upload Failed", "Could not upload video. Please try again.");
         } finally {
             setIsUploading(false);
@@ -83,9 +83,9 @@ export default function Demonstration() {
             Alert.alert("Success", "Your submission has been uploaded for review!");
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                 console.error('Submission error response:', error.response?.data);
+                 console.log('Submission error response:', error.response?.data);
             }
-            console.error('Submission failed', error);
+            console.log('Submission failed', error);
             Alert.alert("Submission Failed", "Could not submit your video. Please try again.");
         } finally {
             setIsSubmitting(false);

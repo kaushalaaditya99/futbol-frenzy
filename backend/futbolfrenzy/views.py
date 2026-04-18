@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass
+from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
 import os
 import boto3
 from rest_framework.decorators import api_view
@@ -93,6 +93,282 @@ def change_password(request):
     new_token = Token.objects.create(user=user)
 
     return Response({'message': 'Password changed successfully.', 'token': new_token.key})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def coach_submissions(request):
+    from django.utils import timezone
+    coach = request.user
+
+    # Get all classes this coach owns
+    coach_classes = SoccerClass.objects.filter(coachID=coach)
+
+    # Get all assignment IDs across those classes
+    assignment_ids = set()
+    class_by_assignment = {}  # assignment_id -> class_name
+    for sc in coach_classes:
+        for assignment in sc.assignments.all():
+            assignment_ids.add(assignment.id)
+            class_by_assignment[assignment.id] = sc.className
+
+    # Filter by today if ?today=true
+    submissions = Submission.objects.filter(
+        assignmentID__in=assignment_ids
+    ).select_related('studentID', 'assignmentID', 'assignmentID__workoutID').order_by('-dateSubmitted')
+
+    today_only = request.query_params.get('today', '').lower() == 'true'
+    if today_only:
+        now = timezone.now()
+        submissions = submissions.filter(
+            dateSubmitted__date=now.date()
+        )
+
+    limit = request.query_params.get('limit')
+    if limit:
+        submissions = submissions[:int(limit)]
+
+    results = []
+    for sub in submissions:
+        workout = sub.assignmentID.workoutID
+        results.append({
+            'id': sub.id,
+            'studentName': f"{sub.studentID.first_name} {sub.studentID.last_name}",
+            'studentID': sub.studentID.id,
+            'drillName': workout.workoutName if workout else '',
+            'className': class_by_assignment.get(sub.assignmentID.id, ''),
+            'dateSubmitted': sub.dateSubmitted.isoformat(),
+            'grade': sub.grade,
+        })
+
+    return Response(results)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_stats(request):
+    from django.utils import timezone
+    from datetime import timedelta
+    student = request.user
+    today = timezone.now().date()
+
+    # Get all classes this student is in
+    student_classes = SoccerClass.objects.filter(members__studentID=student)
+
+    # Due Today: assignments due today across all student's classes
+    due_today = Assignment.objects.filter(
+        soccer_classes__in=student_classes,
+        dueDate__date=today,
+    ).distinct().count()
+
+    # This Week: submissions the student made this week (Mon-Sun)
+    start_of_week = today - timedelta(days=today.weekday())
+    this_week = Submission.objects.filter(
+        studentID=student,
+        dateSubmitted__date__gte=start_of_week,
+        dateSubmitted__date__lte=today,
+    ).count()
+
+    # Days Streak: consecutive days with at least one submission
+    streak = 0
+    check_date = today
+    while True:
+        has_submission = Submission.objects.filter(
+            studentID=student,
+            dateSubmitted__date=check_date,
+        ).exists()
+        if has_submission:
+            streak += 1
+            check_date -= timedelta(days=1)
+        else:
+            break
+
+    return Response({
+        'daysStreak': streak,
+        'thisWeek': this_week,
+        'dueToday': due_today,
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_schedule(request):
+    from django.utils import timezone
+    student = request.user
+    date_str = request.query_params.get('date')
+
+    if date_str:
+        from datetime import datetime
+        target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    else:
+        target_date = timezone.now().date()
+
+    # Get classes the student is in
+    student_classes = SoccerClass.objects.filter(members__studentID=student)
+
+    # Get assignments due on target date
+    assignments = Assignment.objects.filter(
+        soccer_classes__in=student_classes,
+        dueDate__date=target_date,
+    ).select_related('workoutID').distinct()
+
+    # Check which assignments the student has already submitted
+    submitted_assignment_ids = set(
+        Submission.objects.filter(
+            studentID=student,
+            assignmentID__in=assignments,
+        ).values_list('assignmentID', flat=True)
+    )
+
+    results = []
+    for assignment in assignments:
+        workout = assignment.workoutID
+        # Find which class this assignment belongs to for this student
+        class_name = ''
+        for sc in student_classes:
+            if sc.assignments.filter(id=assignment.id).exists():
+                class_name = sc.className
+                break
+
+        results.append({
+            'id': assignment.id,
+            'workoutId': workout.id,
+            'name': workout.workoutName,
+            'type': workout.workoutType,
+            'dueDate': assignment.dueDate.isoformat() if assignment.dueDate else None,
+            'className': class_name,
+            'submitted': assignment.id in submitted_assignment_ids,
+            'imageBackgroundColor': assignment.imageBackgroundColor or workout.imageBackgroundColor,
+            'imageText': assignment.imageText or workout.imageText,
+            'imageTextColor': assignment.imageTextColor or workout.imageTextColor,
+        })
+
+    return Response(results)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_results(request):
+    student = request.user
+
+    # Get graded submissions for this student
+    submissions = Submission.objects.filter(
+        studentID=student,
+        grade__isnull=False,
+    ).select_related('assignmentID', 'assignmentID__workoutID').order_by('-dateGraded')[:10]
+
+    results = []
+    for sub in submissions:
+        workout = sub.assignmentID.workoutID
+        results.append({
+            'id': sub.id,
+            'name': workout.workoutName,
+            'type': workout.workoutType,
+            'score': sub.grade,
+            'date': sub.dateGraded.strftime('%b %d') if sub.dateGraded else sub.dateSubmitted.strftime('%b %d'),
+            'imageBackgroundColor': sub.imageBackgroundColor or '#1C1C1C',
+            'imageTextColor': sub.imageTextColor or '#FFFFFF',
+        })
+
+    return Response(results)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def coach_stats(request):
+    coach = request.user
+
+    # Get all classes this coach owns
+    coach_classes = SoccerClass.objects.filter(coachID=coach)
+
+    # To Review: ungraded submissions across coach's assignments
+    assignment_ids = set()
+    for sc in coach_classes:
+        for assignment in sc.assignments.all():
+            assignment_ids.add(assignment.id)
+
+    to_review = Submission.objects.filter(
+        assignmentID__in=assignment_ids,
+        grade__isnull=True,
+    ).count()
+
+    # Students: unique students across all coach's classes
+    total_students = ClassMember.objects.filter(
+        classID__in=coach_classes
+    ).values('studentID').distinct().count()
+
+    # Completion: average today's completion across classes
+    from django.utils import timezone
+    today = timezone.now().date()
+    completion_values = []
+    for sc in coach_classes:
+        todays_assignments = sc.assignments.filter(dueDate__date=today)
+        num_students = ClassMember.objects.filter(classID=sc).count()
+        if num_students == 0 or todays_assignments.count() == 0:
+            continue
+        assignment_ids_today = list(todays_assignments.values_list('id', flat=True))
+        total_expected = num_students * len(assignment_ids_today)
+        class_student_ids = ClassMember.objects.filter(classID=sc).values_list('studentID', flat=True)
+        submissions_count = Submission.objects.filter(
+            assignmentID__in=assignment_ids_today,
+            studentID__in=class_student_ids,
+        ).count()
+        completion_values.append(round((submissions_count / total_expected) * 100))
+
+    avg_completion = round(sum(completion_values) / len(completion_values)) if completion_values else 0
+
+    return Response({
+        'toReview': to_review,
+        'totalStudents': total_students,
+        'completion': avg_completion,
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def coach_class_progress(request):
+    from django.utils import timezone
+    coach = request.user
+    today = timezone.now().date()
+
+    coach_classes = SoccerClass.objects.filter(coachID=coach)
+    results = []
+
+    for sc in coach_classes:
+        # Get assignments due today for this class
+        todays_assignments = sc.assignments.filter(dueDate__date=today)
+
+        # Total students in the class
+        total_students = ClassMember.objects.filter(classID=sc).count()
+
+        if total_students == 0 or todays_assignments.count() == 0:
+            results.append({
+                'id': sc.id,
+                'name': sc.className,
+                'completion': 0,
+                'assignmentsToday': todays_assignments.count(),
+                'studentsCompleted': 0,
+                'totalStudents': total_students,
+            })
+            continue
+
+        # Count how many unique students have submitted for ALL of today's assignments
+        assignment_ids = list(todays_assignments.values_list('id', flat=True))
+        total_expected = total_students * len(assignment_ids)
+
+        # Count total submissions from class members for today's assignments
+        class_student_ids = ClassMember.objects.filter(classID=sc).values_list('studentID', flat=True)
+        submissions_count = Submission.objects.filter(
+            assignmentID__in=assignment_ids,
+            studentID__in=class_student_ids,
+        ).count()
+
+        completion = round((submissions_count / total_expected) * 100) if total_expected > 0 else 0
+
+        results.append({
+            'id': sc.id,
+            'name': sc.className,
+            'completion': completion,
+            'assignmentsToday': len(assignment_ids),
+            'studentsCompleted': submissions_count,
+            'totalStudents': total_students,
+        })
+
+    return Response(results)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

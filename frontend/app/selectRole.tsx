@@ -4,7 +4,7 @@ import ThemedText from "@/components/ui/ThemedText";
 import { colors, fontSize, letterSpacing, padding, margin, theme } from "@/theme";
 import { router } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/contexts/AuthContext";
 import resolveEndpoint from "@/services/resolveEndpoint";
@@ -30,11 +30,11 @@ export default function SelectRole() {
                 setAuth(token!, group as "Coach" | "Student");
                 router.replace("/(tabs)");
             } else {
-                alert(`Failed to set role: ${data.error || JSON.stringify(data)}`);
+                Alert.alert("Error", "Failed to set role. Please try again.");
             }
         } catch (error) {
-            console.error("Error setting role:", error);
-            alert("Error setting role. See console for details.");
+            console.log("Error setting role:", error);
+            Alert.alert("Connection Error", "Unable to connect to the server. Please check your internet connection.");
         }
     };
 

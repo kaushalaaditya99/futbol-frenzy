@@ -40,7 +40,7 @@ export default function ShowDrills() {
       console.log("Fetched drills:", allDrills);
       setDrills(allDrills);
     } catch (err) {
-      console.error("Failed to load drills:", err);
+      console.log("Failed to load drills:", err);
     }
   };
 
