@@ -1,3 +1,4 @@
+import { Assignment } from "@/services/assignments";
 import { Session } from "@/services/sessions";
 import { colors } from "@/theme";
 import { useEffect, useState } from "react";
@@ -95,8 +96,8 @@ export default function useFunctionalDate() {
     }
 
 
-    const markSessionsOnCalendar = (markedDates: MarkedDates, sessions: Array<Session>) => {
-        const markedDatesAndSessions: MarkedDates = {}
+    const markSessionsOnCalendar = (markedDates: MarkedDates, sessions: Array<Session>, maxNumDots: number = 3) => {
+        const markedDatesAndSessions: MarkedDates = markedDates;
 
         for (const session of sessions) {
             const shortISOString = getShortISOString(session.date);
@@ -106,6 +107,9 @@ export default function useFunctionalDate() {
 
             if (!markedDatesAndSessions[shortISOString].dots)
                 markedDatesAndSessions[shortISOString].dots = [];
+
+            if (markedDatesAndSessions[shortISOString].dots.length >= maxNumDots)
+                continue;
 
             markedDatesAndSessions[shortISOString].dots.push({
                 color: colors.coreColors.primary, 
@@ -117,6 +121,31 @@ export default function useFunctionalDate() {
     }
     
     
+    const markAssignmentsOnCalendar = (markedDates: MarkedDates, assignments: Array<Assignment>, maxNumDots: number = 3) => {
+        const updatedMarkedDates: MarkedDates = markedDates;
+
+        for (const assignment of assignments) {
+            const shortISOString = getShortISOString(assignment.dueDate);
+            
+            if (!updatedMarkedDates[shortISOString])
+                updatedMarkedDates[shortISOString] = {};
+
+            if (!updatedMarkedDates[shortISOString].dots)
+                updatedMarkedDates[shortISOString].dots = [];
+
+            if (updatedMarkedDates[shortISOString].dots.length >= maxNumDots)
+                continue;
+
+            updatedMarkedDates[shortISOString].dots.push({
+                color: colors.coreColors.primary, 
+                selectedDotColor: "white"
+            });
+        }
+        
+        return updatedMarkedDates;
+    }
+    
+
     const isToday = (date: Date) => {
         return getShortISOString(today) === getShortISOString(date);
     }
@@ -152,6 +181,7 @@ export default function useFunctionalDate() {
         isToday,
         isTomorrow,
         isYesterday,
-        markSessionsOnCalendar
+        markSessionsOnCalendar,
+        markAssignmentsOnCalendar
     }
 }

@@ -1,23 +1,20 @@
 import { Stack } from "expo-router";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProfileProvider } from "@/contexts/ProfileContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   return (
+    <GestureHandlerRootView>
     <AuthProvider>
     <ProfileProvider>
     <Stack
       screenOptions={{
         headerShown: false
       }}
-    >
-      <Stack.Screen
-        name="ui"
-        options={{
-          headerTitle: "",
-          headerShown: false
-        }}
-      />
+          >
+
+
       <Stack.Screen
         name="index"
         options={{
@@ -105,5 +102,6 @@ export default function RootLayout() {
     </Stack>
     </ProfileProvider>
     </AuthProvider>
+    </GestureHandlerRootView>
   );
 }

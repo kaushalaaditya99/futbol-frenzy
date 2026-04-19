@@ -23,7 +23,7 @@ const redirectUri = Platform.select({
 
 export default function useGoogleAuth() {
     const { setAuth } = useAuth();
-    console.log('Redirect URI:', redirectUri);
+    // console.log('Redirect URI:', redirectUri);
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: WEB_CLIENT_ID,
         iosClientId: IOS_CLIENT_ID,
@@ -32,20 +32,20 @@ export default function useGoogleAuth() {
     });
 
     useEffect(() => {
-        console.log('Google auth response:', JSON.stringify(response));
+        // console.log('Google auth response:', JSON.stringify(response));
 
         const handleGoogleAuth = async () => {
             try {
                 const idToken = response?.type === 'success' ? response.authentication?.idToken : null;
-                console.log('idToken received:', idToken ? 'yes' : 'no');
-                console.log('Sending idToken to backend...');
+                // console.log('idToken received:', idToken ? 'yes' : 'no');
+                // console.log('Sending idToken to backend...');
                 const backendResponse = await fetch(`${API_URL}google-auth/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ idToken }),
                 });
                 const data = await backendResponse.json();
-                console.log('Backend response:', JSON.stringify(data));
+                // console.log('Backend response:', JSON.stringify(data));
                 if (backendResponse.ok && data.token) {
                     const role = data.groups?.includes('Coach') ? 'Coach' :
                                  data.groups?.includes('Student') ? 'Student' : null;

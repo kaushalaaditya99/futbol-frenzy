@@ -26,7 +26,7 @@ export async function getUser(token: string) {
         },
     });
     const data = await response.json();
-    console.log("User", data);
+    // console.log("User", data);
     return data;
 }
 
@@ -41,7 +41,7 @@ export async function simpleGetUser(token: string)
       },
   });
   const data = await response.json();
-  console.log("User", data);
+//   console.log("User", data);
   return data;
 }
 
@@ -53,6 +53,6 @@ export async function getUserSettings(token: string) {
         },
     });
     const data = await response.json();
-    console.log("User Settings", data);
+    // console.log("User Settings", data);
     return data;
 }

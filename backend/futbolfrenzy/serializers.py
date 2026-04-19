@@ -78,13 +78,18 @@ class SettingsSerializer(serializers.ModelSerializer):
 
 
 class DrillSerializer(serializers.ModelSerializer):
+    coach = serializers.SerializerMethodField()
 
     class Meta:
         model = Drill
         fields = ['id', 'drillName', 'drillType', 'coachID', 'url',
                   'difficultyLevel', 'instructions', 'imageBackgroundColor',
-                  'imageText', 'imageTextColor', 'publicDrill']
-        read_only_fields = ['id']
+                  'imageText', 'imageTextColor', 'publicDrill', 'coach']
+        read_only_fields = ['id', 'coach']
+    
+    def get_coach(self, obj):
+        return UserSerializer(obj.coachID).data
+
 
 class DrillBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
@@ -92,7 +97,31 @@ class DrillBookmarkSerializer(serializers.ModelSerializer):
         fields = ['id', 'drillID', 'userID']
         read_only_fields = ['id']
 
+
+class WorkoutBookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkoutBookmark
+        fields = ['id', 'workoutID', 'userID']
+        read_only_fields = ['id']
+
+class WorkoutDrillSerializer(serializers.ModelSerializer):
+    drill = DrillSerializer(source='drillID', read_only=True) 
+
+    class Meta:
+        model = WorkoutDrill
+        fields = ['id', 'workoutID', 'drillID', 'drill', 'minutes', 'repetitions']
+        read_only_fields = ['id']
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        drill_data = representation.pop('drill')
+        representation.update(drill_data)
+        return representation
+
 class WorkoutSerializer(serializers.ModelSerializer):
+    coach = serializers.SerializerMethodField()
+    drills = WorkoutDrillSerializer(source='workoutdrill_set', many=True)
+
     class Meta:
         model = Workout
         fields = [
@@ -106,37 +135,28 @@ class WorkoutSerializer(serializers.ModelSerializer):
             "imageTextColor",
             "drills",
             "publicWorkout",
+            'coach'
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", 'coach']
+    
+    def get_coach(self, obj):
+        return UserSerializer(obj.coachID).data
 
+class SubmittedDrillSerializer(serializers.ModelSerializer):
+    drill = serializers.SerializerMethodField()
 
-class WorkoutBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WorkoutBookmark
-        fields = ['id', 'workoutID', 'userID']
-        read_only_fields = ['id']
-
-class WorkoutDrillSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WorkoutDrill
-        fields = ['id', 'workoutID', 'drillID', 'minutes', 'repetitions']
-        read_only_fields = ['id']
-
-class AssignmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Assignment
-        fields = [
-            "id",
-            "workoutID",
-            "dueDate",
-            "imageBackgroundColor",
-            "imageText",
-            "imageTextColor",
-        ]
-        read_only_fields = ["id"]
-
+        model = SubmittedDrill
+        fields = ["id", "submissionID", "drillID", "videoURL", "grade", "touchCount", 'drill']
+        read_only_fields = ["id", 'drill']
+    
+    def get_drill(self, obj):
+        return DrillSerializer(obj.drillID).data
 
 class SubmissionSerializer(serializers.ModelSerializer):
+    student = serializers.SerializerMethodField()
+    submitted_drills = serializers.SerializerMethodField()
+
     class Meta:
         model = Submission
         fields = [
@@ -149,16 +169,46 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "imageBackgroundColor",
             "imageText",
             "imageTextColor",
+            'student',
+            'submitted_drills'
         ]
-        read_only_fields = ["id"]
+        read_only_fields = [
+            "id", 
+            'student',
+            'submitted_drills'
+        ]
+    
+    def get_student(self, obj):
+        return StudentSerializer(obj.studentID).data
+    
+    def get_submitted_drills(self, obj):
+        submitted_drills = obj.submitteddrill_set.all()
+        return SubmittedDrillSerializer(submitted_drills, many=True).data
 
+class AssignmentSerializer(serializers.ModelSerializer):
+    workout = serializers.SerializerMethodField()
+    submissions = serializers.SerializerMethodField()
 
-class SubmittedDrillSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubmittedDrill
-        fields = ["id", "submissionID", "drillID", "videoURL", "grade", "touchCount"]
-        read_only_fields = ["id"]
-
+        model = Assignment
+        fields = [
+            "id",
+            "workoutID",
+            "dueDate",
+            "imageBackgroundColor",
+            "imageText",
+            "imageTextColor",
+            'workout',
+            'submissions'
+        ]
+        read_only_fields = ["id", 'workout', 'submissions']
+    
+    def get_workout(self, obj):
+        return WorkoutSerializer(obj.workoutID).data
+    
+    def get_submissions(self, obj):
+        submissions = obj.submission_set.all()
+        return SubmissionSerializer(submissions, many=True).data
 
 class SoccerClassSerializer(serializers.ModelSerializer):
     coach = serializers.SerializerMethodField()
@@ -166,7 +216,7 @@ class SoccerClassSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SoccerClass
-        fields = ['id', 'className', 'classCode', 'coachID', 'assignments', 'students', 'coach', 'imageText', 'imageTextColor', 'imageBackgroundColor']
+        fields = ['id', 'className', 'classCode', 'coachID', 'description', 'assignments', 'students', 'coach', 'imageText', 'imageTextColor', 'imageBackgroundColor']
         read_only_fields = ['id', 'students', 'coach']
 
     def get_coach(self, obj):

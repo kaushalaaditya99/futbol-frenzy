@@ -37,7 +37,7 @@ export default function ShowDrills() {
   const loadDrills = async () => {
     try {
       const allDrills = await getDrills();
-      console.log("Fetched drills:", allDrills);
+      // console.log("Fetched drills:", allDrills);
       setDrills(allDrills);
     } catch (err) {
       console.log("Failed to load drills:", err);

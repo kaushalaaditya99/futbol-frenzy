@@ -24,7 +24,7 @@ You will know the virtual environment is running when you can see `(venv)` next 
 
 #### Install dependencies
 ```bash
-cd backend
+cd backendcd
 pip install -r requirements.txt
 ```
 

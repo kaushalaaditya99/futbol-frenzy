@@ -3,6 +3,7 @@ from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
+from .serializers import SoccerClassSerializer
 import os
 import boto3
 from rest_framework.decorators import api_view
@@ -42,6 +43,9 @@ def me(request):
     return Response({
         'id': user.id,
         'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
         'groups': list(user.groups.values_list('name', flat=True))
     })
 
@@ -475,6 +479,17 @@ def get_presigned_url(request):
         })
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+@api_view(['GET'])
+def get_class_by_assignment(request, assignment_id):
+    try:
+        assignment = Assignment.objects.get(id=assignment_id)
+        soccer_class = SoccerClass.objects.filter(assignments=assignment).first()
+        if not soccer_class:
+            return Response({'error': 'No class found for this assignment'}, status=404)
+        return Response(SoccerClassSerializer(soccer_class).data)
+    except Assignment.DoesNotExist:
+        return Response({'error': 'Assignment not found'}, status=404)
     
 @api_view(['POST'])
 @permission_classes([AllowAny])

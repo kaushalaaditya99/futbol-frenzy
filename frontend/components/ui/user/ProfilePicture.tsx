@@ -53,7 +53,7 @@ export default function ProfilePicture(props: ProfilePictureProps) {
                     <ThemedText
                         style={{
                             fontSize: size * 0.4,
-                            fontWeight: "700",
+                            fontWeight: "600",
                             color: colors.schemes.light.onSurfaceVariant,
                         }}
                     >

@@ -109,7 +109,7 @@ function DrillPickerRow({ drill, isSelected, onToggle }: DrillPickerRowProps) {
                         color: colors.schemes.light.onSurface,
                     }}
                 >
-                    {drill.name}
+                    {drill.drillName}
                 </ThemedText>
                 <View
                     style={{
@@ -182,7 +182,7 @@ export default function DrillPickerSheet(props: DrillPickerSheetProps) {
     }, [props.visible]);
 
     const filteredDrills = props.drills.filter((drill) => {
-        const matchesSearch = drill.name.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = drill.drillName.toLowerCase().includes(search.toLowerCase());
         const matchesTab =
             tab === "library"
                 ? drill.accessControl === "private"

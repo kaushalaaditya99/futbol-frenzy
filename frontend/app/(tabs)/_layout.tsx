@@ -15,7 +15,7 @@ function TabsLayout() {
         <Tabs
             screenOptions={{
                 headerShown: false,
-                tabBarLabelStyle: { 
+                tabBarLabelStyle: {
                     fontSize: 12
                 },
                 tabBarStyle: {
@@ -25,9 +25,9 @@ function TabsLayout() {
                 }
             }}
         >
-            <Tabs.Screen 
-                name="index" 
-                options={{ 
+            <Tabs.Screen
+                name="index"
+                options={{
                     headerShown: false,
                     title: "Home",
                     tabBarIcon: ({color, size }) => (
@@ -50,9 +50,9 @@ function TabsLayout() {
                     )
                 }}
             />
-            <Tabs.Screen 
-                name="classes" 
-                options={{ 
+            <Tabs.Screen
+                name="classes"
+                options={{
                     title: "Classes",
                     tabBarIcon: ({color, size }) => (
                         <ClipboardList
@@ -72,11 +72,11 @@ function TabsLayout() {
                             Classes
                         </ThemedText>
                     )
-                }} 
+                }}
             />
-            <Tabs.Screen 
-                name="notifications" 
-                options={{ 
+            <Tabs.Screen
+                name="notifications"
+                options={{
                     title: "Notifications",
                     tabBarIcon: ({color, size }) => (
                         <View
@@ -119,8 +119,8 @@ function TabsLayout() {
                     tabBarLabel: ({color, focused}) => (
                         <ThemedText
                             style={{
-                                fontSize: fontSize.xs,
-                                letterSpacing: letterSpacing.base,
+                                fontSize: fontSize.sm,
+                                letterSpacing: letterSpacing.lg,
                                 fontWeight: 500,
                                 color: color
                             }}
@@ -130,23 +130,23 @@ function TabsLayout() {
                     )
                 }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="drills"
-                options={{ 
+                options={{
                     headerShown: false,
                     href: null,
                 }}
             />
-            <Tabs.Screen 
+            <Tabs.Screen
                 name="workouts"
-                options={{ 
+                options={{
                     headerShown: false,
                     href: null,
                 }}
             />
-            <Tabs.Screen 
-                name="class" 
-                options={{ 
+            <Tabs.Screen
+                name="class"
+                options={{
                     headerShown: false,
                     href: null,
                 }}
@@ -193,6 +193,34 @@ function TabsLayout() {
                     href: null,
                 }}
             />
+            <Tabs.Screen
+                name="assignments/[id]"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="drills/[id]"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="workouts/[id]"
+                options={{
+                    headerShown: false,
+                    href: null,
+                }}
+        />
+          <Tabs.Screen
+              name="submissions/[id]"
+              options={{
+                  headerShown: false,
+                  href: null,
+              }}
+          />
         </Tabs>
   );
 }

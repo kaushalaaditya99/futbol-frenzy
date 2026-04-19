@@ -20,7 +20,7 @@ async function authHeaders(): Promise<{ Authorization: string }> {
 
     // get presigned URL from backend
     const fileName = uri.split("/").pop() || "video.mp4";
-    console.log("Requesting presigned URL for:", fileName);
+    // console.log("Requesting presigned URL for:", fileName);
 
     const headers = await authHeaders();
     const presignedResponse = await axios.post(
@@ -31,7 +31,7 @@ async function authHeaders(): Promise<{ Authorization: string }> {
         },
         { headers }
     );
-    console.log("Presigned response:", presignedResponse.data);
+    // console.log("Presigned response:", presignedResponse.data);
     const {uploadUrl, fields, videoUrl, fileKey} = presignedResponse.data;
 
     // create form data for S3 upload
@@ -58,8 +58,8 @@ async function authHeaders(): Promise<{ Authorization: string }> {
     // append file with proper blob
     formData.append("file", fileBlob, fileName);
 
-    console.log("Uploading to:", uploadUrl);
-    console.log("File blob size:", fileBlob.size);
+    // console.log("Uploading to:", uploadUrl);
+    // console.log("File blob size:", fileBlob.size);
 
     // upload to S3
     const uploadResponse = await axios.post(uploadUrl, formData, {
@@ -68,7 +68,7 @@ async function authHeaders(): Promise<{ Authorization: string }> {
             return data;
         },
     });
-    console.log("Upload successful:", uploadResponse.status);
+    // console.log("Upload successful:", uploadResponse.status);
 
     return {videoUrl, fileName, fileKey};
 }
@@ -95,13 +95,13 @@ export function getVideoUrl(fileKey: string): string {
 export async function retrieveVideo(videoUrlOrFileKey: string) {
     const fileKey = extractFileKey(videoUrlOrFileKey);
     const videoUrl = getVideoUrl(fileKey);
-    console.log("Retrieving video from:", videoUrl);
+    // console.log("Retrieving video from:", videoUrl);
 
     // download to a local file using expo-file-system
     const localUri = `${FileSystem.documentDirectory}${fileKey.split('/').pop()}`;
 
     const downloadResult = await FileSystem.downloadAsync(videoUrl, localUri);
-    console.log("Video downloaded to:", downloadResult.uri);
+    // console.log("Video downloaded to:", downloadResult.uri);
 
     return downloadResult.uri;
 }

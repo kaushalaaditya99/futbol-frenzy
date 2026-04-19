@@ -13,13 +13,13 @@ import DisclosureCategory from "./DisclosureCategory";
 import DisclosureInstances from "./DisclosureInstances";
 import useSearchBar from "@/hooks/useSearchBar";
 import { Student } from "@/services/students";
-import { Drillv2 as Drill } from "@/services/drills";
-import { Session } from "@/services/sessions";
+import { Drill } from "@/services/drills";
 import ThemedText from "@/components/ui/ThemedText";
+import { Assignment } from "@/services/assignments";
 
 interface TabProgressProps {
     drills: Array<Drill>;
-    sessions: Array<Session>;
+    assignments: Array<Assignment>;
     students: Array<Student>;
 }
 
@@ -65,14 +65,14 @@ export default function TabProgress(props: TabProgressProps) {
 
     const drillSearchBar = useSearchBar<Drill>(
         props.drills, 
-        (drill: Drill) => `${drill.name}`, 
-        (drill: Drill) => `${drill.name}`
+        (drill: Drill) => `${drill.drillName}`, 
+        (drill: Drill) => `${drill.drillName}`
     );
 
-    const sessionSearchBar = useSearchBar<Session>(
-        props.sessions, 
-        (session: Session) => `${session.name}`, 
-        (session: Session) => `${session.name}`
+    const assignmentSearchBar = useSearchBar<Assignment>(
+        props.assignments, 
+        (assignment: Assignment) => `${assignment.workout.workoutName}`, 
+        (assignment: Assignment) => `${assignment.workout.workoutName}`
     );
 
     useEffect(() => {
@@ -169,10 +169,10 @@ export default function TabProgress(props: TabProgressProps) {
                         else
                             setInstances(instances.splice(instances.indexOf(id), 0));
                     }}
-                    onSelectAll={() => setInstances((category === "drills" ? drillSearchBar : sessionSearchBar).filtered.map(s => s.id))}
+                    onSelectAll={() => setInstances((category === "drills" ? drillSearchBar : assignmentSearchBar).filtered.map(s => s.id))}
                     onDeselectAll={() => setInstances([])}
                     onClose={closeDisclosure}
-                    searchBar={category === "drills" ? drillSearchBar : sessionSearchBar}
+                    searchBar={category === "drills" ? drillSearchBar : assignmentSearchBar}
                 />
             }
             <View
@@ -327,7 +327,7 @@ export default function TabProgress(props: TabProgressProps) {
                     />
                     <DisclosureButton
                         label={`${category === "drill" ? "Drill" : "Session"} Instances`}
-                        value={category === "drill" ? (instances.length === props.drills.length ? "All" : (instances.length === 0 ? "None Selected" : `${instances.length} Selected`)) : ((instances.length === props.sessions.length ? "All" : (instances.length === 0 ? "None Selected" : `${instances.length} Selected`)))}
+                        value={category === "drill" ? (instances.length === props.drills.length ? "All" : (instances.length === 0 ? "None Selected" : `${instances.length} Selected`)) : ((instances.length === props.assignments.length ? "All" : (instances.length === 0 ? "None Selected" : `${instances.length} Selected`)))}
                         level="bottom"
                         onDisclose={() => setShowDisclosure("Instances")}
                     />

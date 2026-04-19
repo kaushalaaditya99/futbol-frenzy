@@ -19,6 +19,8 @@ import InputErrorMessage from "@/components/ui/input/InputErrorMessage";
 import InputInlineRadioGroup from "@/components/ui/input/InputInlineRadioGroup";
 import { uploadAndCreateDrill } from "@/services/cloud";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from "@/contexts/AuthContext";
+import { loadExtendedProfile, defaultExtendedUser } from "@/services/extendeduser";
 
 export default function CreateDrill() {
     const levelOptions = [
@@ -29,6 +31,9 @@ export default function CreateDrill() {
 
     const [failed, setFailed] = useState(false);
     const [errors, setErrors] = useState<Errors>();
+
+    const { role, token } = useAuth();
+    const [ Profile, setProfile ] = useState(defaultExtendedUser);
 
     const [name, setName] = useState("");
     const [accessControl, setAccessControl] = useState("private");
@@ -43,6 +48,13 @@ export default function CreateDrill() {
         player.muted = true;
         player.audioMixingMode = "mixWithOthers";
     });
+
+    useEffect(() => {
+        if (token) {
+            loadExtendedProfile(token).then(setProfile).catch(() => {});
+        }
+    }, [token]);
+
 
 
     useEffect(() => {
@@ -106,7 +118,7 @@ export default function CreateDrill() {
     }
 
 
-    const uploadVideoFromLibrary = async () => {        
+    const uploadVideoFromLibrary = async () => {
         if (!mediaLibraryPermission?.granted) {
             const ask = await requestMediaLibraryPermission();
             if (!ask.granted) {
@@ -140,7 +152,7 @@ export default function CreateDrill() {
                 setIsSubmitting(true);
                 // get coachID from async storage, set to 1 if not found
                 const storedUserID = await AsyncStorage.getItem("userID");
-                const coachID = storedUserID ? parseInt(storedUserID, 10) : 1;
+                const coachID = Profile.id;
 
                 await uploadAndCreateDrill({
                     videoUri: videoURI,
@@ -154,7 +166,7 @@ export default function CreateDrill() {
                     imageTextColor: theme.colors.schemes.light.onPrimary || "#FFFFFF",
                     publicDrill: accessControl === "public"
                 });
-            
+
             router.back();
             } catch (error) {
                 console.log("Error uploading drill:", error);
@@ -167,11 +179,11 @@ export default function CreateDrill() {
         setFailed(true);
     }
 
-    
+
     const checkForm = (): {errors: Errors; canSubmit: boolean} => {
         let canSubmit = true;
         let nameError: Error = {valid: true, errorMessage: ""};
-        
+
         if (name.length === 0) {
             nameError = {valid: false, errorMessage: "Must enter a name."};
             canSubmit = false;
@@ -383,8 +395,8 @@ export default function CreateDrill() {
                         {videoURI &&
                             <VideoView
                                 player={demonstration}
-                                style={{ 
-                                    width: "auto", 
+                                style={{
+                                    width: "auto",
                                     height: 180,
                                     borderRadius: theme.borderRadius.base,
                                     backgroundColor: theme.colors.palettes.neutral[0]

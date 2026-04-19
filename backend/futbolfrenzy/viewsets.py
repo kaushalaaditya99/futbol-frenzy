@@ -82,13 +82,21 @@ class DrillViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
+        #all drills marked public
+        publicDrills = Drill.objects.filter(publicDrill=True)
+        #all drills belonging to a coach
+        userDrills = Drill.objects.filter(coachID=self.request.user)
 
-        queryset = Drill.objects.all()
-        coach_id = self.request.query_params.get("coachID")
+        #combine the two querysets
+        queryset = publicDrills.union(userDrills)  # without duplicates
+
+        #modify Drill to return public Drills and userDrills for a Coach. This action may have consequences
+        #queryset = Drill.objects.all()
+        #coach_id = self.request.query_params.get("coachID")
 
         # drills by a specific coach
-        if coach_id:
-            queryset = queryset.filter(coachID=coach_id)
+        #if coach_id:
+        #    queryset = queryset.filter(coachID=coach_id)
 
         return queryset
 

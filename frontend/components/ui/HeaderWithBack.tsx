@@ -3,10 +3,12 @@ import ThemedText from "./ThemedText";
 import { LucideProps } from "lucide-react-native";
 import { colors, letterSpacing, padding } from "@/theme";
 import ButtonBack from "./button/ButtonBack";
+import { ReactNode } from "react";
 
 interface HeaderWithBackProps {
     onBack: () => void;
     header: string;
+    subHeader?: ReactNode;
     containerStyle?: ViewStyle;
     headerStyle?: TextStyle;
     buttonStyle?: ViewStyle;
@@ -20,7 +22,7 @@ export default function HeaderWithBack(props: HeaderWithBackProps) {
             style={{
                 display: "flex",
                 flexDirection: "row",
-                alignItems: "center",
+                alignItems: "flex-start",
                 columnGap: padding.lg,
                 borderBottomWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
@@ -34,17 +36,28 @@ export default function HeaderWithBack(props: HeaderWithBackProps) {
                 svgStyle={props.svgStyle}
                 svgProps={props.svgProps}
             />
-            <ThemedText
-                style={{
-                    fontSize: 20,
-                    fontWeight: 600,
-                    letterSpacing: letterSpacing.sm,
-                    color: colors.schemes.light.onBackground,
-                    ...props.headerStyle
-                }}
-            >
-                {props.header}
-            </ThemedText>
+            <View>
+                <View
+                    style={{
+                        height: 28,
+                        justifyContent: 'center',
+                        // alignItems: 'center',
+                    }}
+                >
+                    <ThemedText
+                        style={{
+                            fontSize: 20,
+                            fontWeight: 600,
+                            letterSpacing: letterSpacing.sm,
+                            color: colors.schemes.light.onBackground,
+                            ...props.headerStyle
+                        }}
+                    >
+                        {props.header}
+                    </ThemedText>
+                </View>
+                {props.subHeader}
+            </View>
         </View>
     )
 }
