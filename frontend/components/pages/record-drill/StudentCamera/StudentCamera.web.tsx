@@ -217,7 +217,7 @@ export const StudentCamera = forwardRef<StudentCameraRef, StudentCameraProps>(fu
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [hasPermission]);
+    }, [hasPermission, onPoseDetected]);
 
     // Expose camera methods via ref
     useImperativeHandle(ref, () => ({

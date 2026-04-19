@@ -10,6 +10,7 @@ import { LiveScoreBadge, ScoreDisplay } from './ScoreDisplay';
 import { useCameraPermission } from '@/hooks/useCameraPermission';
 import { RecordingState, CameraFacing, PoseLandmark } from '@/types/pose';
 import { comparePoses } from '@/utils/poseComparison';
+import { comparePoseSequences } from '@/utils/fastDTW';
 import { uploadVideo, createSubmission, saveSubmittedDrillWithUrl } from '@/services/cloud';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -52,7 +53,14 @@ export function RecordDrillScreen({
     const [similarityScore, setSimilarityScore] = useState<number | null>(null);
     const [finalScore, setFinalScore] = useState<number | null>(null); // Frozen score after recording
 
-    // track all scores during recording for averaging
+    // Pose sequences for DTW comparison (collected during recording)
+    const instructorSequenceRef = useRef<PoseLandmark[][]>([]);
+    const studentSequenceRef = useRef<PoseLandmark[][]>([]);
+    const lastInstructorSampleTimeRef = useRef<number>(0);
+    const lastStudentSampleTimeRef = useRef<number>(0);
+    const SAMPLE_INTERVAL = 100; // Sample poses every 100ms for DTW
+
+    // Track all scores during recording for averaging
     const scoreSamplesRef = useRef<number[]>([]);
 
     // Submission tracking
@@ -91,12 +99,38 @@ export function RecordDrillScreen({
     // Handle instructor pose detection
     const handleInstructorPose = useCallback((landmarks: PoseLandmark[]) => {
         setInstructorPose(landmarks);
-    }, []);
+
+        // Collect instructor pose samples during recording for DTW
+        if (recordingState === 'recording') {
+            const now = Date.now();
+            if (now - lastInstructorSampleTimeRef.current >= SAMPLE_INTERVAL) {
+                instructorSequenceRef.current.push([...landmarks]);
+                lastInstructorSampleTimeRef.current = now;
+                // log every 10 samples to avoid spam
+                if (instructorSequenceRef.current.length % 10 === 0) {
+                    console.log(`[DTW] Collected ${instructorSequenceRef.current.length} instructor poses`);
+                }
+            }
+        }
+    }, [recordingState]);
 
     // Handle student pose detection (this would come from StudentCamera)
     const handleStudentPose = useCallback((landmarks: PoseLandmark[]) => {
         setStudentPose(landmarks);
-    }, []);
+
+        // Collect student pose samples during recording for DTW
+        if (recordingState === 'recording') {
+            const now = Date.now();
+            if (now - lastStudentSampleTimeRef.current >= SAMPLE_INTERVAL) {
+                studentSequenceRef.current.push([...landmarks]);
+                lastStudentSampleTimeRef.current = now;
+                // log every 10 samples to avoid spam
+                if (studentSequenceRef.current.length % 10 === 0) {
+                    console.log(`[DTW] Collected ${studentSequenceRef.current.length} student poses`);
+                }
+            }
+        }
+    }, [recordingState]);
 
     // Calculate similarity score when both poses are available
     const updateSimilarityScore = useCallback(() => {
@@ -128,8 +162,14 @@ export function RecordDrillScreen({
     // handle when countdown completes, actually start recording
     const handleCountdownComplete = useCallback(() => {
         try {
-            // reset score samples for new recording
+            // Reset score samples and pose sequences for new recording
             scoreSamplesRef.current = [];
+            instructorSequenceRef.current = [];
+            studentSequenceRef.current = [];
+            lastInstructorSampleTimeRef.current = 0;
+            lastStudentSampleTimeRef.current = 0;
+
+            console.log('[DTW] Starting recording - reset pose sequences');
 
             setRecordingState('recording');
 
@@ -152,15 +192,38 @@ export function RecordDrillScreen({
         try {
             setRecordingState('processing');
 
-            // calculate average score from all samples collected during recording
-            const samples = scoreSamplesRef.current;
-            if (samples.length > 0) {
-                const averageScore = samples.reduce((sum, score) => sum + score, 0) / samples.length;
-                setFinalScore(Math.round(averageScore * 100) / 100); // Round to 2 decimal places
-                console.log(`Final score: ${averageScore.toFixed(2)} (from ${samples.length} samples)`);
+            // Use DTW to compare pose sequences for final score
+            const instructorSeq = instructorSequenceRef.current;
+            const studentSeq = studentSequenceRef.current;
+
+            console.log(`[DTW] Recording stopped - instructor: ${instructorSeq.length} frames, student: ${studentSeq.length} frames`);
+
+            if (instructorSeq.length > 0 && studentSeq.length > 0) {
+                console.log('[DTW] Computing FastDTW alignment...');
+
+                const startTime = performance.now();
+                const dtwResult = comparePoseSequences(instructorSeq, studentSeq);
+                const endTime = performance.now();
+
+                console.log(`[DTW] Computed in ${(endTime - startTime).toFixed(2)}ms`);
+                console.log(`[DTW] Alignment path length: ${dtwResult.path.length}`);
+                console.log(`[DTW] Frame scores count: ${dtwResult.frameScores.length}`);
+                console.log(`[DTW] Average frame score: ${dtwResult.frameScores.length > 0 ? (dtwResult.frameScores.reduce((a, b) => a + b, 0) / dtwResult.frameScores.length).toFixed(2) : 'N/A'}`);
+                console.log(`[DTW] Final score: ${dtwResult.score}`);
+
+                setFinalScore(dtwResult.score);
             } else {
-                // fallback to current score if no samples collected
-                setFinalScore(similarityScore);
+                console.log('[DTW] Insufficient pose data, falling back to frame-by-frame average');
+                // Fallback to average of frame-by-frame scores if sequences unavailable
+                const samples = scoreSamplesRef.current;
+                if (samples.length > 0) {
+                    const averageScore = samples.reduce((sum, score) => sum + score, 0) / samples.length;
+                    setFinalScore(Math.round(averageScore * 100) / 100);
+                    console.log(`[DTW] Fallback average score: ${averageScore.toFixed(2)} (from ${samples.length} samples)`);
+                } else {
+                    setFinalScore(similarityScore);
+                    console.log(`[DTW] No samples, using last similarity score: ${similarityScore}`);
+                }
             }
 
             // Stop recording and get video URI
@@ -197,6 +260,8 @@ export function RecordDrillScreen({
         setInstructorPose([]);
         setStudentPose([]);
         scoreSamplesRef.current = [];
+        instructorSequenceRef.current = [];
+        studentSequenceRef.current = [];
     }, []);
 
     // Handle cancel - go back or navigate to demonstration

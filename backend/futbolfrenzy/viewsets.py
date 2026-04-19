@@ -87,8 +87,8 @@ class DrillViewSet(viewsets.ModelViewSet):
         #all drills belonging to a coach
         userDrills = Drill.objects.filter(coachID=self.request.user)
 
-        #combine the two querysets
-        queryset = publicDrills.union(userDrills)  # without duplicates
+        #combine the two querysets using | operator (supports .get() unlike union())
+        queryset = publicDrills | userDrills  # without duplicates
 
         #modify Drill to return public Drills and userDrills for a Coach. This action may have consequences
         #queryset = Drill.objects.all()
