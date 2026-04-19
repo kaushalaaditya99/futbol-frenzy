@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from . import viewsets
 from .views import me, detailed_user_info, change_password, student_stats, student_schedule, student_results, coach_submissions, coach_stats, coach_class_progress
+from .views import me, detailed_user_info, analyze_pose, analyze_video_pose
 
 api_router = DefaultRouter()
 api_router.register(r'user', viewsets.UserViewSet)
@@ -39,4 +40,6 @@ urlpatterns = [
     path('api/set-role/', views.set_role),
     path('', views.home, name='test-home'),
     path('get_presigned_url/', views.get_presigned_url, name='get_presigned_url'),
+    path('analyze-pose/', analyze_pose),
+    path('analyze-video-pose/', analyze_video_pose),
 ]

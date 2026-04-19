@@ -16,10 +16,14 @@ from django.contrib.auth.models import User, Group
 import os
 from dotenv import load_dotenv
 import uuid
+from .mediapipe import PoseService, VideoPoseService
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
 GOOGLE_IOS_CLIENT_ID = os.getenv('GOOGLE_IOS_CLIENT_ID')
 GOOGLE_ANDROID_CLIENT_ID = os.getenv('GOOGLE_ANDROID_CLIENT_ID')
+
+pose_service = PoseService()
+video_service = VideoPoseService()
 
 
 load_dotenv()
@@ -46,7 +50,17 @@ def me(request):
 @permission_classes([IsAuthenticated])
 def detailed_user_info(request):
     user = request.user
-    extended_settings, _ = Settings.objects.get_or_create(userID=user)
+    # Get or create settings for the user
+    extended_settings, created = Settings.objects.get_or_create(
+        userID=user,
+        defaults={
+            'mode': 'NONE',
+            'notificationType': 'NONE',
+            'profileBackgroundColor': '#FFFFFF',
+            'isDarkMode': False,
+            'position': 'US',
+        }
+    )
     return Response({
         'id': user.id,
         'username': user.username,
@@ -461,3 +475,25 @@ def get_presigned_url(request):
         })
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+    
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def analyze_pose(request):
+    image = request.FILES.get("image")
+
+    if not image:
+        return Response({"error": "No image provided"}, status=400)
+
+    result = pose_service.process_image(image)
+
+    return Response(result)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def analyze_video_pose(request):
+    video = request.FILES.get("video")
+    if not video:
+        return Response({"error": "No video provided"}, status=400)
+
+    result = video_service.process_video(video)
+    return Response(result)
