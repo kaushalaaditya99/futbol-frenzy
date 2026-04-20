@@ -12,10 +12,11 @@ import useSideBar from "@/components/ui/user/sideBar/useSideBar";
 import { Drill, getDrills } from "@/services/drills";
 import { fontSize, letterSpacing, margin, padding, theme } from "@/theme";
 import { router } from "expo-router";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dimensions, FlatList, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 export default function Drills() {
@@ -38,6 +39,14 @@ export default function Drills() {
         loadDrills(id);
         console.log("Drills loaded")
     }, [token]);
+
+
+    useFocusEffect(
+      useCallback(() => {
+          const id = 0;
+            loadDrills(id);
+        }, [token])
+    );
 
     const loadDrills = async (id: number) => {
         const drills = await getDrills(token);
