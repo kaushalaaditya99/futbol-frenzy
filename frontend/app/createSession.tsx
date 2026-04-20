@@ -23,6 +23,8 @@ import { Drill, getDrills } from "@/services/drills";
 import DrillPickerSheet from "@/components/pages/createSession/DrillPickerSheet";
 import TimePicker from "@/components/pages/createSession/TimePicker";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/contexts/ProfileContext";
+import { createSession } from "@/services/sessions";
 // ─── Draggable Drill Row ─────────────────────────────────────────────────────
 
 const ITEM_HEIGHT = 76;
@@ -194,9 +196,11 @@ export default function CreateSession() {
     const [showDrillPicker, setShowDrillPicker] = useState(false);
     const [allDrills, setAllDrills] = useState<Drill[]>([]);
     const [nameError, setNameError] = useState("");
+    const [isCreating, setIsCreating] = useState(false);
 
 
     const { token } = useAuth();
+    const { profile } = useProfile();
 
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     const [dragY, setDragY] = useState(0);
@@ -247,9 +251,36 @@ export default function CreateSession() {
         setDragY(0);
     };
 
-    const onCreateSession = () => {
+    const onCreateSession = async () => {
         if (!name.trim()) { setNameError("Must enter a session name."); return; }
-        router.back();
+        if (selectedDrills.length === 0) { return; }
+        if (!token || !profile) { return; }
+
+        setIsCreating(true);
+        try {
+            const result = await createSession(token, {
+                workoutName: name.trim(),
+                workoutType: selectedDrills[0]?.drillType || "general",
+                dueDate: selectedDate.toISOString(),
+                coachID: profile.id,
+                imageBackgroundColor: "#1C1C1C",
+                imageText: name.trim().substring(0, 3).toUpperCase(),
+                imageTextColor: "#FFFFFF",
+                publicWorkout: true,
+                drills: selectedDrills.map((drill) => ({
+                    drillID: drill.id,
+                    minutes: drill.time || 5,
+                })),
+            });
+
+            if (result.success) {
+                router.back();
+            } else {
+                console.error("Failed to create session:", result.error);
+            }
+        } finally {
+            setIsCreating(false);
+        }
     };
 
     return (

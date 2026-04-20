@@ -28,6 +28,7 @@ export default function RecordDrillRoute() {
     // Get drill ID and assignment ID from route params
     const drillId = parseInt(params.drillId as string, 10) || 1;
     const assignmentId = parseInt(params.assignmentId as string, 10) || 1;
+    const returnTo = params.returnTo as string | undefined;
 
     // Fetch drill data
     useEffect(() => {
@@ -126,6 +127,7 @@ export default function RecordDrillRoute() {
                 drillName={drill.drillName}
                 instructorVideoUrl={drill.url}
                 assignmentId={assignmentId}
+                returnToAssignment={returnTo === 'assignment'}
             />
         </SafeAreaView>
     );

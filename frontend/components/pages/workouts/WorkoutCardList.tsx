@@ -75,7 +75,7 @@ export default function WorkoutCardList(props: WorkoutCardListProps) {
             >
             </View>
             <Pressable
-                onPress={() => router.push("/workout")}
+                onPress={() => router.push(`/workouts/${props.id}`)}
                 style={{
                     flex: 1, 
                     paddingVertical: padding.sm,

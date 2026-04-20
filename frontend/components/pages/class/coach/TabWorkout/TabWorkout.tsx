@@ -27,6 +27,7 @@ interface TabWorkoutProps {
     sessionsOnDateLabel: string;
     functionalDate: ReturnType<typeof useFunctionalDate>;
     markedDatesAndSessions: MarkedDates;
+    classId?: number;
 }
 
 export default function TabWorkout(props: TabWorkoutProps) {

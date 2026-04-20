@@ -120,7 +120,7 @@ class WorkoutDrillSerializer(serializers.ModelSerializer):
 
 class WorkoutSerializer(serializers.ModelSerializer):
     coach = serializers.SerializerMethodField()
-    drills = WorkoutDrillSerializer(source='workoutdrill_set', many=True)
+    drills = WorkoutDrillSerializer(source='workoutdrill_set', many=True, read_only=True)
 
     class Meta:
         model = Workout
@@ -137,10 +137,22 @@ class WorkoutSerializer(serializers.ModelSerializer):
             "publicWorkout",
             'coach'
         ]
-        read_only_fields = ["id", 'coach']
-    
+        read_only_fields = ["id", 'coach', 'drills']
+
     def get_coach(self, obj):
         return UserSerializer(obj.coachID).data
+
+    def create(self, validated_data):
+        drills_data = self.context.get('request').data.get('drills', [])
+        workout = Workout.objects.create(**validated_data)
+        for drill_data in drills_data:
+            WorkoutDrill.objects.create(
+                workoutID=workout,
+                drillID_id=drill_data.get('drillID'),
+                minutes=drill_data.get('minutes'),
+                repetitions=drill_data.get('repetitions')
+            )
+        return workout
 
 class SubmittedDrillSerializer(serializers.ModelSerializer):
     drill = serializers.SerializerMethodField()
@@ -188,6 +200,11 @@ class SubmissionSerializer(serializers.ModelSerializer):
 class AssignmentSerializer(serializers.ModelSerializer):
     workout = serializers.SerializerMethodField()
     submissions = serializers.SerializerMethodField()
+    soccer_classes = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=SoccerClass.objects.all(),
+        required=False
+    )
 
     class Meta:
         model = Assignment
@@ -199,13 +216,14 @@ class AssignmentSerializer(serializers.ModelSerializer):
             "imageText",
             "imageTextColor",
             'workout',
-            'submissions'
+            'submissions',
+            'soccer_classes'
         ]
         read_only_fields = ["id", 'workout', 'submissions']
-    
+
     def get_workout(self, obj):
         return WorkoutSerializer(obj.workoutID).data
-    
+
     def get_submissions(self, obj):
         submissions = obj.submission_set.all()
         return SubmissionSerializer(submissions, many=True).data

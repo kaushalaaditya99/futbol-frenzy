@@ -110,7 +110,7 @@ export async function getClassByAssignment(token: string, assignmentID: number):
             },
         });
 
-        if (!response.ok) 
+        if (!response.ok)
             return null;
 
         const soccerClass = await response.json();
@@ -119,5 +119,60 @@ export async function getClassByAssignment(token: string, assignmentID: number):
     catch (err) {
         console.error("Error Fetching Soccer Class\n", err);
         return null;
+    }
+}
+
+export interface CreateAssignmentData {
+    workoutID: number;
+    dueDate: string; // ISO string
+    imageBackgroundColor?: string;
+    imageText?: string;
+    imageTextColor?: string;
+    classIds: number[]; // IDs of classes to assign to
+}
+
+export async function createAssignment(token: string, data: CreateAssignmentData): Promise<{ success: boolean; id?: number; error?: string }> {
+    try {
+        // Get workout info for the imageText
+        const workoutResponse = await fetch(`${API_URL}/workouts/${data.workoutID}/`, {
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        let workoutName = "Assignment";
+        if (workoutResponse.ok) {
+            const workout = await workoutResponse.json();
+            workoutName = workout.workoutName || "Assignment";
+        }
+
+        const response = await fetch(`${API_URL}/assignments/`, {
+            method: "POST",
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                workoutID: data.workoutID,
+                dueDate: data.dueDate,
+                imageBackgroundColor: data.imageBackgroundColor || "#1C1C1C",
+                imageText: data.imageText || workoutName.substring(0, 2).toUpperCase(),
+                imageTextColor: data.imageTextColor || "#FFFFFF",
+                soccer_classes: data.classIds,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error("Failed to create assignment:", response.status, errorData);
+            return { success: false, error: JSON.stringify(errorData) };
+        }
+
+        const result = await response.json();
+        return { success: true, id: result.id };
+    } catch (err) {
+        console.error("Error creating assignment:", err);
+        return { success: false, error: String(err) };
     }
 }

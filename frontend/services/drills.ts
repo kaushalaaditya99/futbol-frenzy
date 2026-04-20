@@ -8,6 +8,7 @@ export interface Drill {
     name: string; // Same as drillName cba
     drillName: string;
     drillType: string;
+    type: string; // Same as drillType, for convenience
     time: number;
     minutes: number;
     repetitions: number;
@@ -44,7 +45,7 @@ export async function getDrills(token: string): Promise<Drill[]> {
       videoURL: d.url,
       name: d.drillName,
       type: d.drillType,
-      //time: d.time,
+      time: d.time || 5,
       level: d.difficultyLevel,
       instructions: d.instructions,
       accessControl: d.publicDrill ? "public" : "private",

@@ -19,6 +19,7 @@ interface RecordDrillScreenProps {
     drillName: string;
     instructorVideoUrl: string;
     assignmentId: number;
+    returnToAssignment?: boolean;
 }
 
 export function RecordDrillScreen({
@@ -26,6 +27,7 @@ export function RecordDrillScreen({
     drillName,
     instructorVideoUrl,
     assignmentId,
+    returnToAssignment,
 }: RecordDrillScreenProps) {
     const router = useRouter();
 
@@ -264,14 +266,9 @@ export function RecordDrillScreen({
         studentSequenceRef.current = [];
     }, []);
 
-    // Handle cancel - go back or navigate to demonstration
+    // Handle cancel - go back to previous page
     const handleCancel = useCallback(() => {
-        if (router.canGoBack()) {
-            router.back();
-        } else {
-            // If no previous screen, navigate to demonstration tab
-            router.replace('/(tabs)/demonstration');
-        }
+        router.back();
     }, [router]);
 
     // Handle submit
@@ -350,14 +347,23 @@ export function RecordDrillScreen({
             setHasSubmitted(true);
             setRecordingState('complete');
 
-            // Show success message
+            // Show success message and navigate
+            const navigateAfterSubmit = () => {
+                if (returnToAssignment) {
+                    router.replace(`/assignments/${assignmentId}`);
+                } else {
+                    router.back();
+                }
+            };
+
             if (Platform.OS === 'web') {
                 window.alert(`Success! Your drill has been submitted for review.\n${finalGrade !== undefined ? `Grade: ${finalGrade}/100` : ''}`);
+                navigateAfterSubmit();
             } else {
                 Alert.alert(
                     'Success!',
                     `Your drill has been submitted for review.\n${finalGrade !== undefined ? `Grade: ${finalGrade}/100` : ''}`,
-                    [{ text: 'OK', onPress: () => router.back() }]
+                    [{ text: 'OK', onPress: navigateAfterSubmit }]
                 );
             }
         } catch (error) {

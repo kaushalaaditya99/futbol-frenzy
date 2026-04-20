@@ -16,8 +16,8 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-> **Windows:** use `py -m venv venv                          
-> venv\Scripts\activate ` instead
+> **Windows:** use `py -m venv venv
+>> venv\Scripts\activate` instead
 
 You will know the virtual environment is running when you can see `(venv)` next to your directory in terminal.
 
@@ -38,8 +38,8 @@ python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 > **Windows:** use 'py manage.py check                       
-> py manage.py makemigrations
-> py manage.py migrate' instead
+>> py manage.py makemigrations
+>> py manage.py migrate' instead
 
 These commands should also be run whenever a change is made to `backend/futbolfrenzy/models.py`.
 
@@ -47,7 +47,7 @@ These commands should also be run whenever a change is made to `backend/futbolfr
 ```bash
 python3 manage.py runserver 0.0.0.0:8000
 ```
-> **Windows:** use python manage.py runserver 0.0.0.0:8000 ` instead
+> **Windows:** use 'python manage.py runserver 0.0.0.0:8000` instead
 
 > **Important:** You must use `0.0.0.0:8000` (not just `runserver`) so the app can connect from your phone/emulator over the local network.
 

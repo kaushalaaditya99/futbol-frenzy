@@ -1,25 +1,23 @@
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSession, Session } from "@/services/sessions";
-import { getStudents, Student } from "@/services/students";
+import { getClasses, Class } from "@/services/classes";
+import { createAssignment } from "@/services/assignments";
 import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
 import { router, useLocalSearchParams } from "expo-router";
-import { Check, ChevronLeft, Pencil } from "lucide-react-native";
+import { Check, ChevronLeft, Calendar } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Alert, Pressable, ScrollView, TextInput, View, Platform, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// Mock: students pre-assigned to this session (by student id)
-const MOCK_ASSIGNED_IDS = new Set([0, 1, 4]);
-
-interface StudentRowProps {
-    student: Student;
+interface ClassRowProps {
+    classItem: Class;
     checked: boolean;
     editMode: boolean;
     onToggle: () => void;
 }
 
-function StudentRow({ student, checked, editMode, onToggle }: StudentRowProps) {
+function ClassRow({ classItem, checked, editMode, onToggle }: ClassRowProps) {
     const checkboxBg = checked
         ? editMode
             ? colors.coreColors.primary
@@ -94,11 +92,11 @@ function StudentRow({ student, checked, editMode, onToggle }: StudentRowProps) {
                             : colors.schemes.light.onSurfaceVariant,
                     }}
                 >
-                    {student.first_name[0]}{student.last_name[0]}
+                    {classItem.imageText || classItem.className?.substring(0, 2).toUpperCase()}
                 </ThemedText>
             </View>
 
-            {/* Name & position */}
+            {/* Name & student count */}
             <View style={{ flex: 1 }}>
                 <ThemedText
                     style={{
@@ -109,7 +107,7 @@ function StudentRow({ student, checked, editMode, onToggle }: StudentRowProps) {
                             : colors.schemes.light.onSurfaceVariant,
                     }}
                 >
-                    {student.first_name} {student.last_name}
+                    {classItem.className}
                 </ThemedText>
                 <ThemedText
                     style={{
@@ -120,7 +118,7 @@ function StudentRow({ student, checked, editMode, onToggle }: StudentRowProps) {
                             : colors.schemes.light.outlineVariant,
                     }}
                 >
-                    {student.position}
+                    {classItem.students?.length || 0} students
                 </ThemedText>
             </View>
         </Pressable>
@@ -129,48 +127,113 @@ function StudentRow({ student, checked, editMode, onToggle }: StudentRowProps) {
 
 export default function AssignStudents() {
     const { token } = useAuth();
-    const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
+    const { sessionId, date, classId } = useLocalSearchParams<{ sessionId: string; date?: string; classId?: string }>();
     const sessionIdNum = sessionId ? Number(sessionId) : 0;
+    const preselectedClassId = classId ? Number(classId) : null;
 
     const [session, setSession] = useState<Session | null>(null);
-    const [students, setStudents] = useState<Student[]>([]);
-    const [assignedIds, setAssignedIds] = useState<Set<number>>(new Set(MOCK_ASSIGNED_IDS));
-    const [editMode, setEditMode] = useState(false);
-    const [draftIds, setDraftIds] = useState<Set<number>>(new Set(MOCK_ASSIGNED_IDS));
+    const [classes, setClasses] = useState<Class[]>([]);
+    const [selectedClassIds, setSelectedClassIds] = useState<Set<number>>(new Set());
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Due date state
+    const selectedDate = date ? new Date(date) : new Date();
+    const [dueDate, setDueDate] = useState(selectedDate.toISOString().split('T')[0]);
 
     useEffect(() => {
+        loadData();
+    }, [token, sessionIdNum]);
+
+    useEffect(() => {
+        // Pre-select class if classId is provided
+        if (preselectedClassId && classes.length > 0) {
+            setSelectedClassIds(new Set([preselectedClassId]));
+        }
+    }, [preselectedClassId, classes]);
+
+    const loadData = async () => {
         if (!token) return;
-        getSession(token, sessionIdNum).then((s) => { if (s) setSession(s); });
-        getStudents(0).then(setStudents);
-    }, []);
+        setIsLoading(true);
 
-    const enterEdit = () => {
-        setDraftIds(new Set(assignedIds));
-        setEditMode(true);
+        try {
+            const [sessionData, classesData] = await Promise.all([
+                getSession(token, sessionIdNum),
+                getClasses(token),
+            ]);
+
+            if (sessionData) setSession(sessionData);
+            setClasses(classesData);
+        } catch (err) {
+            console.error("Failed to load data:", err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const saveChanges = () => {
-        setAssignedIds(new Set(draftIds));
-        setEditMode(false);
-    };
-
-    const cancelEdit = () => {
-        setDraftIds(new Set(assignedIds));
-        setEditMode(false);
-    };
-
-    const toggleStudent = (id: number) => {
-        const next = new Set(draftIds);
+    const toggleClass = (id: number) => {
+        const next = new Set(selectedClassIds);
         if (next.has(id)) next.delete(id);
         else next.add(id);
-        setDraftIds(next);
+        setSelectedClassIds(next);
     };
 
-    const selectAll = () => setDraftIds(new Set(students.map((s) => s.id)));
-    const unselectAll = () => setDraftIds(new Set());
+    const selectAll = () => setSelectedClassIds(new Set(classes.map((c) => c.id)));
+    const unselectAll = () => setSelectedClassIds(new Set());
 
-    const currentIds = editMode ? draftIds : assignedIds;
-    const allSelected = students.length > 0 && students.every((s) => draftIds.has(s.id));
+    const handleAssign = async () => {
+        if (selectedClassIds.size === 0) {
+            if (Platform.OS === 'web') {
+                window.alert('Please select at least one class.');
+            } else {
+                Alert.alert('Error', 'Please select at least one class.');
+            }
+            return;
+        }
+
+        if (!token) {
+            if (Platform.OS === 'web') {
+                window.alert('You must be logged in.');
+            } else {
+                Alert.alert('Error', 'You must be logged in.');
+            }
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const result = await createAssignment(token, {
+                workoutID: sessionIdNum,
+                dueDate: new Date(dueDate).toISOString(),
+                classIds: Array.from(selectedClassIds),
+            });
+
+            if (result.success) {
+                if (Platform.OS === 'web') {
+                    window.alert('Assignment created successfully!');
+                    router.back();
+                } else {
+                    Alert.alert('Success', 'Assignment created successfully!', [
+                        { text: 'OK', onPress: () => router.back() },
+                    ]);
+                }
+            } else {
+                throw new Error(result.error || 'Failed to create assignment');
+            }
+        } catch (err) {
+            console.error("Failed to create assignment:", err);
+            if (Platform.OS === 'web') {
+                window.alert('Failed to create assignment. Please try again.');
+            } else {
+                Alert.alert('Error', 'Failed to create assignment. Please try again.');
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const allSelected = classes.length > 0 && classes.every((c) => selectedClassIds.has(c.id));
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.background }}>
@@ -186,11 +249,7 @@ export default function AssignStudents() {
                     backgroundColor: colors.schemes.light.background,
                 }}
             >
-                <Pressable
-                    onPress={editMode ? cancelEdit : () => router.back()}
-                    hitSlop={8}
-                    style={{ marginRight: 8 }}
-                >
+                <Pressable onPress={() => router.back()} hitSlop={8} style={{ marginRight: 8 }}>
                     <ChevronLeft size={24} color={colors.schemes.light.onSurface} />
                 </Pressable>
                 <View style={{ flex: 1 }}>
@@ -202,7 +261,7 @@ export default function AssignStudents() {
                             color: colors.schemes.light.onSurface,
                         }}
                     >
-                        {session?.name ?? "Assign Students"}
+                        Assign to Classes
                     </ThemedText>
                     <ThemedText
                         style={{
@@ -211,49 +270,9 @@ export default function AssignStudents() {
                             letterSpacing: letterSpacing.xl,
                         }}
                     >
-                        {assignedIds.size} of {students.length} assigned
+                        {session?.name ?? "Select classes for this workout"}
                     </ThemedText>
                 </View>
-
-                {/* Edit / Cancel button */}
-                {!editMode ? (
-                    <Pressable
-                        onPress={enterEdit}
-                        hitSlop={8}
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            columnGap: 4,
-                            paddingHorizontal: 12,
-                            paddingVertical: 7,
-                            borderRadius: borderRadius.base,
-                            borderWidth: 1,
-                            borderColor: colors.coreColors.primary,
-                        }}
-                    >
-                        <Pencil size={14} color={colors.coreColors.primary} />
-                        <ThemedText
-                            style={{
-                                fontSize: fontSize.sm,
-                                fontWeight: 600,
-                                color: colors.coreColors.primary,
-                            }}
-                        >
-                            Edit
-                        </ThemedText>
-                    </Pressable>
-                ) : (
-                    <Pressable onPress={cancelEdit} hitSlop={8}>
-                        <ThemedText
-                            style={{
-                                fontSize: fontSize.md,
-                                color: colors.schemes.light.onSurfaceVariant,
-                            }}
-                        >
-                            Cancel
-                        </ThemedText>
-                    </Pressable>
-                )}
             </View>
 
             {/* Session info card */}
@@ -322,130 +341,172 @@ export default function AssignStudents() {
                                     letterSpacing: letterSpacing.xl,
                                 }}
                             >
-                                {session.durationInMins} min
-                            </ThemedText>
-                            <View
-                                style={{
-                                    width: 3,
-                                    height: 3,
-                                    borderRadius: 100,
-                                    backgroundColor: colors.schemes.light.outlineVariant,
-                                }}
-                            />
-                            <ThemedText
-                                style={{
-                                    fontSize: fontSize.sm,
-                                    color: colors.schemes.light.onSurfaceVariant,
-                                    letterSpacing: letterSpacing.xl,
-                                }}
-                            >
-                                {session.drills.length} drill{session.drills.length !== 1 ? "s" : ""}
+                                {session.drills?.length || 0} drill{(session.drills?.length || 0) !== 1 ? "s" : ""}
                             </ThemedText>
                         </View>
                     </View>
                 </View>
             )}
 
-            {/* Select All / Unselect All — only in edit mode */}
-            {editMode && (
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
-                        paddingHorizontal: margin["3xs"],
-                        paddingVertical: 8,
-                        columnGap: 10,
-                    }}
-                >
-                    <Pressable
-                        onPress={unselectAll}
-                        style={{
-                            paddingHorizontal: 12,
-                            paddingVertical: 6,
-                            borderRadius: borderRadius.base,
-                            borderWidth: 1,
-                            borderColor: colors.schemes.light.outlineVariant,
-                            backgroundColor: colors.schemes.light.surfaceContainerLowest,
-                        }}
-                    >
-                        <ThemedText
-                            style={{
-                                fontSize: fontSize.sm,
-                                color: colors.schemes.light.onSurfaceVariant,
-                                fontWeight: 500,
-                            }}
-                        >
-                            Unselect All
-                        </ThemedText>
-                    </Pressable>
-                    <Pressable
-                        onPress={selectAll}
-                        style={{
-                            paddingHorizontal: 12,
-                            paddingVertical: 6,
-                            borderRadius: borderRadius.base,
-                            borderWidth: 1,
-                            borderColor: colors.coreColors.primary,
-                            backgroundColor: colors.schemes.light.primaryContainer + "40",
-                        }}
-                    >
-                        <ThemedText
-                            style={{
-                                fontSize: fontSize.sm,
-                                color: colors.coreColors.primary,
-                                fontWeight: 500,
-                            }}
-                        >
-                            Select All
-                        </ThemedText>
-                    </Pressable>
-                </View>
-            )}
-
-            {/* Student list */}
-            <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{
-                    marginTop: editMode ? 0 : margin["3xs"],
+            {/* Due Date Selection */}
+            <View
+                style={{
+                    marginHorizontal: margin["3xs"],
+                    marginTop: margin["3xs"],
                     backgroundColor: colors.schemes.light.surfaceContainerLowest,
                     borderWidth: 1,
                     borderColor: colors.schemes.light.outlineVariant,
                     borderRadius: borderRadius.base,
-                    marginHorizontal: margin["3xs"],
-                    overflow: "hidden",
-                    ...shadow.sm,
+                    padding: 12,
                 }}
             >
-                {students.map((student, i) => (
-                    <StudentRow
-                        key={student.id}
-                        student={student}
-                        checked={currentIds.has(student.id)}
-                        editMode={editMode}
-                        onToggle={() => toggleStudent(student.id)}
-                    />
-                ))}
-            </ScrollView>
-
-            {/* Save Changes button — only in edit mode */}
-            {editMode && (
-                <View
-                    style={{
-                        padding: 16,
-                        borderTopWidth: 1,
-                        borderColor: colors.schemes.light.outlineVariant,
-                        backgroundColor: colors.schemes.light.background,
-                    }}
-                >
-                    <Pressable
-                        onPress={saveChanges}
+                <View style={{ flexDirection: "row", alignItems: "center", columnGap: 8 }}>
+                    <Calendar size={20} color={colors.schemes.light.onSurfaceVariant} />
+                    <ThemedText
                         style={{
-                            backgroundColor: colors.coreColors.primary,
-                            borderRadius: borderRadius.base,
-                            paddingVertical: 14,
-                            alignItems: "center",
+                            fontSize: fontSize.md,
+                            fontWeight: 500,
+                            color: colors.schemes.light.onSurface,
                         }}
                     >
+                        Due Date
+                    </ThemedText>
+                </View>
+                <TextInput
+                    value={dueDate}
+                    onChangeText={setDueDate}
+                    placeholder="YYYY-MM-DD"
+                    style={{
+                        marginTop: 8,
+                        paddingVertical: 10,
+                        paddingHorizontal: 12,
+                        borderWidth: 1,
+                        borderColor: colors.schemes.light.outlineVariant,
+                        borderRadius: borderRadius.sm,
+                        fontSize: fontSize.md,
+                        color: colors.schemes.light.onSurface,
+                        backgroundColor: colors.schemes.light.background,
+                    }}
+                />
+            </View>
+
+            {/* Select All / Unselect All */}
+            <View
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    paddingHorizontal: margin["3xs"],
+                    paddingVertical: 8,
+                    columnGap: 10,
+                }}
+            >
+                <Pressable
+                    onPress={unselectAll}
+                    style={{
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        borderRadius: borderRadius.base,
+                        borderWidth: 1,
+                        borderColor: colors.schemes.light.outlineVariant,
+                        backgroundColor: colors.schemes.light.surfaceContainerLowest,
+                    }}
+                >
+                    <ThemedText
+                        style={{
+                            fontSize: fontSize.sm,
+                            color: colors.schemes.light.onSurfaceVariant,
+                            fontWeight: 500,
+                        }}
+                    >
+                        Unselect All
+                    </ThemedText>
+                </Pressable>
+                <Pressable
+                    onPress={selectAll}
+                    style={{
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        borderRadius: borderRadius.base,
+                        borderWidth: 1,
+                        borderColor: colors.coreColors.primary,
+                        backgroundColor: colors.schemes.light.primaryContainer + "40",
+                    }}
+                >
+                    <ThemedText
+                        style={{
+                            fontSize: fontSize.sm,
+                            color: colors.coreColors.primary,
+                            fontWeight: 500,
+                        }}
+                    >
+                        Select All
+                    </ThemedText>
+                </Pressable>
+            </View>
+
+            {/* Class list */}
+            {isLoading ? (
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <ActivityIndicator size="large" color={colors.coreColors.primary} />
+                </View>
+            ) : (
+                <ScrollView
+                    style={{ flex: 1 }}
+                    contentContainerStyle={{
+                        marginTop: 0,
+                        backgroundColor: colors.schemes.light.surfaceContainerLowest,
+                        borderWidth: 1,
+                        borderColor: colors.schemes.light.outlineVariant,
+                        borderRadius: borderRadius.base,
+                        marginHorizontal: margin["3xs"],
+                        overflow: "hidden",
+                        ...shadow.sm,
+                    }}
+                >
+                    {classes.map((classItem) => (
+                        <ClassRow
+                            key={classItem.id}
+                            classItem={classItem}
+                            checked={selectedClassIds.has(classItem.id)}
+                            editMode={true}
+                            onToggle={() => toggleClass(classItem.id)}
+                        />
+                    ))}
+                    {classes.length === 0 && (
+                        <View style={{ padding: 20, alignItems: "center" }}>
+                            <ThemedText style={{ color: colors.schemes.light.onSurfaceVariant }}>
+                                No classes available. Create a class first.
+                            </ThemedText>
+                        </View>
+                    )}
+                </ScrollView>
+            )}
+
+            {/* Assign Button */}
+            <View
+                style={{
+                    padding: 16,
+                    borderTopWidth: 1,
+                    borderColor: colors.schemes.light.outlineVariant,
+                    backgroundColor: colors.schemes.light.background,
+                }}
+            >
+                <Pressable
+                    onPress={handleAssign}
+                    disabled={isSubmitting || selectedClassIds.size === 0}
+                    style={{
+                        backgroundColor: selectedClassIds.size === 0
+                            ? colors.schemes.light.outlineVariant
+                            : colors.coreColors.primary,
+                        borderRadius: borderRadius.base,
+                        paddingVertical: 14,
+                        alignItems: "center",
+                        opacity: isSubmitting ? 0.7 : 1,
+                    }}
+                >
+                    {isSubmitting ? (
+                        <ActivityIndicator size="small" color="white" />
+                    ) : (
                         <ThemedText
                             style={{
                                 fontSize: fontSize.base,
@@ -453,11 +514,11 @@ export default function AssignStudents() {
                                 color: "white",
                             }}
                         >
-                            Save Changes
+                            Assign to {selectedClassIds.size} Class{selectedClassIds.size !== 1 ? "es" : ""}
                         </ThemedText>
-                    </Pressable>
-                </View>
-            )}
+                    )}
+                </Pressable>
+            </View>
         </SafeAreaView>
     );
 }

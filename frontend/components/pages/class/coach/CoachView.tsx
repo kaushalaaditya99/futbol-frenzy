@@ -178,7 +178,10 @@ export default function CoachView(props: CoachViewProps) {
                 <TabWorkout
                     onAssignPress={() => router.push({
                         pathname: "/assignSession",
-                        params: { date: functionalDate.date.toISOString() }
+                        params: {
+                            date: functionalDate.date.toISOString(),
+                            classId: String(props.param_class.id)
+                        }
                     })}
                     onCreatePress={() => router.push({
                         pathname: "/createSession",
@@ -191,6 +194,7 @@ export default function CoachView(props: CoachViewProps) {
                     sessionsOnDateLabel={assignmentsOnDateLabel}
                     functionalDate={functionalDate}
                     markedDatesAndSessions={markedDatesAndAssignments}
+                    classId={props.param_class.id}
                 />
             }
             {tab === "Students" &&

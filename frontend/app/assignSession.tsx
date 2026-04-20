@@ -5,41 +5,8 @@ import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow 
 import { router, useLocalSearchParams } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-function formatDateLabel(date: Date): string {
-    const today = new Date();
-    const isToday =
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear();
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    const isTomorrow =
-        date.getDate() === tomorrow.getDate() &&
-        date.getMonth() === tomorrow.getMonth() &&
-        date.getFullYear() === tomorrow.getFullYear();
-
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const isYesterday =
-        date.getDate() === yesterday.getDate() &&
-        date.getMonth() === yesterday.getMonth() &&
-        date.getFullYear() === yesterday.getFullYear();
-
-    if (isToday) return "Today";
-    if (isTomorrow) return "Tomorrow";
-    if (isYesterday) return "Yesterday";
-
-    return date.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-    });
-}
 
 interface SessionCardProps {
     session: Session;
@@ -114,24 +81,7 @@ function SessionCard({ session, onPress }: SessionCardProps) {
                             color: colors.schemes.light.onSurfaceVariant,
                         }}
                     >
-                        {session.durationInMins} min
-                    </ThemedText>
-                    <View
-                        style={{
-                            width: 3,
-                            height: 3,
-                            borderRadius: 100,
-                            backgroundColor: colors.schemes.light.onSurfaceVariant,
-                        }}
-                    />
-                    <ThemedText
-                        style={{
-                            fontSize: fontSize.sm,
-                            letterSpacing: letterSpacing.xl,
-                            color: colors.schemes.light.onSurfaceVariant,
-                        }}
-                    >
-                        {session.drills.length} drill{session.drills.length !== 1 ? "s" : ""}
+                        {session.drills?.length || 0} drill{(session.drills?.length || 0) !== 1 ? "s" : ""}
                     </ThemedText>
                 </View>
             </View>
@@ -147,26 +97,38 @@ function SessionCard({ session, onPress }: SessionCardProps) {
 
 export default function AssignSession() {
     const { token } = useAuth();
-    const { date } = useLocalSearchParams<{ date: string }>();
-    const selectedDate = date ? new Date(date) : new Date();
+    const { date, classId } = useLocalSearchParams<{ date?: string; classId?: string }>();
 
     const [sessions, setSessions] = useState<Session[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         if (!token) return;
-        getSessions(token).then((all) => {
-            const filtered = all.filter((s) => {
-                return (
-                    s.date.getFullYear() === selectedDate.getFullYear() &&
-                    s.date.getMonth() === selectedDate.getMonth() &&
-                    s.date.getDate() === selectedDate.getDate()
-                );
+        setIsLoading(true);
+        // Fetch ALL workouts (not filtered by date)
+        getSessions(token)
+            .then((all) => {
+                setSessions(all);
+            })
+            .catch((err) => {
+                console.error("Failed to load workouts:", err);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
-            setSessions(filtered);
-        });
-    }, []);
+    }, [token]);
 
-    const dateLabel = formatDateLabel(selectedDate);
+    const handleSelectSession = (sessionId: number) => {
+        // Navigate to assignStudents with the workout ID and date
+        router.push({
+            pathname: "/assignStudents",
+            params: {
+                sessionId: String(sessionId),
+                date: date || new Date().toISOString(),
+                classId: classId || "",
+            },
+        });
+    };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.background }}>
@@ -194,7 +156,7 @@ export default function AssignSession() {
                             color: colors.schemes.light.onSurface,
                         }}
                     >
-                        Assign Session
+                        Select Workout
                     </ThemedText>
                     <ThemedText
                         style={{
@@ -203,7 +165,7 @@ export default function AssignSession() {
                             letterSpacing: letterSpacing.xl,
                         }}
                     >
-                        {dateLabel}
+                        Choose a workout to assign to your class
                     </ThemedText>
                 </View>
             </View>
@@ -214,7 +176,14 @@ export default function AssignSession() {
                     rowGap: 10,
                 }}
             >
-                {sessions.length === 0 ? (
+                {isLoading ? (
+                    <View style={{ alignItems: "center", paddingTop: 60 }}>
+                        <ActivityIndicator size="large" color={colors.coreColors.primary} />
+                        <ThemedText style={{ marginTop: 12, color: colors.schemes.light.onSurfaceVariant }}>
+                            Loading workouts...
+                        </ThemedText>
+                    </View>
+                ) : sessions.length === 0 ? (
                     <View
                         style={{
                             alignItems: "center",
@@ -228,7 +197,15 @@ export default function AssignSession() {
                                 color: colors.schemes.light.onSurfaceVariant,
                             }}
                         >
-                            No sessions on this date.
+                            No workouts available.
+                        </ThemedText>
+                        <ThemedText
+                            style={{
+                                fontSize: fontSize.sm,
+                                color: colors.schemes.light.outlineVariant,
+                            }}
+                        >
+                            Create a workout first in the Workouts tab.
                         </ThemedText>
                     </View>
                 ) : (
@@ -236,12 +213,7 @@ export default function AssignSession() {
                         <SessionCard
                             key={session.id}
                             session={session}
-                            onPress={() =>
-                                router.push({
-                                    pathname: "/assignStudents",
-                                    params: { sessionId: String(session.id) },
-                                })
-                            }
+                            onPress={() => handleSelectSession(session.id)}
                         />
                     ))
                 )}

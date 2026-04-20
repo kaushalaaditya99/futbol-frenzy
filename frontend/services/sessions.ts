@@ -112,3 +112,40 @@ export async function deleteWorkout(token: string, workoutID: number): Promise<b
     });
     return response.ok;
 }
+
+export interface CreateSessionData {
+    workoutName: string;
+    workoutType: string;
+    dueDate: string | null;
+    coachID: number;
+    imageBackgroundColor: string;
+    imageText: string;
+    imageTextColor: string;
+    publicWorkout: boolean;
+    drills: Array<{ drillID: number; minutes?: number; repetitions?: number }>;
+}
+
+export async function createSession(token: string, data: CreateSessionData): Promise<{ success: boolean; id?: number; error?: string }> {
+    try {
+        const response = await fetch(`${API_URL}/workouts/`, {
+            method: "POST",
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error("Failed to create session:", response.status, errorData);
+            return { success: false, error: JSON.stringify(errorData) };
+        }
+
+        const result = await response.json();
+        return { success: true, id: result.id };
+    } catch (err) {
+        console.error("Error creating session:", err);
+        return { success: false, error: String(err) };
+    }
+}

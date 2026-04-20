@@ -17,6 +17,7 @@ import { router } from "expo-router";
 import { CheckIcon, FilterIcon } from "lucide-react-native";
 import { Fragment, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/contexts/ProfileContext";
 import { Dimensions, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SortButton from "@/components/pages/workouts/SortButton";
@@ -26,7 +27,7 @@ import { Slider } from '@miblanchard/react-native-slider';
 import InputText from "@/components/ui/input/InputText";
 
 export default function Workouts() {
-    const { token } = useAuth();
+    const { token, role } = useAuth();
     const sideBar = useSideBar();
 
     // Feed
@@ -352,9 +353,11 @@ export default function Workouts() {
                                         paddingHorizontal: theme.padding.lg,
                                     }}
                                 />
-                                <CreateWorkoutButton
-                                    onPress={() => router.push("/createSession")}
-                                />  
+                                {role === "Coach" && (
+                                    <CreateWorkoutButton
+                                        onPress={() => router.push("/createSession")}
+                                    />
+                                )}  
                             </View>
                             <SearchBar
                                 search={searchBar.search}

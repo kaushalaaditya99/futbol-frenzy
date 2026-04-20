@@ -7,12 +7,17 @@ import ThemedText from "@/components/ui/ThemedText";
 
 interface RowCardSessionProps extends Session {
     showTag?: boolean;
+    onPress?: () => void;
 }
 
 export default function RowCardSession(props: RowCardSessionProps) {
+    const handlePress = props.onPress ?? (() => {
+        router.push(`/assignments/${props.id}`);
+    });
+
     return (
         <RowCard
-            onPress={() => 1}
+            onPress={handlePress}
             title={props.name}
             imageText={props["imageText"]}
             imageTextColor={"black"}
