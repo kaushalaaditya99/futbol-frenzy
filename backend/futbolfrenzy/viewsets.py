@@ -128,14 +128,15 @@ class WorkoutViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
 
-        queryset = super().get_queryset()
-        coach_id = self.request.query_params.get("coachID")
+         #all workouts marked public
+         publicWorkouts = Workout.objects.filter(publicWorkout=True)
+         #all workouts belonging to a coach
+         userWorkouts = Workout.objects.filter(coachID=self.request.user.id)
 
-        # workouts made by a specific coach
-        if coach_id:
-            queryset = queryset.filter(coachID=coach_id)
+         #combine the two querysets using | operator (supports .get() unlike union())
+         queryset = publicWorkouts | userWorkouts  # without duplicates
+         return queryset
 
-        return queryset
 
 class WorkoutBookmarkViewSet(viewsets.ModelViewSet):
     queryset = WorkoutBookmark.objects.all()
