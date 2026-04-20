@@ -13,9 +13,9 @@ import SideBarDim from "@/components/ui/user/sideBar/SideBarDim";
 import useSideBar from "@/components/ui/user/sideBar/useSideBar";
 import { getSessions, Session } from "@/services/sessions";
 import { shadow, spacing, theme } from "@/theme";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { CheckIcon, FilterIcon } from "lucide-react-native";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/contexts/ProfileContext";
 import { Dimensions, Pressable, ScrollView, View } from "react-native";
@@ -33,8 +33,8 @@ export default function Workouts() {
     // Feed
     const [feed, setFeed] = useState("library");
     const feedOptions = [
-        ["library", "My Library"], 
-        ["explore", "Explore"], 
+        ["library", "My Library"],
+        ["explore", "Explore"],
         ["bookmark", "Bookmarks"]
     ];
 
@@ -54,6 +54,11 @@ export default function Workouts() {
         loadWorkouts();
     }, [token]);
 
+    useFocusEffect(
+        useCallback(() => {
+            loadWorkouts();
+        }, [token])
+    );
 
     const loadWorkouts = async () => {
         if (!token) return;
@@ -61,7 +66,7 @@ export default function Workouts() {
         setWorkouts(workouts);
     }
 
-    
+
     return (
         <View
             style={{
@@ -357,7 +362,7 @@ export default function Workouts() {
                                     <CreateWorkoutButton
                                         onPress={() => router.push("/createSession")}
                                     />
-                                )}  
+                                )}
                             </View>
                             <SearchBar
                                 search={searchBar.search}
