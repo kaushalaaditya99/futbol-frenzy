@@ -24,9 +24,9 @@ export default function RowCardSession(props: RowCardSessionProps) {
             imageBackgroundColor={props["imageBackgroundColor"]}
             descriptions={[
                 props.type,
-                `${props.durationInMins} min`,
+                props.durationInMins ? `${props.durationInMins} min` : "",
                 props.class,
-            ]}
+            ].filter(Boolean)}
             titleTag={
                 props.showTag &&
                 <>
