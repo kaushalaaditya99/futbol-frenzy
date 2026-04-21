@@ -2,7 +2,7 @@
 // https://github.com/slaypni/fastdtw
 
 import { PoseLandmark } from '@/types/pose';
-import { normalizePose, comparePoses } from './poseComparison';
+import { normalizePose, comparePoses, applyLenientCurve, scoreToGrade } from './poseComparison';
 
 export interface PoseSequence {
     frames: PoseLandmark[][];
@@ -384,10 +384,16 @@ export function comparePoseSequences(
     // combine: 70% frame comparison, 30% DTW distance
     const combinedScore = avgScore * 0.7 + dtwScore * 0.3;
 
-    console.log(`[FastDTW] Results - avgFrameScore: ${avgScore.toFixed(2)}, dtwScore: ${dtwScore.toFixed(2)}, combined: ${combinedScore.toFixed(2)}`);
+    // apply lenient curve for young children grading
+    const curvedScore = applyLenientCurve(combinedScore);
 
+    console.log(`[FastDTW] Results - avgFrameScore: ${avgScore.toFixed(2)}, dtwScore: ${dtwScore.toFixed(2)}`);
+    console.log(`[FastDTW] Raw combined score: ${combinedScore.toFixed(2)} → Curved score: ${curvedScore.toFixed(2)}`);
+    console.log(`[FastDTW] Grade: ${scoreToGrade(curvedScore).letter}`);
+
+    // Return curved score for display
     return {
-        score: Math.round(combinedScore * 10) / 10,
+        score: Math.round(curvedScore * 10) / 10,
         path,
         frameScores,
     };

@@ -10,11 +10,26 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Class, getClasses } from "@/services/classes";
 import { getSession, Session } from "@/services/sessions";
 import { padding, shadow, theme } from "@/theme";
+import { Asset } from "expo-asset";
 import { router, useLocalSearchParams } from "expo-router";
+import { useVideoPlayer, VideoView } from "expo-video";
 import { BookmarkIcon, CalendarIcon, PlusCircle, PlusCircleIcon } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const localVideos: Record<string, any> = {
+  "@/assets/videos/video.mp4": require("@/assets/videos/video.mp4"),
+  "@/assets/videos/video2.mp4": require("@/assets/videos/video2.mp4"),
+  "@/assets/videos/video3.mp4": require("@/assets/videos/video3.mp4"),
+  "@/assets/videos/video4.mp4": require("@/assets/videos/video4.mp4"),
+  "@/assets/videos/video5.mp4": require("@/assets/videos/video5.mp4"),
+  "@/assets/videos/video6.mp4": require("@/assets/videos/video6.mp4"),
+  "@/assets/videos/video7.mp4": require("@/assets/videos/video7.mp4"),
+  "@/assets/videos/video8.mp4": require("@/assets/videos/video8.mp4"),
+  "@/assets/videos/video9.mp4": require("@/assets/videos/video9.mp4"),
+  "@/assets/videos/video10.mp4": require("@/assets/videos/video10.mp4"),
+};
 
 // Sorry for the bad, messy, and uncommented code.
 // I am rushing
@@ -27,22 +42,80 @@ export default function Workout() {
     const [workout, setWorkout] = useState<Session>();
     const [drillIndex, setDrillIndex] = useState(0);
     const [showAssignWorkout, setShowAssignWorkout] = useState(false);
+    const [videoError, setVideoError] = useState<string | null>(null);
+    const isLoadingVideo = useRef(false);
+    const currentDrillUrl = useRef<string | null>(null);
+
+    const drillPlayer = useVideoPlayer(null, (player) => {
+        player.muted = true;
+        player.audioMixingMode = "mixWithOthers";
+        player.loop = true;
+    });
+
+    const resolveURL = async (url: string) => {
+        if (url?.startsWith("@")) {
+            const resolved = await Asset.loadAsync(localVideos[url]);
+            return resolved[0].localUri;
+        }
+        return url;
+    };
 
     useEffect(() => {
-        loadWorkout();
-        loadClasses();
-    }, []);
+        if (token && id) {
+            loadWorkout();
+            loadClasses();
+        }
+    }, [token, id]);
+
+    // Update video when drill changes
+    useEffect(() => {
+        (async () => {
+            const drill = workout?.drills?.[drillIndex];
+            const url = drill?.url;
+
+            // Skip if no URL
+            if (!url || url === "") {
+                currentDrillUrl.current = null;
+                return;
+            }
+
+            // Skip if we're already loading this exact video
+            if (currentDrillUrl.current === url) {
+                return;
+            }
+
+            // Skip if we're currently loading another video
+            if (isLoadingVideo.current) {
+                return;
+            }
+
+            isLoadingVideo.current = true;
+            currentDrillUrl.current = url;
+            setVideoError(null);
+
+            try {
+                const videoUri = await resolveURL(url);
+                await drillPlayer.replaceAsync(videoUri);
+                drillPlayer.play();
+            } catch (err) {
+                console.warn("Failed to load video", err);
+                setVideoError("Failed to load video");
+                currentDrillUrl.current = null;
+            } finally {
+                isLoadingVideo.current = false;
+            }
+        })();
+    }, [drillIndex, workout?.drills]);
 
     const loadWorkout = async () => {
-        if (!token)
-            return;
-        
-        const workout = await getSession(token, parseInt(id));
-        console.log(workout);
-        if (!workout)
-            return;
+        if (!token || !id) return;
 
-        setWorkout(workout);
+        const workoutId = parseInt(id);
+        const workoutData = await getSession(token, workoutId);
+        if (!workoutData) return;
+
+        setVideoError(null);
+        setWorkout(workoutData);
     }
 
     const loadClasses = async () => {
@@ -146,7 +219,7 @@ export default function Workout() {
                         color: theme.colors.schemes.light.onSurfaceVariant
                     }}
                 >
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+                    {workout?.drills?.[0]?.instructions || "Select a drill to see its instructions."}
                 </ThemedText>
             </View>
             <View
@@ -197,23 +270,50 @@ export default function Workout() {
                         ...theme.shadow.sm
                     }}
                 >
-                    {/* Video */}
-                    {/* The video would go here, but I'm not goign to bother faking one. */}
-                    <View
-                        style={{
-                            // flex: 1,
-                            width: "100%",
-                            // height: 100,
-                            aspectRatio: 2,
-                            borderWidth: 1,
-                            borderBottomWidth: 0,
-                            borderColor: theme.colors.schemes.light.outlineVariant,
-                            borderTopLeftRadius: theme.borderRadius.base,
-                            borderTopRightRadius: theme.borderRadius.base,
-                            backgroundColor: theme.colors.schemes.light.surfaceContainerHigh
-                        }}
-                    >
-                    </View>
+                    {videoError ? (
+                        <View
+                            style={{
+                                width: "100%",
+                                aspectRatio: 2,
+                                borderTopLeftRadius: theme.borderRadius.base,
+                                borderTopRightRadius: theme.borderRadius.base,
+                                backgroundColor: theme.colors.schemes.light.surfaceContainerHigh,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <ThemedText style={{ color: theme.colors.schemes.light.onSurfaceVariant }}>
+                                {videoError}
+                            </ThemedText>
+                        </View>
+                    ) : workout?.drills?.[drillIndex]?.url ? (
+                        <VideoView
+                            player={drillPlayer}
+                            style={{
+                                width: "100%",
+                                aspectRatio: 2,
+                                borderTopLeftRadius: theme.borderRadius.base,
+                                borderTopRightRadius: theme.borderRadius.base,
+                            }}
+                            contentFit="cover"
+                        />
+                    ) : (
+                        <View
+                            style={{
+                                width: "100%",
+                                aspectRatio: 2,
+                                borderTopLeftRadius: theme.borderRadius.base,
+                                borderTopRightRadius: theme.borderRadius.base,
+                                backgroundColor: theme.colors.schemes.light.surfaceContainerHigh,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <ThemedText style={{ color: theme.colors.schemes.light.onSurfaceVariant }}>
+                                Loading video...
+                            </ThemedText>
+                        </View>
+                    )}
                     <View
                         style={{
                             padding: 0,

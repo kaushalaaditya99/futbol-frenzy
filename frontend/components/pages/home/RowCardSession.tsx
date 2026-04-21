@@ -15,6 +15,38 @@ export default function RowCardSession(props: RowCardSessionProps) {
         router.push(`/assignments/${props.id}`);
     });
 
+    // Determine tag colors based on state
+    const getTagStyle = () => {
+        if (props["isCompleted"]) {
+            return {
+                backgroundColor: colors.palettes.tertiary[90],
+                color: colors.palettes.tertiary[50]
+            };
+        }
+        if (props["isDue"]) {
+            return {
+                backgroundColor: colors.schemes.light.errorContainer,
+                color: colors.schemes.light.error
+            };
+        }
+        if (props["isNew"]) {
+            return {
+                backgroundColor: colors.palettes.primary[90],
+                color: colors.palettes.primary[50]
+            };
+        }
+        return { backgroundColor: "transparent", color: "transparent" };
+    };
+
+    const tagStyle = getTagStyle();
+
+    const getTagText = () => {
+        if (props["isCompleted"]) return "COMPLETED";
+        if (props["isDue"]) return "DUE";
+        if (props["isNew"]) return "NEW";
+        return "";
+    };
+
     return (
         <RowCard
             onPress={handlePress}
@@ -30,7 +62,7 @@ export default function RowCardSession(props: RowCardSessionProps) {
             titleTag={
                 props.showTag &&
                 <>
-                    {(props["isNew"] || props["isDue"]) &&
+                    {(props["isNew"] || props["isDue"] || props["isCompleted"]) &&
                         <View
                             style={{
                                 display: "flex",
@@ -38,7 +70,7 @@ export default function RowCardSession(props: RowCardSessionProps) {
                                 alignItems: "center",
                                 paddingVertical: 0,
                                 paddingHorizontal: 8,
-                                backgroundColor: props["isNew"] ? colors.palettes.primary[90] : colors.palettes.tertiary[95],
+                                backgroundColor: tagStyle.backgroundColor,
                                 borderRadius: 100
                             }}
                         >
@@ -46,10 +78,10 @@ export default function RowCardSession(props: RowCardSessionProps) {
                                 style={{
                                     fontSize: 10,
                                     fontWeight: 600,
-                                    color: props["isNew"] ? colors.palettes.primary[50] : colors.palettes.tertiary[50],
+                                    color: tagStyle.color,
                                 }}
                             >
-                                {props["isNew"] ? "NEW" : props["isDue"] ? "DUE" : ""}
+                                {getTagText()}
                             </ThemedText>
                         </View>
                     }
