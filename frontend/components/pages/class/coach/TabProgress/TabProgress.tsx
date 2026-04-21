@@ -1,4 +1,5 @@
 import { colors, margin, padding } from "@/theme";
+import { useMemo } from "react";
 import { Dimensions, View } from "react-native";
 import CardMetric from "../../../CardMetric";
 import { MoveDown, MoveUp } from "lucide-react-native";
@@ -19,6 +20,8 @@ import { Assignment } from "@/services/assignments";
 import resolveEndpoint from "@/services/resolveEndpoint";
 import { useCallback } from "react";
 import { Class } from "@/services/classes";
+import { Submission } from "@/services/assignments";
+
 interface TabProgressProps {
     drills: Array<Drill>;
     assignments: Array<Assignment>;
@@ -59,6 +62,7 @@ export default function TabProgress(props: TabProgressProps) {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [metric, setMetric] = useState("accuracy");
+    const [submissionData, setSubmissionData] = useState<Array<Submission>>([]);
     const [category, setCategory] = useState("drills");
     const [instances, setInstances] = useState<number[]>([]);
 
@@ -129,7 +133,10 @@ export default function TabProgress(props: TabProgressProps) {
         }
 
         const data = await res.json();
-        // handle data (set state, update charts, etc.)
+        if (data)
+            data.dueDate = new Date(data.dueDate || "");
+        setSubmissionData(data);
+
         console.log("analytics:", data);
       } catch (err: any) {
         if (err.name === "AbortError") return;
@@ -144,6 +151,80 @@ export default function TabProgress(props: TabProgressProps) {
       return () => controller.abort();
     }, [fetchAnalytics]);
 
+
+    // helper to parse date string to numeric x (ms)
+    const parseX = (d: string | Date) => {
+      const dt = typeof d === "string" ? new Date(d) : d;
+      return dt.getTime();
+    };
+
+    // format submissionData -> map studentId -> [{value: number, label?: string, date: number}]
+    const studentSeries = useMemo(() => {
+      const map = new Map<number, Array<{ value: number; date: number; label?: string }>>();
+      submissionData.forEach((s) => {
+        if (!s) return;
+        const sid = (s.studentID) as number;
+        const grade = typeof s.grade === "number" ? s.grade : parseInt(s.grade || "0", 10);
+        const dateVal = parseX(s.dateSubmitted);
+        if (!map.has(sid)) map.set(sid, []);
+        map.get(sid)!.push({ value: grade, date: dateVal, label: new Date(dateVal).toLocaleDateString() });
+      });
+
+      // sort each student's points by date
+      for (const arr of map.values()) arr.sort((a, b) => a.date - b.date);
+
+      return map; // Map<studentId, points[]>
+    }, [submissionData]);
+
+    // build union of all x positions (optional — for consistent x spacing/labels)
+    const xTicks = useMemo(() => {
+      const set = new Set<number>();
+      for (const pts of studentSeries.values()) pts.forEach(p => set.add(p.date));
+      return Array.from(set).sort((a,b)=>a-b);
+    }, [studentSeries]);
+
+    // create per-student data arrays compatible with react-native-gifted-charts single-line `data` prop:
+    // It expects an array of objects like { value: number, label?: string, date?: number } where index is x position.
+    // We'll map xTicks to values and insert nulls (or zeros) when missing.
+    const seriesArrays = useMemo(() => {
+      const out: Array<{ id: number; name?: string; data: Array<{ value: number | null; label?: string }>; color?: string }> = [];
+      const colors = ["#1a1ac2","#3877ff","#ff6b6b","#00b894","#fdcb6e","#6c5ce7"]; // pick colors
+      let ci = 0;
+      for (const [id, pts] of studentSeries.entries()) {
+        const map = new Map(pts.map(p => [p.date, p]));
+        const data = xTicks.map(x => {
+          const p = map.get(x);
+          return p ? { value: p.value, label: p.label } : { value: null };
+        });
+        out.push({ id, name: `${id}`, data, color: colors[ci % colors.length] });
+        ci++;
+      }
+      return out;
+    }, [studentSeries, xTicks]);
+
+    // Render multiple LineChart components overlaid so each renders one student's line.
+    // Wrap them in a View with position: 'relative' and absolute-position each chart.
+    <View style={{ height: 300, width: Dimensions.get("screen").width, position: "relative" }}>
+      {seriesArrays.map((series, idx) => (
+        <LineChart
+          key={series.id}
+          data={series.data}
+          width={Dimensions.get("screen").width}
+          height={300}
+          backgroundColor="transparent"
+          color={series.color}
+          hideRules
+          hideXAxisIndices
+          hideDataPoints={false}
+          dataPointsColor={series.color}
+          yAxisLabelWidth={0}
+          xAxisLabelsHeight={0}
+          yAxisThickness={0}
+          {...(idx === 0 ? { areaChart: true, startOpacity: 0.1, endOpacity: 0.05 } : { areaChart: false })}
+          style={{ position: "absolute", left: 0, top: 0 }}
+        />
+      ))}
+    </View>
 
     return (
         <View
