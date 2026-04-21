@@ -48,104 +48,86 @@ export default function CoachView(props: ViewProps) {
                         style={{
                             height: 90,
                             justifyContent: 'center',
-                            backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#b1f0c2' : props.submission.grade > 60 ? '#f9ca5d' : '#ffc1c1',
+                            borderWidth: 1,
+                            borderColor: theme.colors.schemes.light.outlineVariant,
+                            backgroundColor: 'white',
+                            // backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#b1f0c2' : props.submission.grade > 60 ? '#f9ca5d' : '#ffc1c1',
                             borderRadius: theme.borderRadius.base,
-                            // ...theme.shadow.sm
+                            ...theme.shadow.sm
                         }}
                     >
-                        <LinearGradient
-                            colors={[
-                                props.submission.grade === null ? '' : props.submission.grade > 80 ? '#ffffff' : props.submission.grade > 60 ? '#ffffff' : '#ffc1c1',
-                                props.submission.grade === null ? '' : props.submission.grade > 80 ? '#94cfa4' : props.submission.grade > 60 ? '#f9ca5d' : '#ffc1c1'
-                            ]}
-                            start={{ 
-                                x: 0, 
-                                y: 0
-                            }}
-                            end={{ 
-                                x: 0, 
-                                y: 1
-                            }}
+                        <View
                             style={{
-                                height: 88,
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'flex-end',
+                                height: 86,
                                 marginHorizontal: 1,
-                                justifyContent: 'center',
-                                borderRadius: theme.borderRadius.base - 1,
+                                padding: theme.padding.md,
+                                flexShrink: 1,
+                                borderRadius: theme.borderRadius.base - 2,
+                                // backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#d0f8db' : props.submission.grade > 60 ? '#ffecc1' : '#ffc1c1',
+                                backgroundColor: theme.colors.schemes.light.surfaceContainer,
                             }}
                         >
-                            <View
+                            <ThemedText
                                 style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'flex-end',
-                                    height: 86,
-                                    marginHorizontal: 1,
-                                    padding: theme.padding.md,
-                                    flexShrink: 1,
-                                    borderRadius: theme.borderRadius.base - 2,
-                                    backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#d0f8db' : props.submission.grade > 60 ? '#ffecc1' : '#ffc1c1',
+                                    fontSize: 64,
+                                    fontWeight: 500,
+                                    // letterSpacing: theme.letterSpacing.xl * -10,
+                                    color: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#56be74' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828'
                                 }}
                             >
-                                <ThemedText
-                                    style={{
-                                        fontSize: 64,
-                                        fontWeight: 500,
-                                        // letterSpacing: theme.letterSpacing.xl * -10,
-                                        color: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#56be74' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828'
-                                    }}
-                                >
-                                    {props.submission.grade}%
-                                </ThemedText>
-                                {/* <ThemedText
-                                    style={{
-                                        fontSize: 32,
-                                        fontWeight: 500,
-                                        opacity: 0.5,
-                                        letterSpacing: -1.5,
-                                        color: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#78ce90' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828'
-                                    }}
-                                >
-                                    {'/ 100'}
-                                </ThemedText> */}
-                            </View>
-                        </LinearGradient>
+                                {props.submission.grade ? `${props.submission.grade}%` : `--`}
+                            </ThemedText>
+                        </View>
                     </View>
                 </View>
                 <View
                     style={{
+                        padding: 4,
+                        paddingHorizontal: 8,
+                        marginBottom: 6,
                         flexDirection: 'row',
-                        justifyContent: 'space-between'
+                        justifyContent: 'space-between',
+                        borderRadius: theme.borderRadius.base,
+                        borderWidth: 1,
+                        borderColor: theme.colors.schemes.light.outlineVariant,
+                        backgroundColor: 'white'
                     }}
                 >
                     <ThemedText
                         style={{
-                            // fontFamily: 'Silkscreen',
                             fontSize: 16,
                             fontWeight: 400,
                             letterSpacing: theme.letterSpacing.xl,
                             color: theme.colors.schemes.light.onSurfaceVariant
                         }}
                     >
-                        Submitted on
+                        Date Submitted
                     </ThemedText>
-                    {/* <View style={{ flex: 1, borderBottomWidth: 1, borderStyle: 'dashed', marginHorizontal: 12, marginBottom: 4, borderColor: theme.colors.schemes.light.outlineVariant }} /> */}
                     <ThemedText
                         style={{
-                            // fontFamily: 'Silkscreen',
                             fontSize: 16,
                             fontWeight: 400,
                             letterSpacing: theme.letterSpacing.sm,
                             color: theme.colors.schemes.light.onSurfaceVariant
                         }}
                     >
-                        {new Date(props.submission.dateSubmitted).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).replace(/(\d+)/, (d) => `${d}${['th','st','nd','rd'][((+d%100)-10)%10>2?0:+d%10]||'th'}`)}
+                        {!props.submission.dateSubmitted ? 'Not Submitted' : new Date(props.submission.dateSubmitted).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).replace(/(\d+)/, (d) => `${d}${['th','st','nd','rd'][((+d%100)-10)%10>2?0:+d%10]||'th'}`)}
                     </ThemedText>
                 </View>
                 <View
                     style={{
+                        padding: 4,
+                        paddingHorizontal: 8,
                         flexDirection: 'row',
-                        justifyContent: 'space-between'
+                        justifyContent: 'space-between',
+                        borderRadius: theme.borderRadius.base,
+                        borderWidth: 1,
+                        borderColor: theme.colors.schemes.light.outlineVariant,
+                        backgroundColor: 'white'
                     }}
                 >
                     <ThemedText
@@ -156,9 +138,8 @@ export default function CoachView(props: ViewProps) {
                             color: theme.colors.schemes.light.onSurfaceVariant
                         }}
                     >
-                        Graded on
+                        Date Graded
                     </ThemedText>
-                    {/* <View style={{ flex: 1, borderBottomWidth: 1, borderStyle: 'dotted', marginHorizontal: 12, marginBottom: 4, borderColor: theme.colors.schemes.light.outlineVariant }} /> */}
                     <ThemedText
                         style={{
                             fontSize: 16,
@@ -167,7 +148,7 @@ export default function CoachView(props: ViewProps) {
                             color: theme.colors.schemes.light.onSurfaceVariant
                         }}
                     >
-                        {new Date(props.submission.dateGraded).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).replace(/(\d+)/, (d) => `${d}${['th','st','nd','rd'][((+d%100)-10)%10>2?0:+d%10]||'th'}`)}
+                        {!props.submission.dateGraded ? 'Not Graded' : new Date(props.submission.dateGraded).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).replace(/(\d+)/, (d) => `${d}${['th','st','nd','rd'][((+d%100)-10)%10>2?0:+d%10]||'th'}`)}
                     </ThemedText>
                 </View>
             </View>
@@ -305,10 +286,19 @@ export default function CoachView(props: ViewProps) {
                     )
                 })}
                 <Button
-                    onPress={() => router.push(`/gradeSubmission/${props.submission.id}`)}
-                    {...buttonTheme.blue}
+                    // onPress={() => router.push(`/gradeSubmission/${props.submission.id}`)}
+                    onPress={() => props.submission.dateSubmitted && router.push({
+                        pathname: `/gradeSubmission/[id]`,
+                        params: { 
+                            submissionID: props.submissionID, 
+                            // assignmentID: props.assignment.id, 
+                            // studentID: submission.student.id 
+                        }
+                    })}
+                    disabled={!props.submission.dateSubmitted}
+                    {...(props.submission.dateSubmitted ? buttonTheme.blue : buttonTheme.disabled)}
                     outerStyle={{
-                        marginVertical: theme.margin.xs
+                        marginVertical: props.submission.submitted_drills.length ? theme.margin.xs : 0
                     }}
                 >
                     <ThemedText

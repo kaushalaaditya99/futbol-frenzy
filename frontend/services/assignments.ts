@@ -51,9 +51,9 @@ export interface Submission {
 
 const API_URL = resolveEndpoint("/api");
 
-export async function getAssignmentsbyClass(token: string, class_id: number): Promise<Array<Assignment>> {
+export async function getAssignmentsByClass(token: string, class_id: number): Promise<Array<Assignment>> {
     try {
-        const response = await fetch (`${API_URL}/get_assignments_for_class/${class_id}`, {
+        const response = await fetch (`${API_URL}/get_assignments_for_class/${class_id}/`, {
             headers: {
                 Authorization: `Token ${token}`,
                 'Content-Type': 'application/json'

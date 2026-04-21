@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useAuth } from "@/contexts/AuthContext";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '@/theme';
@@ -7,7 +7,7 @@ import CoachView from '@/components/pages/assignments/CoachView';
 import StudentView from '@/components/pages/assignments/StudentView';
 import { View } from 'react-native';
 import ThemedText from '@/components/ui/ThemedText';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Assignment, getAssignment, getClassByAssignment } from '@/services/assignments';
 import { Class } from '@/services/classes';
 
@@ -17,22 +17,25 @@ export default function Page() {
     const [assignment, setAssignment] = useState<Assignment>();
     const [assignmentClass, setAssignmentClass] = useState<Class>();
 
-    useEffect(() => {
-        const load = async () => {
-            if (!token)
-                return;
-            const assignment = await getAssignment(token, Number(id));
-            if (!assignment)
-                return;
-            setAssignment(assignment);
+    useFocusEffect(
+        useCallback(() => {
+            const load = async () => {
+                if (!token)
+                    return;
+                const assignment = await getAssignment(token, Number(id));
+                if (!assignment)
+                    return;
+                setAssignment(assignment);
 
-            const assignmentClass = await getClassByAssignment(token, Number(id));
-            if (!assignmentClass)
-                return;
-            setAssignmentClass(assignmentClass);
-        }
-        load();
-    }, []);
+                console.log('ID', id);
+                const assignmentClass = await getClassByAssignment(token, Number(id));
+                if (!assignmentClass)
+                    return;
+                setAssignmentClass(assignmentClass);
+            }
+            load();
+        }, [])
+    );
     
     return (
         <SafeAreaView

@@ -73,7 +73,14 @@ export default function CoachView(props: CoachViewProps) {
                     <View key={i}>
                         <RowCard
                             title={`${submission.student.first_name} ${submission.student.last_name}`}
-                            onPress={() => (submission.id !== null && submission.id !== -1) && router.push(`/submissions/${submission.id}`)}
+                            onPress={() => router.push({
+                                pathname: `/submissions/[id]`,
+                                params: { 
+                                    id: submission.id, 
+                                    assignmentID: props.assignment.id, 
+                                    studentID: submission.student.id 
+                                }
+                            })}
                             descriptions={[submission.dateSubmitted ? 'Submitted' : 'Not Submitted', submission.dateGraded ? 'Graded' : 'Not Graded']}
                             titleTagClose={true}
                             imageText={`${submission.student.first_name[0]}${submission.student.last_name[0]}`}

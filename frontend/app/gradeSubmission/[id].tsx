@@ -2,11 +2,12 @@ import ProgressBar from "@/components/pages/demonstration/ProgressBar";
 import ButtonBack from "@/components/ui/button/ButtonBack";
 import ButtonHalfWidth from "@/components/ui/button/ButtonHalfWidth";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
+import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import InputText from "@/components/ui/input/InputText";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment, Submission } from "@/services/assignments";
-import { getSubmission } from "@/services/submissions";
+import { createSubmission, getSubmission, gradeSubmission } from "@/services/submissions";
 import { shadow, theme } from "@/theme";
 import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
@@ -15,11 +16,15 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { CheckIcon, MoveLeft, MoveRightIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Page() {
     const { token } = useAuth();
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const { submissionID, assignmentID, studentID } = useLocalSearchParams<{ 
+        submissionID?: string, 
+        assignmentID?: string, 
+        studentID?: string 
+    }>();
 
     const [submission, setSubmission] = useState<Submission>();
     const [assignment, setAssignment] = useState<Assignment>();
@@ -38,7 +43,7 @@ export default function Page() {
         player.loop = true;
     });
 
-    const [grades, setGrades] = useState<{[k: number]: number}>({});
+    const [grades, setGrades] = useState<{[k: number]: string}>({});
 
     // Used for Blur Effect
     const insets = useSafeAreaInsets();
@@ -50,17 +55,34 @@ export default function Page() {
     const loadSubmission = async () => {
         if (!token)
             return;
-        
-        const submission = await getSubmission(token, parseInt(id));
-        if (!submission) {
-            return router.back();
-        }
-        setSubmission(submission);
 
-        const assignment = await getAssignment(token, submission.assignmentID);
-        if (!assignment)
-            return;
-        setAssignment(assignment);
+        if (submissionID) {
+            // Existing submission
+            const submission = await getSubmission(token, parseInt(submissionID));
+            if (!submission)
+                return router.back();
+            setSubmission(submission);
+
+            const assignment = await getAssignment(token, submission.assignmentID);
+            if (!assignment)
+                return;
+            setAssignment(assignment);
+        } 
+        else if (assignmentID && studentID) {
+            // No submission yet — create one first
+            const submission = await createSubmission(token, parseInt(assignmentID), parseInt(studentID));
+            if (!submission)
+                return router.back();
+            setSubmission(submission);
+
+            const assignment = await getAssignment(token, parseInt(assignmentID));
+            if (!assignment)
+                return;
+            setAssignment(assignment);
+        } 
+        else {
+            router.back();
+        }
     }
     
     const nextDrill = () => {
@@ -80,66 +102,55 @@ export default function Page() {
     }
 
     return (
-        <View
+        <SafeAreaView
+            edges={["top"]}
             style={{
                 flex: 1,
-                backgroundColor: theme.colors.palettes.neutral[0],
-                position: "relative"
+                backgroundColor: theme.colors.schemes.light.background
             }}
         >
             {(assignment && submission) &&
                 <>
-                    <StatusBar
-                        style="light"  
-                    />
-                    <BlurView
-                        intensity={50}
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            minHeight: insets.top,
-                            paddingTop: insets.top,
-                            zIndex: 100,
-                            paddingVertical: theme.padding.xl,
-                            paddingHorizontal: theme.padding.md,
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            columnGap: 12,
-                            backgroundColor: "#ffffff75"
-                        }}
-                    >
-                        <ButtonBack
-                            onBack={() => router.back()}
-                        />
-                    </BlurView>
                     <ScrollView
                         style={{
                             flex: 1,
                         }}
                     >
+                        <HeaderWithBack
+                            header='Grade Submission'
+                            subHeader={(
+                                <View>
+                                    <ThemedText
+                                        style={{
+                                            fontSize: 16,
+                                            letterSpacing: theme.letterSpacing.xl * 1,
+                                            color: theme.colors.schemes.light.onSurfaceVariant
+                                        }}
+                                    >
+                                        {submission?.student.first_name} {submission?.student.last_name}, {assignment?.workout.workoutName}
+                                    </ThemedText>
+                                </View>
+                            )}
+                            onBack={() => router.back()}
+                            containerStyle={{
+                                paddingVertical: theme.margin.xs,
+                                paddingHorizontal: theme.margin.sm,
+                            }}
+                            buttonStyle={{
+                                backgroundColor: "#00000010"
+                            }}
+                        />
                         <VideoView
                             player={refDrillPlayer}
-                            style={{ 
-                                // width: Dimensions.get("screen").width * 1, 
-                                height: Dimensions.get("screen").height * 0.5,
-                                // position: "absolute",
-                                // top: 0,
-                                // left: 0,
+                            style={{
+                                height: Dimensions.get("screen").height * 0.25,
                                 backgroundColor: theme.colors.palettes.neutral[0]
                             }}
                             contentFit="cover"
                         />
                         <View
                             style={{
-                                width: "100%", 
-                                // height: Dimensions.get("screen").height * 0.5,
-                                // maxHeight: Dimensions.get("screen").height * 0.5,
-                                // position: "absolute",
-                                // top: Dimensions.get("screen").height * 0.5 + 0,
-                                // left: 0,
+                                width: "100%",
                                 flex: 1,
                                 backgroundColor: theme.colors.schemes.light.surface,
                                 ...shadow.lg
@@ -148,7 +159,7 @@ export default function Page() {
                             <ProgressBar
                                 drills={assignment.workout.drills}
                                 drillIndex={drillIndex}
-                                submittedDrills={Object.keys(grades).map(grade => Number(grade))}
+                                submittedDrills={Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0]))}
                                 setDrillIndex={(drillIndex: number) => safelySetDrillIndex(drillIndex)}
                             />
                             <View
@@ -240,25 +251,25 @@ export default function Page() {
                             </View>
                             <View
                                 style={{
-                                    paddingVertical: 36,
+                                    paddingVertical: 12,
                                     paddingHorizontal: 0,
                                     rowGap: 12,
                                 }}
                             >
                                 <ThemedText
                                     style={{
-                                        paddingBottom: 12,
+                                        // paddingBottom: 12,
                                         paddingHorizontal: 12,
                                         marginHorizontal: 12,
                                         fontSize: 18,
                                         fontWeight: 600,
                                         letterSpacing: -0.25,
                                         textAlign: "center",
-                                        borderBottomWidth: 1,
+                                        // borderBottomWidth: 1,
                                         borderColor: theme.colors.schemes.light.outlineVariant
                                     }}
                                 >
-                                    Submission
+                                    Submission Video
                                 </ThemedText>
                                 {!!submission.submitted_drills[drillIndex].videoURL &&
                                     <VideoView 
@@ -316,11 +327,11 @@ export default function Page() {
                                             fontWeight: 400,
                                             letterSpacing: theme.letterSpacing.sm,
                                         }}
-                                        value={(grades[drillIndex] || '') + ''}
+                                        value={grades[drillIndex]}
                                         onChangeText={(text) => {
                                             setGrades(grades => ({
                                                 ...grades,
-                                                [drillIndex]: Number(text)
+                                                [drillIndex]: text
                                             }));
                                         }}
                                     />
@@ -354,10 +365,9 @@ export default function Page() {
                                 <View
                                     style={{
                                         display: "flex",
-                                        // flexDirection: "row",
-                                        paddingTop: 24,
+                                        paddingTop: 12,
                                         marginHorizontal: 12,
-                                        columnGap: 12,
+                                        rowGap: 12,
                                         borderTopWidth: 1,
                                         borderColor: theme.colors.schemes.light.outlineVariant
                                     }}
@@ -408,8 +418,19 @@ export default function Page() {
                                     }
                                     {(drillIndex === assignment.workout.drills.length - 1) &&
                                         <ButtonHalfWidth
-                                            {...buttonTheme.blue}
-                                            // onPress={() => submitSession(session, submissions)}
+                                            disabled={Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0])).length !== assignment.workout.drills.length}
+                                            // {...buttonTheme.blue}
+                                            {...((Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0])).length === assignment.workout.drills.length) ? buttonTheme.blue : buttonTheme.disabled)}
+                                            onPress={async () => {
+                                                if (!token)
+                                                    return;
+                                                const output = await gradeSubmission(token, submission.id, Object.fromEntries(Object.entries(grades).map(([drillIndex, grade]) => [drillIndex, Number(grade)])));
+                                                if (output) {
+                                                    router.back();
+                                                    return;
+                                                }
+                                                alert('Could Not Grade Submission!')
+                                            }}
                                         >
                                             {false &&
                                                 <ActivityIndicator
@@ -442,6 +463,6 @@ export default function Page() {
                     </ScrollView>
                 </>
             }
-        </View>
+        </SafeAreaView>
     )
 }

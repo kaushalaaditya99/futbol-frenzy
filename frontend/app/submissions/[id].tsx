@@ -4,38 +4,61 @@ import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment, Submission } from "@/services/assignments";
-import { getSubmission } from "@/services/submissions";
+import { createSubmission, getSubmission } from "@/services/submissions";
 import { theme } from "@/theme";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page() {
     const { role, token } = useAuth();
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const { submissionID, assignmentID, studentID } = useLocalSearchParams<{ 
+        submissionID?: string, 
+        assignmentID?: string, 
+        studentID?: string 
+    }>();
 
     const [submission, setSubmission] = useState<Submission>();
     const [assignment, setAssignment] = useState<Assignment>();
 
-    useEffect(() => {
-        loadSubmission();
-    }, [token]);
+    useFocusEffect(
+        useCallback(() => {
+            loadSubmission();
+        }, [token])
+    );
 
     const loadSubmission = async () => {
         if (!token)
             return;
-        
-        const submission = await getSubmission(token, parseInt(id));
-        if (!submission) {
-            return router.back();
-        }
-        setSubmission(submission);
 
-        const assignment = await getAssignment(token, submission.assignmentID);
-        if (!assignment)
-            return;
-        setAssignment(assignment);
+        if (submissionID) {
+            // Existing submission
+            const submission = await getSubmission(token, parseInt(submissionID));
+            if (!submission)
+                return router.back();
+            setSubmission(submission);
+
+            const assignment = await getAssignment(token, submission.assignmentID);
+            if (!assignment)
+                return;
+            setAssignment(assignment);
+        } 
+        else if (assignmentID && studentID) {
+            // No submission yet — create one first
+            const submission = await createSubmission(token, parseInt(assignmentID), parseInt(studentID));
+            if (!submission)
+                return router.back();
+            setSubmission(submission);
+
+            const assignment = await getAssignment(token, parseInt(assignmentID));
+            if (!assignment)
+                return;
+            setAssignment(assignment);
+        } 
+        else {
+            router.back();
+        }
     }
 
     return (
@@ -77,14 +100,14 @@ export default function Page() {
                         <CoachView
                             submission={submission}
                             assignment={assignment}
-                            submissionID={parseInt(id)}
+                            submissionID={submission.id}
                         />
                     }
                     {role !== 'Coach' &&
                         <StudentView
                             submission={submission}
                             assignment={assignment}
-                            submissionID={parseInt(id)}
+                            submissionID={submission.id}
                         />
                     }
                 </>    

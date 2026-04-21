@@ -3,7 +3,7 @@ from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
-from .serializers import SoccerClassSerializer, AssignmentSerializer
+from .serializers import SoccerClassSerializer, AssignmentSerializer, SubmissionSerializer
 import os
 import boto3
 from rest_framework.decorators import api_view
@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 import uuid
 from .mediapipe import PoseService, VideoPoseService
 from rest_framework import status
+from django.utils import timezone
 
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
@@ -525,3 +526,66 @@ def get_assignments_for_class(request, class_id):
     assignments_qs = soccer_class.assignments.all()
     serializer = AssignmentSerializer(assignments_qs, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def grade_submission(request, submission_id):
+    try:
+        data = json.loads(request.body)
+        grade = data.get("grade")
+        grades = data.get("grades", {})
+
+        submission = Submission.objects.get(id=submission_id)
+        submission.grade = grade
+        submission.dateGraded = timezone.now()
+        submission.save()
+
+        submitted_drills = SubmittedDrill.objects.filter(
+            submissionID=submission_id
+        ).order_by("id")
+
+        for index, drill in enumerate(submitted_drills):
+            if str(index) in grades:
+                drill.grade = grades[str(index)]
+                drill.save()
+
+        return Response({"success": True}, status=200)
+
+    except Submission.DoesNotExist:
+        return Response({"error": "Submission not found"}, status=404)
+    
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+    
+@api_view(['POST'])
+def create_submission(request):
+    if request.method != "POST":
+        return Response({"error": "Method not allowed"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        assignment_id = data.get("assignmentID")
+        student_id = data.get("studentID")
+
+        # Return existing submission if one already exists
+        existing = Submission.objects.filter(
+            assignmentID=assignment_id,
+            studentID=student_id
+        ).first()
+
+        if existing:
+            serializer = SubmissionSerializer(existing)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        submission = Submission.objects.create(
+            assignmentID_id=assignment_id,
+            studentID_id=student_id,
+            imageBackgroundColor="#FFFFFF",
+            imageText="",
+            imageTextColor="#000000",
+        )
+        
+        serializer = SubmissionSerializer(submission)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
