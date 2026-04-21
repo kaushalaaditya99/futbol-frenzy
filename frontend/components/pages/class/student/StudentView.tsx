@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ScrollView } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { MarkedDates } from "react-native-calendars/src/types";
 import Tabs from "../coach/Tabs";
 import StudentTabOverview from "./TabOverview/TabOverview";
@@ -85,6 +86,18 @@ export default function StudentView(props: StudentViewProps) {
         const data = await getAssignmentsbyClass(token, classID);
         setAssignments(data);
     };
+
+    // Reload assignments when screen regains focus (e.g. after assigning)
+    useFocusEffect(
+        useCallback(() => {
+            if (token && classID > 0) {
+                loadAssignments();
+                if (studentId !== null) {
+                    loadMySubmissions();
+                }
+            }
+        }, [token, classID, studentId])
+    );
 
     const loadMySubmissions = async () => {
         if (!token || studentId === null) return;

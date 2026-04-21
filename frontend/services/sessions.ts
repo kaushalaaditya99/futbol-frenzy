@@ -46,7 +46,7 @@ export async function getSessions(token: string): Promise<Array<Session>> {
             type: workout.workoutType,
             durationInMins: 0,
             class: "",
-            drills: [],
+            drills: workout.drills || [],
             isNew: false,
             isDue: workout.dueDate ? new Date(workout.dueDate) >= new Date() : false,
             imageBackgroundColor: workout.imageBackgroundColor || "#1C1C1C",

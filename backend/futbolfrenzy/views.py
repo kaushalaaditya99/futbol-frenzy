@@ -20,6 +20,7 @@ import uuid
 from .mediapipe import PoseService, VideoPoseService
 from rest_framework import status
 
+load_dotenv(override=True)
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
 GOOGLE_IOS_CLIENT_ID = os.getenv('GOOGLE_IOS_CLIENT_ID')
@@ -27,9 +28,6 @@ GOOGLE_ANDROID_CLIENT_ID = os.getenv('GOOGLE_ANDROID_CLIENT_ID')
 
 pose_service = PoseService()
 video_service = VideoPoseService()
-
-
-load_dotenv()
 # Create your views here.
 
 def home(request):
