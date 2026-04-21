@@ -53,8 +53,9 @@ export async function getStudentSchedule(token: string, date: string): Promise<S
     return res.json();
 }
 
-export async function getStudentResults(token: string): Promise<StudentResult[]> {
-    const res = await fetch(`${API_URL}student/results/`, {
+export async function getStudentResults(token: string, date?: string): Promise<StudentResult[]> {
+    const params = date ? `?date=${date}` : '';
+    const res = await fetch(`${API_URL}student/results/${params}`, {
         headers: {
             Authorization: `Token ${token}`,
             "Content-Type": "application/json",

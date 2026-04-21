@@ -2,13 +2,14 @@ import { Flame, PackageOpenIcon } from "lucide-react-native";
 import { Dimensions, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, fontSize, letterSpacing, margin, padding, theme } from "@/theme";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import CardMetric from "@/components/pages/CardMetric";
 import RowCardSession from "@/components/pages/home/RowCardSession";
 import ViewAllButton from "@/components/pages/home/ViewAllButton";
 import CardResult from "@/components/pages/home/RowCardResult";
 import { Session } from "@/services/sessions";
 import { StatusBar } from "expo-status-bar";
+import { useFocusEffect } from "expo-router";
 import SideBar from "@/components/ui/user/sideBar/SideBar";
 import CalendarModal from "@/components/ui/calendar/CalendarModal";
 import useSideBar from "@/components/ui/user/sideBar/useSideBar";
@@ -33,15 +34,16 @@ export default function Home() {
 
     const { role, token } = useAuth();
 
-    useEffect(() => {
+    const loadHomeData = useCallback(() => {
         if (!token) return;
         getStudentStats(token)
             .then(setStats)
             .catch((err) => console.log("Failed to load student stats:", err));
-        getStudentResults(token)
-            .then(setResults)
-            .catch((err) => console.log("Failed to load student results:", err));
     }, [token]);
+
+    useEffect(() => { loadHomeData(); }, [token]);
+
+    useFocusEffect(useCallback(() => { loadHomeData(); }, [loadHomeData]));
 
     useEffect(() => {
         if (!token) return;
@@ -49,6 +51,9 @@ export default function Home() {
         getStudentSchedule(token, dateStr)
             .then(setSchedule)
             .catch((err) => console.log("Failed to load schedule:", err));
+        getStudentResults(token, dateStr)
+            .then(setResults)
+            .catch((err) => console.log("Failed to load student results:", err));
     }, [token, functionalDate.date]);
 
     // Map ScheduleItem to Session props for RowCardSession

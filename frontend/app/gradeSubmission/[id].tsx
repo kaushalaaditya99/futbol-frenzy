@@ -15,7 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { CheckIcon, MoveLeft, MoveRightIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Dimensions, ScrollView, View } from "react-native";
+import { ActivityIndicator, Dimensions, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ErrorMessage from "@/components/ui/input/ErrorMessage";
@@ -48,6 +48,8 @@ export default function Page() {
     const [grades, setGrades] = useState<{[drillIndex: number]: string}>({});
     const [feedbacks, setFeedbacks] = useState<Record<number, string>>({});
     const [isGrading, setIsGrading] = useState(false);
+    const [suggestedGrades, setSuggestedGrades] = useState<{[drillIndex: number]: number | null}>({});
+    const [loadingSuggestions] = useState(false);
 
     // Used for Blur Effect
     const insets = useSafeAreaInsets();
@@ -90,8 +92,12 @@ export default function Page() {
                 s => s.studentID === submission.studentID
             ) || [];
             const mergedDrills = allSubmissions.flatMap(s => s.submitted_drills || []);
-            setSubmission({ ...submission, submitted_drills: mergedDrills });
+            const mergedSubmission = { ...submission, submitted_drills: mergedDrills };
+            setSubmission(mergedSubmission);
             setAssignment(assignment);
+
+            // Fetch AI suggested grades for each drill
+            fetchSuggestedGrades(assignment, mergedDrills);
         }
         else if (assignmentID && studentID) {
             // No submission yet — create one first
@@ -109,6 +115,26 @@ export default function Page() {
             router.back();
         }
     }
+
+    const fetchSuggestedGrades = (_assignmentData: Assignment, submittedDrills: any[]) => {
+        const suggestions: {[k: number]: number | null} = {};
+
+        submittedDrills.forEach((sd: any, index: number) => {
+            const suggested = sd?.suggestedGrade ?? null;
+            suggestions[index] = suggested;
+            // Pre-fill grade if not already set
+            if (suggested !== null) {
+                setGrades(prev => {
+                    if (prev[index] === undefined || prev[index] === '') {
+                        return { ...prev, [index]: String(Math.round(suggested)) };
+                    }
+                    return prev;
+                });
+            }
+        });
+
+        setSuggestedGrades(suggestions);
+    };
 
     const nextDrill = () => {
         safelySetDrillIndex(drillIndex + 1);
@@ -428,6 +454,34 @@ export default function Page() {
                                         message="Must enter a whole number."
                                     />
                                 }
+                                {suggestedGrades[drillIndex] !== undefined && suggestedGrades[drillIndex] !== null && (
+                                    <Pressable
+                                        onPress={() => setGrades(prev => ({ ...prev, [drillIndex]: String(Math.round(suggestedGrades[drillIndex]!)) }))}
+                                        style={{
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            columnGap: 6,
+                                            paddingVertical: 4,
+                                        }}
+                                    >
+                                        <ThemedText style={{
+                                            fontSize: 13,
+                                            color: theme.colors.coreColors.primary,
+                                            fontWeight: '500',
+                                        }}>
+                                            AI Suggested: {Math.round(suggestedGrades[drillIndex]!)}%  — Tap to apply
+                                        </ThemedText>
+                                    </Pressable>
+                                )}
+                                {loadingSuggestions && suggestedGrades[drillIndex] === undefined && (
+                                    <ThemedText style={{
+                                        fontSize: 13,
+                                        color: theme.colors.schemes.light.onSurfaceVariant,
+                                        paddingVertical: 4,
+                                    }}>
+                                        Analyzing video...
+                                    </ThemedText>
+                                )}
                                 <View
                                     style={{
                                         paddingVertical: 10,
