@@ -32,7 +32,7 @@ export default function FeedbackCard({
                 borderRadius: borderRadius.lg,
                 borderWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
-                overflow: "hidden",
+                // overflow: "hidden", // Shadow doesn't show up if overflow is hidden
                 ...shadow.sm,
             }}
         >
@@ -42,8 +42,10 @@ export default function FeedbackCard({
                     flexDirection: "row",
                     alignItems: "center",
                     gap: padding.lg,
-                    padding: padding.xl,
+                    padding: padding.md,
                     borderBottomWidth: 1,
+                    borderTopLeftRadius: borderRadius.lg,
+                    borderTopRightRadius: borderRadius.lg,
                     borderColor: colors.schemes.light.outlineVariant,
                     backgroundColor: colors.schemes.light.surfaceContainerHigh,
                 }}
@@ -58,12 +60,12 @@ export default function FeedbackCard({
                         justifyContent: "center",
                     }}
                 >
-                    <ThemedText style={{ fontSize: fontSize.lg }}>{drillEmoji}</ThemedText>
+                    <ThemedText style={{ fontSize: fontSize.xl }}>{drillEmoji}</ThemedText>
                 </View>
                 <View style={{ flex: 1 }}>
                     <ThemedText
                         style={{
-                            fontSize: fontSize.md,
+                            fontSize: fontSize.base,
                             fontWeight: "600",
                             color: colors.schemes.light.onSurface,
                         }}
@@ -72,7 +74,7 @@ export default function FeedbackCard({
                     </ThemedText>
                     <ThemedText
                         style={{
-                            fontSize: fontSize.xs,
+                            fontSize: fontSize.md,
                             color: colors.schemes.light.onSurfaceVariant,
                             marginTop: 1,
                         }}
@@ -83,7 +85,7 @@ export default function FeedbackCard({
                 <ThemedText
                     style={{
                         fontSize: fontSize.lg,
-                        fontWeight: "800",
+                        fontWeight: "600",
                         color: scoreColor,
                     }}
                 >
@@ -92,38 +94,50 @@ export default function FeedbackCard({
             </View>
 
             {/* Body */}
-            <View style={{ padding: padding.xl }}>
+            <View style={{ padding: padding.md, paddingVertical: padding.xl, }}>
                 <View
                     style={{
                         flexDirection: "row",
                         alignItems: "center",
                         gap: padding.md,
-                        marginBottom: padding.md,
+                        // marginBottom: padding.md,
+                        // backgroundColor: 'red'
                     }}
                 >
                     <View
                         style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: 14,
-                            backgroundColor: colors.coreColors.primary,
-                            alignItems: "center",
-                            justifyContent: "center",
+                            width: 40,
+                            // height: 40,
+                            flexDirection: 'row',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            // backgroundColor: 'yellow'
                         }}
                     >
-                        <ThemedText
+                        <View
                             style={{
-                                fontSize: fontSize.xs,
-                                fontWeight: "700",
-                                color: "white",
+                                width: 28,
+                                height: 28,
+                                borderRadius: 14,
+                                backgroundColor: colors.coreColors.primary,
+                                alignItems: "center",
+                                justifyContent: "center",
                             }}
                         >
-                            {coachInitials}
-                        </ThemedText>
+                            <ThemedText
+                                style={{
+                                    fontSize: fontSize.md,
+                                    fontWeight: "600",
+                                    color: "white",
+                                }}
+                            >
+                                {coachInitials}
+                            </ThemedText>
+                        </View>
                     </View>
                     <ThemedText
                         style={{
-                            fontSize: fontSize.sm,
+                            fontSize: fontSize.base,
                             fontWeight: "600",
                             color: colors.schemes.light.onSurface,
                         }}
@@ -145,16 +159,17 @@ export default function FeedbackCard({
                                 color: colors.schemes.light.onSurfaceVariant,
                             }}
                         >
-                            Coach
+                            COACH
                         </ThemedText>
                     </View>
                 </View>
                 <ThemedText
                     style={{
-                        fontSize: fontSize.md,
+                        fontSize: fontSize.base,
                         color: colors.schemes.light.onSurfaceVariant,
                         lineHeight: 20,
-                        paddingLeft: 36,
+                        paddingLeft: 40 + padding.md,
+                        // backgroundColor: 'blue'
                     }}
                 >
                     {feedback}

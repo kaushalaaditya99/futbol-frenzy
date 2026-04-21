@@ -14,6 +14,7 @@ interface HeaderWithBackProps {
     buttonStyle?: ViewStyle;
     svgProps?: LucideProps;
     svgStyle?: ViewStyle;
+    leftHeader?: ReactNode;
 }
 
 export default function HeaderWithBack(props: HeaderWithBackProps) {
@@ -36,12 +37,18 @@ export default function HeaderWithBack(props: HeaderWithBackProps) {
                 svgStyle={props.svgStyle}
                 svgProps={props.svgProps}
             />
-            <View>
+            <View
+                style={{
+                    flex: 1,
+                }}
+            >
                 <View
                     style={{
                         height: 28,
-                        justifyContent: 'center',
-                        // alignItems: 'center',
+                        width: '100%',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
                     }}
                 >
                     <ThemedText
@@ -55,6 +62,7 @@ export default function HeaderWithBack(props: HeaderWithBackProps) {
                     >
                         {props.header}
                     </ThemedText>
+                    {props.leftHeader}
                 </View>
                 {props.subHeader}
             </View>

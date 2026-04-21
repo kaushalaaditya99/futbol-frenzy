@@ -3,8 +3,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
 import { useState, useEffect } from "react";
-import { colors, fontSize, letterSpacing, borderRadius, margin, padding } from "@/theme";
-import { Zap, Calendar, PlusCircle } from "lucide-react-native";
+import { colors, fontSize, letterSpacing, borderRadius, margin, padding, shadow, theme } from "@/theme";
+import { Zap, Calendar, PlusCircle, PackageOpenIcon } from "lucide-react-native";
 import ThemedText from "@/components/ui/ThemedText";
 import CardMetric from "@/components/pages/CardMetric";
 import ViewAllButton from "@/components/pages/home/ViewAllButton";
@@ -137,9 +137,40 @@ export default function CoachHome() {
                     <SectionTitle title="Recent Submissions" />
                     <View style={{ rowGap: padding.lg }}>
                         {submissions.length === 0 ? (
-                            <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.outline }}>
-                                No recent submissions.
-                            </ThemedText>
+                            <View
+                                style={{
+                                    paddingVertical: 36,
+                                    paddingHorizontal: padding.md,
+                                    minHeight: 100,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    rowGap: 12,
+                                    borderWidth: 1,
+                                    borderColor: colors.schemes.light.outlineVariant,
+                                    borderStyle: "dashed",
+                                    borderRadius: 12,
+                                    backgroundColor: colors.schemes.light.surfaceContainer,
+                                }}
+                            >
+                                <PackageOpenIcon
+                                    size={36}
+                                    strokeWidth={1.5}
+                                    color={theme.colors.schemes.light.outline}
+                                />
+                                <ThemedText 
+                                    style={{ 
+                                        // fontWeight: 400, 
+                                        // fontSize: fontSize.base, 
+                                        color: colors.schemes.light.outline, 
+                                        // letterSpacing: letterSpacing.lg,
+                                        fontSize: fontSize.base,
+                                        fontWeight: 500,
+                                        letterSpacing: letterSpacing.xs,
+                                    }}
+                                >
+                                    No Recent Submissions
+                                </ThemedText>
+                            </View>
                         ) : (
                             submissions.map((submission) => (
                                 <Pressable
@@ -153,16 +184,17 @@ export default function CoachHome() {
                                         padding: padding.lg,
                                         borderWidth: 1,
                                         borderColor: colors.schemes.light.outlineVariant,
+                                        ...shadow.sm
                                     }}
                                 >
                                     <View style={{ flex: 1 }}>
-                                        <ThemedText style={{ fontSize: fontSize.md, fontWeight: "600", color: colors.schemes.light.onSurface }}>
+                                        <ThemedText style={{ fontSize: fontSize.base, fontWeight: "600", color: colors.schemes.light.onSurface }}>
                                             {submission.studentName}
                                         </ThemedText>
-                                        <ThemedText style={{ fontSize: fontSize.sm, color: colors.schemes.light.outline, marginTop: padding.xs }}>
+                                        <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.onSurfaceVariant, marginTop: padding.xs }}>
                                             {submission.drillName} · {formatTimeAgo(submission.dateSubmitted)}
                                         </ThemedText>
-                                        <ThemedText style={{ fontSize: fontSize.xs, color: colors.schemes.light.onSurfaceVariant, marginTop: padding.xs }}>
+                                        <ThemedText style={{ fontSize: fontSize.sm, color: colors.schemes.light.outline, marginTop: padding.xs, letterSpacing: letterSpacing.xl * 1 }}>
                                             {submission.className}
                                         </ThemedText>
                                     </View>
@@ -180,9 +212,40 @@ export default function CoachHome() {
                     <SectionTitle title="Class Progress" />
                     <View style={{ rowGap: padding.lg }}>
                         {classProgress.length === 0 ? (
-                            <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.outline }}>
-                                No classes found.
-                            </ThemedText>
+                            <View
+                                style={{
+                                    paddingVertical: 36,
+                                    paddingHorizontal: padding.md,
+                                    minHeight: 100,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    rowGap: 12,
+                                    borderWidth: 1,
+                                    borderColor: colors.schemes.light.outlineVariant,
+                                    borderStyle: "dashed",
+                                    borderRadius: 12,
+                                    backgroundColor: colors.schemes.light.surfaceContainer,
+                                }}
+                            >
+                                <PackageOpenIcon
+                                    size={36}
+                                    strokeWidth={1.5}
+                                    color={theme.colors.schemes.light.outline}
+                                />
+                                <ThemedText 
+                                    style={{ 
+                                        // fontWeight: 400, 
+                                        // fontSize: fontSize.base, 
+                                        color: colors.schemes.light.outline, 
+                                        // letterSpacing: letterSpacing.lg,
+                                        fontSize: fontSize.base,
+                                        fontWeight: 500,
+                                        letterSpacing: letterSpacing.xs,
+                                    }}
+                                >
+                                    No Classes Found
+                                </ThemedText>
+                            </View>
                         ) : (
                             classProgress.map((cls) => (
                                 <Pressable
@@ -193,6 +256,7 @@ export default function CoachHome() {
                                         padding: padding.xl,
                                         borderWidth: 1,
                                         borderColor: colors.schemes.light.outlineVariant,
+                                        ...shadow.sm
                                     }}
                                 >
                                     <View
@@ -203,13 +267,13 @@ export default function CoachHome() {
                                             marginBottom: padding.md,
                                         }}
                                     >
-                                        <ThemedText style={{ fontSize: fontSize.md, fontWeight: "600", color: colors.schemes.light.onSurface }}>
+                                        <ThemedText style={{ fontSize: fontSize.base, fontWeight: "500", color: colors.schemes.light.onSurface }}>
                                             {cls.name}
                                         </ThemedText>
                                         <ThemedText
                                             style={{
                                                 fontSize: fontSize.md,
-                                                fontWeight: "700",
+                                                fontWeight: "600",
                                                 color: cls.completion >= 70 ? colors.coreColors.tertiary : "#FF9800",
                                             }}
                                         >
@@ -234,8 +298,8 @@ export default function CoachHome() {
                                             }}
                                         />
                                     </View>
-                                    <ThemedText style={{ fontSize: fontSize.xs, color: colors.schemes.light.outline, marginTop: padding.md }}>
-                                        {cls.assignmentsToday} assignment{cls.assignmentsToday !== 1 ? "s" : ""} today · {cls.studentsCompleted}/{cls.totalStudents} submitted
+                                    <ThemedText style={{ fontSize: fontSize.sm, color: colors.schemes.light.outline, marginTop: padding.md, letterSpacing: letterSpacing.xl }}>
+                                        {cls.assignmentsToday} Assignment{cls.assignmentsToday !== 1 ? "s" : ""} Today · {cls.studentsCompleted}/{cls.totalStudents} Submitted
                                     </ThemedText>
                                 </Pressable>
                             ))
@@ -253,10 +317,13 @@ export default function CoachHome() {
                                 flex: 1,
                                 backgroundColor: colors.schemes.light.surfaceContainerLowest,
                                 borderRadius: borderRadius.base,
-                                padding: padding.xl,
+                                padding: padding.sm,
+                                paddingVertical: padding.xl,
+                                justifyContent: 'center',
                                 alignItems: "center",
                                 borderWidth: 1,
                                 borderColor: colors.schemes.light.outlineVariant,
+                                ...shadow.sm
                             }}
                         >
                             <View
@@ -272,7 +339,7 @@ export default function CoachHome() {
                             >
                                 <Zap size={18} color={colors.coreColors.tertiary} />
                             </View>
-                            <ThemedText style={{ fontSize: fontSize.xs, fontWeight: "600", color: colors.schemes.light.onSurface }}>
+                            <ThemedText style={{ fontSize: fontSize.md, fontWeight: "500", color: colors.coreColors.tertiary }}>
                                 New Drill
                             </ThemedText>
                         </Pressable>
@@ -283,10 +350,13 @@ export default function CoachHome() {
                                 flex: 1,
                                 backgroundColor: colors.schemes.light.surfaceContainerLowest,
                                 borderRadius: borderRadius.base,
-                                padding: padding.xl,
+                                padding: padding.sm,
+                                paddingVertical: padding.xl,
+                                justifyContent: 'center',
                                 alignItems: "center",
                                 borderWidth: 1,
                                 borderColor: colors.schemes.light.outlineVariant,
+                                ...shadow.sm
                             }}
                         >
                             <View
@@ -302,7 +372,7 @@ export default function CoachHome() {
                             >
                                 <Calendar size={18} color={colors.coreColors.primary} />
                             </View>
-                            <ThemedText style={{ fontSize: fontSize.xs, fontWeight: "600", color: colors.schemes.light.onSurface }}>
+                            <ThemedText style={{ fontSize: fontSize.md, fontWeight: "500", color: colors.coreColors.primary }}>
                                 Assign Session
                             </ThemedText>
                         </Pressable>
@@ -313,10 +383,13 @@ export default function CoachHome() {
                                 flex: 1,
                                 backgroundColor: colors.schemes.light.surfaceContainerLowest,
                                 borderRadius: borderRadius.base,
-                                padding: padding.xl,
+                                padding: padding.sm,
+                                paddingVertical: padding.xl,
+                                justifyContent: 'center',
                                 alignItems: "center",
                                 borderWidth: 1,
                                 borderColor: colors.schemes.light.outlineVariant,
+                                ...shadow.sm
                             }}
                         >
                             <View
@@ -332,7 +405,7 @@ export default function CoachHome() {
                             >
                                 <PlusCircle size={18} color={"#FF9800"} />
                             </View>
-                            <ThemedText style={{ fontSize: fontSize.xs, fontWeight: "600", color: colors.schemes.light.onSurface }}>
+                            <ThemedText style={{ fontSize: fontSize.md, fontWeight: "500", color: "#FF9800" }}>
                                 Add Class
                             </ThemedText>
                         </Pressable>

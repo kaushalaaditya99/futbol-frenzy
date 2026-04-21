@@ -33,8 +33,8 @@ export default function ProgressBar({ label, current, total }: ProgressBarProps)
             >
                 <ThemedText
                     style={{
-                        fontSize: fontSize.md,
-                        fontWeight: "600",
+                        fontSize: fontSize.base,
+                        fontWeight: "500",
                         color: colors.schemes.light.onSurface,
                     }}
                 >
@@ -42,8 +42,8 @@ export default function ProgressBar({ label, current, total }: ProgressBarProps)
                 </ThemedText>
                 <ThemedText
                     style={{
-                        fontSize: fontSize.md,
-                        fontWeight: "800",
+                        fontSize: fontSize.base,
+                        fontWeight: "600",
                         color: barColor,
                     }}
                 >
@@ -70,7 +70,7 @@ export default function ProgressBar({ label, current, total }: ProgressBarProps)
             </View>
             <ThemedText
                 style={{
-                    fontSize: fontSize.xs,
+                    fontSize: fontSize.md,
                     color: colors.schemes.light.onSurfaceVariant,
                     marginTop: padding.md,
                 }}

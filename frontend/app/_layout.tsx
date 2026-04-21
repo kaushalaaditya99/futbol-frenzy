@@ -141,6 +141,20 @@ export default function RootLayout() {
             headerShown: false
           }}
       />
+      <Stack.Screen
+          name="edit-profile"
+          options={{
+            headerTitle: "",
+            headerShown: false
+          }}
+      />
+      <Stack.Screen
+          name="change-password"
+          options={{
+            headerTitle: "",
+            headerShown: false
+          }}
+      />
     </Stack>
     </ProfileProvider>
     </AuthProvider>

@@ -13,6 +13,7 @@ interface RowCardProps {
     imageTextColor: string;
     imageBackgroundColor: string;
     rightElement?: ReactNode;
+    alignItemsCenter?: boolean;
 }
 
 export default function RowCard(props: RowCardProps) {
@@ -32,6 +33,7 @@ export default function RowCard(props: RowCardProps) {
                 display: "flex",
                 flexDirection: "row",
                 columnGap: 8,
+                alignItems: props.alignItemsCenter ? 'center' : undefined,
                 justifyContent: "space-between",
                 backgroundColor: colors.schemes.light.surfaceContainerLowest,
                 borderWidth: 1,

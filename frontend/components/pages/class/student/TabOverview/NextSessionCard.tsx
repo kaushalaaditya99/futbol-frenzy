@@ -29,7 +29,7 @@ export default function NextSessionCard({
                 borderWidth: 1,
                 borderColor: colors.schemes.light.outlineVariant,
                 padding: padding.xl,
-                gap: padding.lg,
+                gap: padding.xl,
                 ...shadow.sm,
             }}
         >
@@ -43,9 +43,9 @@ export default function NextSessionCard({
             >
                 <ThemedText
                     style={{
-                        fontSize: fontSize.lg,
+                        fontSize: fontSize.base,
                         fontWeight: "500",
-                        letterSpacing: letterSpacing.xs,
+                        letterSpacing: letterSpacing.lg,
                         color: colors.schemes.light.onSurface,
                     }}
                 >
@@ -61,8 +61,8 @@ export default function NextSessionCard({
                 >
                     <ThemedText
                         style={{
-                            fontSize: fontSize.xs,
-                            fontWeight: "700",
+                            fontSize: fontSize.sm,
+                            fontWeight: "500",
                             color: "#FF9800",
                         }}
                     >
@@ -72,7 +72,7 @@ export default function NextSessionCard({
             </View>
 
             {/* Drill list */}
-            <View style={{ gap: padding.md }}>
+            <View style={{ gap: padding.xl }}>
                 {drills.map((drill, i) => (
                     <View
                         key={i}
@@ -94,7 +94,7 @@ export default function NextSessionCard({
                         >
                             <ThemedText
                                 style={{
-                                    fontSize: fontSize.xs,
+                                    fontSize: fontSize.sm,
                                     fontWeight: "700",
                                     color: colors.schemes.light.onSurfaceVariant,
                                 }}
@@ -105,10 +105,11 @@ export default function NextSessionCard({
                         <ThemedText
                             style={{
                                 fontSize: fontSize.md,
+                                letterSpacing: letterSpacing.lg,
                                 color: colors.schemes.light.onSurfaceVariant,
                             }}
                         >
-                            {drill.name} · {drill.duration}
+                            {drill.name} {drill.duration && `· ${drill.duration}`}
                         </ThemedText>
                     </View>
                 ))}

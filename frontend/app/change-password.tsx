@@ -6,7 +6,8 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { changePassword } from "@/services/extendeduser";
 import ThemedText from "@/components/ui/ThemedText";
-import { colors, fontSize, borderRadius, margin, padding } from "@/theme";
+import { colors, fontSize, borderRadius, margin, padding, theme, letterSpacing } from "@/theme";
+import HeaderWithBack from "@/components/ui/HeaderWithBack";
 
 const PASSWORD_RULES = [
   { label: "At least 8 characters", test: (pw: string) => pw.length >= 8 },
@@ -67,33 +68,30 @@ export default function ChangePassword() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.background }}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: margin.sm,
-          paddingVertical: padding.lg,
-        }}
-      >
-        <Pressable onPress={() => router.replace("/settings")} style={{ marginRight: padding.lg }}>
-          <ArrowLeft size={24} color={colors.schemes.light.onBackground} />
-        </Pressable>
-        <ThemedText style={{ fontSize: fontSize.xl, fontWeight: "700", color: colors.schemes.light.onBackground, flex: 1 }}>
-          Change Password
-        </ThemedText>
-        <Pressable onPress={handleSave} disabled={saving}>
-          {saving ? (
-            <ActivityIndicator size="small" color={colors.coreColors.primary} />
-          ) : (
-            <ThemedText style={{ fontSize: fontSize.base, fontWeight: "600", color: colors.coreColors.primary }}>
-              Save
-            </ThemedText>
+      <HeaderWithBack
+          header="Change Password"
+          onBack={() => router.back()}
+          containerStyle={{
+              paddingVertical: theme.margin.xs,
+              paddingHorizontal: theme.margin.sm,
+          }}
+          buttonStyle={{
+              backgroundColor: "#00000010"
+          }}
+          leftHeader={(
+            <Pressable onPress={handleSave} disabled={saving} style={{backgroundColor: theme.colors.schemes.light.surfaceContainerHigh, padding: 6, paddingHorizontal: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center'}}>
+              {saving ? (
+                <ActivityIndicator size="small" color={colors.coreColors.primary} />
+              ) : (
+                <ThemedText style={{ fontSize: fontSize.base, fontWeight: "600", color: colors.coreColors.primary, letterSpacing: theme.letterSpacing.xl }}>
+                  Save
+                </ThemedText>
+              )}
+            </Pressable>
           )}
-        </Pressable>
-      </View>
-
-      <ScrollView style={{ flex: 1, paddingHorizontal: margin.sm }}>
-        <View style={{ gap: margin["3xs"] }}>
+        />
+      <ScrollView style={{ flex: 1, padding: margin.sm }}>
+        <View style={{ gap: margin.sm }}>
           <PasswordField
             label="Current Password"
             value={currentPassword}
@@ -121,7 +119,7 @@ export default function ChangePassword() {
         <ThemedText
           style={{
             fontSize: fontSize.sm,
-            letterSpacing: 0.1,
+            letterSpacing: letterSpacing.xl * 2,
             color: colors.schemes.light.onSurfaceVariant,
             marginTop: padding.lg,
             lineHeight: 18,
@@ -154,7 +152,8 @@ function PasswordField({
       <ThemedText
         style={{
           fontSize: fontSize.md,
-          fontWeight: "600",
+          fontWeight: "500",
+          letterSpacing: theme.letterSpacing.sm,
           color: colors.schemes.light.onSurfaceVariant,
           marginBottom: padding.md,
         }}
@@ -169,6 +168,7 @@ function PasswordField({
           borderRadius: borderRadius.lg,
           borderWidth: 1,
           borderColor: colors.schemes.light.outlineVariant,
+          ...theme.shadow.sm
         }}
       >
         <TextInput

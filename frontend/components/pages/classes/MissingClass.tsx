@@ -56,7 +56,7 @@ export default function MissingClass(props: MissingClassProps) {
                         maxWidth: 200,
                         fontSize: fontSize.md,
                         fontWeight: 400,
-                        letterSpacing: letterSpacing.md,
+                        letterSpacing: letterSpacing.xl * 1,
                         color: colors.schemes.light.onSurfaceVariant,
                         textAlign: "center"
                     }}

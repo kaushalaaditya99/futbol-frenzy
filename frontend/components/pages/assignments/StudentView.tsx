@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment } from "@/services/assignments";
-import { theme } from "@/theme";
+import { colors, shadow, theme } from "@/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { CheckCircle, Video } from "lucide-react-native";
@@ -97,11 +97,11 @@ export default function StudentView(props: StudentViewProps) {
         <ScrollView style={{ flex: 1, backgroundColor: theme.colors.schemes.light.background }}>
             {/* Assignment Header */}
             <View style={{
-                paddingVertical: theme.padding.md,
-                paddingHorizontal: theme.padding.md,
+                paddingVertical: theme.margin.xs,
+                paddingHorizontal: theme.margin.sm,
                 borderBottomWidth: 1,
                 borderColor: theme.colors.schemes.light.outlineVariant,
-                backgroundColor: theme.colors.schemes.light.surface,
+                backgroundColor: 'white',
             }}>
                 <ThemedText style={{
                     fontSize: theme.fontSize.xl,
@@ -110,41 +110,48 @@ export default function StudentView(props: StudentViewProps) {
                 }}>
                     {assignment.workout?.workoutName || assignment.workoutID}
                 </ThemedText>
-                <View style={{ flexDirection: "row", marginTop: 4, columnGap: 8 }}>
+                <View style={{ flexDirection: "row", alignItems: 'center', marginTop: 4, columnGap: 8 }}>
                     <ThemedText style={{
-                        fontSize: theme.fontSize.sm,
+                        fontSize: theme.fontSize.base,
                         color: theme.colors.schemes.light.onSurfaceVariant,
                     }}>
                         {assignment.dueDate
                             ? `Due: ${new Date(assignment.dueDate).toLocaleDateString()}`
-                            : "No due date"
+                            : "No Due Date"
                         }
                     </ThemedText>
+                    <ThemedText
+                        style={{
+                            color: colors.coreColors.primary
+                        }}
+                    >
+                    {' • '}
+                    </ThemedText>
                     <ThemedText style={{
-                        fontSize: theme.fontSize.sm,
+                        fontSize: theme.fontSize.base,
                         color: completedCount === totalDrills
                             ? theme.colors.coreColors.primary
                             : theme.colors.schemes.light.onSurfaceVariant,
                     }}>
-                        • {completedCount}/{totalDrills} completed
+                        {completedCount}/{totalDrills} Drills Completed
                     </ThemedText>
                 </View>
             </View>
 
             {/* Drills List */}
             <View style={{
-                paddingVertical: theme.padding.md,
-                paddingHorizontal: theme.padding.md,
-                rowGap: theme.padding.sm,
+                paddingVertical: theme.margin.xs,
+                paddingHorizontal: theme.margin.xs,
+                rowGap: theme.margin.xs,
             }}>
-                <ThemedText style={{
+                {/* <ThemedText style={{
                     fontSize: theme.fontSize.base,
                     fontWeight: 500,
-                    marginBottom: theme.padding.xs,
-                    color: theme.colors.schemes.light.onSurfaceVariant,
+                    // marginBottom: theme.padding.xs,
+                    color: theme.colors.schemes.light.onSurface,
                 }}>
                     Drills
-                </ThemedText>
+                </ThemedText> */}
 
                 {drills.map((drill: any, index: number) => {
                     // drillID is the actual drill ID, id is the WorkoutDrill id
@@ -166,6 +173,7 @@ export default function StudentView(props: StudentViewProps) {
                                 : theme.colors.schemes.light.surfaceContainerHighest
                             }
                             imageTextColor={isCompleted ? "white" : theme.colors.schemes.light.onSurfaceVariant}
+                            alignItemsCenter={true}
                             rightElement={
                                 <View style={{
                                     width: 36,
@@ -173,6 +181,9 @@ export default function StudentView(props: StudentViewProps) {
                                     justifyContent: "center",
                                     alignItems: "center",
                                     borderRadius: 1000,
+                                    borderWidth: 1,
+                                    borderColor: colors.schemes.light.outlineVariant,
+                                    ...shadow.sm,
                                     backgroundColor: isCompleted
                                         ? theme.colors.coreColors.primary
                                         : theme.colors.schemes.light.surfaceContainerHighest,

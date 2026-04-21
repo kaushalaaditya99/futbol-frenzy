@@ -11,6 +11,7 @@ import resolveEndpoint from '@/services/resolveEndpoint';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import useGoogleAuth from '@/hooks/useGoogleauth';
+import { buttonTheme } from "@/components/ui/button/buttonTheme";
 
 const API_URL = resolveEndpoint("/api/");
 
@@ -186,6 +187,7 @@ export default function Index() {
     </View>
     </View>
     <SimpleButton
+		{...buttonTheme.blue}
         onPress={login}
         label="Log In"
     />
