@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useAuth } from "@/contexts/AuthContext";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '@/theme';
@@ -10,7 +10,6 @@ import ThemedText from '@/components/ui/ThemedText';
 import { useCallback, useEffect, useState } from 'react';
 import { Assignment, getAssignment, getClassByAssignment } from '@/services/assignments';
 import { Class } from '@/services/classes';
-import { useFocusEffect } from '@react-navigation/native';
 
 export default function Page() {
     const { role, token, loaded } = useAuth();
@@ -31,7 +30,7 @@ export default function Page() {
 
     // Refresh when screen regains focus (e.g. student submitted while coach was away)
     useFocusEffect(useCallback(() => { loadData(); }, [loadData]));
-    
+
     return (
         <SafeAreaView
             edges={["top"]}
@@ -65,14 +64,14 @@ export default function Page() {
                     backgroundColor: "#00000010"
                 }}
             />
-            {role === 'Coach' &&
+            {(assignment && assignmentClass && role === 'Coach') &&
                 <CoachView
                     assignmentID={parseInt(id)}
                     assignment={assignment}
                     assignmentClass={assignmentClass}
                 />
             }
-            {role !== 'Coach' &&
+            {(assignment && assignmentClass && role !== 'Coach') &&
                 <StudentView
                     assignmentID={parseInt(id)}
                 />

@@ -40,6 +40,7 @@ export async function getSessions(token: string): Promise<Array<Session>> {
         const data = await response.json();
 
         return data.map((workout: any) => ({
+            ...workout,
             id: workout.id,
             date: workout.dueDate ? new Date(workout.dueDate) : new Date(),
             name: workout.workoutName,

@@ -4,43 +4,55 @@ import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment, Submission } from "@/services/assignments";
-import { getSubmission } from "@/services/submissions";
+import { createSubmission, getSubmission } from "@/services/submissions";
 import { theme } from "@/theme";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 import { useCallback, useEffect, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Student } from "@/services/students";
+import { getUserByID, User } from "@/services/user";
 
 export default function Page() {
     const { role, token } = useAuth();
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const { submissionID, assignmentID, studentID } = useLocalSearchParams<{
+        submissionID?: string,
+        assignmentID?: string,
+        studentID?: string
+    }>();
 
+    const [student, setStudent] = useState<User>();
     const [submission, setSubmission] = useState<Submission>();
     const [assignment, setAssignment] = useState<Assignment>();
 
-    useEffect(() => {
-        loadSubmission();
-    }, [token]);
-
-    useFocusEffect(useCallback(() => {
-        loadSubmission();
-    }, [token, id]));
+    useFocusEffect(
+        useCallback(() => {
+            loadSubmission();
+        }, [token])
+    );
 
     const loadSubmission = async () => {
         if (!token)
             return;
-        
-        const submission = await getSubmission(token, parseInt(id));
-        if (!submission) {
-            return router.back();
-        }
-        setSubmission(submission);
 
-        const assignment = await getAssignment(token, submission.assignmentID);
-        if (!assignment)
-            return;
-        setAssignment(assignment);
+        if (submissionID !== null && submissionID !== undefined && Number(submissionID) >= 0) {
+            const submission = await getSubmission(token, parseInt(submissionID));
+            if (submission) {
+                setSubmission(submission);
+            }
+        }
+
+        if (assignmentID !== null && assignmentID !== undefined && Number(assignmentID) >= 0) {
+            const assignment = await getAssignment(token, Number(assignmentID));
+            if (assignment)
+                setAssignment(assignment);
+        }
+
+        if (studentID !== null && studentID !== undefined && Number(studentID) >= 0) {
+            const student = await getUserByID(token, Number(studentID));
+            if (student)
+                setStudent(student);
+        }
     }
 
     return (
@@ -62,7 +74,7 @@ export default function Page() {
                                 color: theme.colors.schemes.light.onSurfaceVariant
                             }}
                         >
-                            {submission?.student.first_name} {submission?.student.last_name}, {assignment?.workout.workoutName}
+                            {student?.first_name} {student?.last_name}, {assignment?.workout.workoutName}
                         </ThemedText>
                     </View>
                 )}
@@ -76,24 +88,22 @@ export default function Page() {
                     backgroundColor: "#00000010"
                 }}
             />
-            {assignment && submission && 
-                <>
-                    {role === 'Coach' &&
-                        <CoachView
-                            submission={submission}
-                            assignment={assignment}
-                            submissionID={parseInt(id)}
-                        />
-                    }
-                    {role !== 'Coach' &&
-                        <StudentView
-                            submission={submission}
-                            assignment={assignment}
-                            submissionID={parseInt(id)}
-                        />
-                    }
-                </>    
+            <>
+            {role === 'Coach'
+                ? <CoachView
+                    student={student}
+                    submission={submission}
+                    assignment={assignment}
+                    submissionID={([null, undefined] as any).includes(submissionID) ? -1 : Number(submissionID)}
+                />
+                :
+                <StudentView
+                    submission={submission}
+                    assignment={assignment}
+                    submissionID={([null, undefined] as any).includes(submissionID) ? -1 : Number(submissionID)}
+                />
             }
+        </>
         </SafeAreaView>
     )
 }

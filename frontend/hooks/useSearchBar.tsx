@@ -9,6 +9,10 @@ export default function useSearchBar<Object>(objects: Array<Object>, searchKey: 
     
 
     useEffect(() => {
+        // console.log('search', search);
+        // console.log('searchKey', searchKey);
+        // console.log('sort', sort);
+        // console.log('sortKey', sortKey);
         const fObjects = searchAndSortObjects(search, searchKey, sort, sortKey, objects);
         setFiltered(fObjects);
     }, [search, searchKey, sort, sortKey, objects]);
@@ -28,9 +32,9 @@ export default function useSearchBar<Object>(objects: Array<Object>, searchKey: 
 
 
     const searchObjects = (search: string, searchKey: Key, objects: Array<Object>) => {
-        const searchLowerCase = search.toLowerCase();
+        const searchLowerCase = search ? search.toLowerCase() : '';
         const fObjects = objects.filter((object) => {
-            const objectSearchKeyLower = getSearchSortValue(object as any, searchKey).toLowerCase();
+            const objectSearchKeyLower = (getSearchSortValue(object as any, searchKey) || '').toLowerCase();
             const match = objectSearchKeyLower.includes(searchLowerCase);
             return match;
         });

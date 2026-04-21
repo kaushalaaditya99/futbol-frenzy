@@ -262,7 +262,7 @@ export default function CoachView() {
                                         imageBackgroundColor={workout.imageBackgroundColor || "lightgray"}
                                         imageTextColor={workout.imageTextColor || "black"}
                                         imageText={workout.imageText || ""}
-                                        description={'I feel so bad, I\'ve got a worried mind. I\'m so lonesome all the time.'}
+                                        description={`${workout.drills.length} Drills`}
                                         descriptions={[]}
                                         deleteObject={() => {
                                             if (!token)
@@ -288,7 +288,7 @@ export default function CoachView() {
                                         imageBackgroundColor={class_.imageBackgroundColor || "lightgray"}
                                         imageTextColor={class_.imageTextColor || "black"}
                                         imageText={class_.imageText || ""}
-                                        description={class_.description || 'ok'}
+                                        description={class_.description || `${class_.students.length} Students`}
                                         descriptions={[
                                             `${class_.students?.length} students`
                                         ]}

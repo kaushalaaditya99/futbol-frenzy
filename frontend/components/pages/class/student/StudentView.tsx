@@ -12,7 +12,7 @@ import { Session } from "@/services/sessions";
 import { getStudents, Student } from "@/services/students";
 import StudentTabStudent from "./TabStudent/TabStudent";
 import StudentTabProgress from "./TabProgress/TabProgress";
-import { Assignment, getAssignmentsbyClass } from "@/services/assignments";
+import { Assignment, getAssignmentsByClass } from "@/services/assignments";
 import { router } from "expo-router";
 import { useProfile } from "@/contexts/ProfileContext";
 import resolveEndpoint from "@/services/resolveEndpoint";
@@ -84,7 +84,7 @@ export default function StudentView(props: StudentViewProps) {
 
     const loadAssignments = async () => {
         if (!token) return;
-        const data = await getAssignmentsbyClass(token, classID);
+        const data = await getAssignmentsByClass(token, classID);
         setAssignments(data);
     };
 

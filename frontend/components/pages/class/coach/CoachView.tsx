@@ -14,7 +14,7 @@ import TabProgress from "./TabProgress/TabProgress";
 import { router } from "expo-router";
 import { Drill, getDrills } from "@/services/drills";
 import { Class, defaultClass } from "@/services/classes";
-import { Assignment, getAssignments, getAssignmentsbyClass } from "@/services/assignments";
+import { Assignment, getAssignments, getAssignmentsByClass } from "@/services/assignments";
 import { useFocusEffect } from "@react-navigation/native";
 
 interface CoachViewProps {
@@ -104,7 +104,7 @@ export default function CoachView(props: CoachViewProps) {
         if (!token)
             return;
         //const assignments = await getAssignments(token);
-        const assignments = await getAssignmentsbyClass(token, props.param_class.id);
+        const assignments = await getAssignmentsByClass(token, props.param_class.id);
         setAssignments(assignments);
     }
 
