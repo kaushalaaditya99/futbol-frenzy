@@ -138,6 +138,7 @@ class SubmittedDrill(models.Model):
     videoURL = models.URLField(max_length=200)
     grade = models.IntegerField(null=True, blank=True)
     touchCount = models.IntegerField(null=True, blank=True)
+    feedback = models.TextField(null=True, blank=True)
 
 
 # A soccer class that coaches host and students can be apart of

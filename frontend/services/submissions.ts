@@ -1,7 +1,38 @@
 import { Submission } from "./assignments";
 import resolveEndpoint from "./resolveEndpoint";
+import axios from "axios";
 
 const API_URL = resolveEndpoint("/api");
+
+export async function gradeSubmittedDrill(token: string, submittedDrillId: number, grade: number, feedback?: string): Promise<boolean> {
+    try {
+        const data: any = { grade };
+        if (feedback !== undefined) data.feedback = feedback;
+        await axios.patch(
+            `${API_URL}/submitteddrills/${submittedDrillId}/`,
+            data,
+            { headers: { Authorization: `Token ${token}`, "Content-Type": "application/json" } }
+        );
+        return true;
+    } catch (err) {
+        console.error("Error grading drill:", err);
+        return false;
+    }
+}
+
+export async function gradeSubmission(token: string, submissionId: number, grade: number): Promise<boolean> {
+    try {
+        await axios.patch(
+            `${API_URL}/submissions/${submissionId}/`,
+            { grade, dateGraded: new Date().toISOString() },
+            { headers: { Authorization: `Token ${token}`, "Content-Type": "application/json" } }
+        );
+        return true;
+    } catch (err) {
+        console.error("Error grading submission:", err);
+        return false;
+    }
+}
 
 export async function getSubmission(token: string, submissionID: number): Promise<Submission|null> {
     try {
@@ -27,27 +58,6 @@ export async function getSubmission(token: string, submissionID: number): Promis
     }
 }
 
-export async function gradeSubmission(token: string, submissionID: number, grades: {[drillIndex: number]: number }): Promise<boolean> {
-    try {
-        const gradeValues = Object.values(grades);
-        const grade = gradeValues.reduce((sum, g) => sum + g, 0) / gradeValues.length;
-
-        const response = await fetch(`${API_URL}/grade_submission/${submissionID}/`, {
-            method: "POST",
-            headers: {
-                Authorization: `Token ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ grade, grades }),
-        });
-
-        return response.ok;
-    } 
-    catch (err) {
-        console.error("Error Grading Submission\n", err);
-        return false;
-    }
-}
 
 export async function createSubmission(token: string, assignmentID: number,studentID: number): Promise<Submission|null> {
     try {

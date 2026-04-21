@@ -7,7 +7,7 @@ import InputText from "@/components/ui/input/InputText";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment, Submission } from "@/services/assignments";
-import { createSubmission, getSubmission, gradeSubmission } from "@/services/submissions";
+import { createSubmission, getSubmission, gradeSubmittedDrill, gradeSubmission } from "@/services/submissions";
 import { shadow, theme } from "@/theme";
 import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
@@ -22,17 +22,17 @@ import ErrorMessage from "@/components/ui/input/ErrorMessage";
 
 export default function Page() {
     const { token } = useAuth();
-    const { submissionID, assignmentID, studentID } = useLocalSearchParams<{ 
-        submissionID?: string, 
-        assignmentID?: string, 
-        studentID?: string 
+    const { submissionID, assignmentID, studentID } = useLocalSearchParams<{
+        submissionID?: string,
+        assignmentID?: string,
+        studentID?: string
     }>();
 
     const [submission, setSubmission] = useState<Submission>();
     const [assignment, setAssignment] = useState<Assignment>();
 
     const [drillIndex, setDrillIndex] = useState<number>(0);
-    
+
     const refDrillPlayer = useVideoPlayer(null, (player) => {
         player.muted = true;
         player.audioMixingMode = "mixWithOthers";
@@ -45,7 +45,9 @@ export default function Page() {
         player.loop = true;
     });
 
-    const [grades, setGrades] = useState<{[k: number]: string}>({});
+    const [grades, setGrades] = useState<Record<number, string>>({});
+    const [feedbacks, setFeedbacks] = useState<Record<number, string>>({});
+    const [isGrading, setIsGrading] = useState(false);
 
     // Used for Blur Effect
     const insets = useSafeAreaInsets();
@@ -53,6 +55,21 @@ export default function Page() {
     useEffect(() => {
         loadSubmission();
     }, [token]);
+
+    useEffect(() => {
+        if (assignment) {
+            const drill = assignment.workout.drills[drillIndex];
+            if (drill?.url) {
+                refDrillPlayer.replace({ uri: drill.url });
+            }
+        }
+        if (submission) {
+            const submittedDrill = submission.submitted_drills[drillIndex];
+            if (submittedDrill?.videoURL) {
+                subDrillPlayer.replace({ uri: submittedDrill.videoURL });
+            }
+        }
+    }, [assignment, submission, drillIndex]);
 
     const loadSubmission = async () => {
         if (!token)
@@ -69,7 +86,7 @@ export default function Page() {
             if (!assignment)
                 return;
             setAssignment(assignment);
-        } 
+        }
         else if (assignmentID && studentID) {
             // No submission yet — create one first
             const submission = await createSubmission(token, parseInt(assignmentID), parseInt(studentID));
@@ -81,12 +98,12 @@ export default function Page() {
             if (!assignment)
                 return;
             setAssignment(assignment);
-        } 
+        }
         else {
             router.back();
         }
     }
-    
+
     const nextDrill = () => {
         safelySetDrillIndex(drillIndex + 1);
     }
@@ -99,7 +116,7 @@ export default function Page() {
     const safelySetDrillIndex = (drillIndex: number) => {
         if (!assignment)
             return;
-        const safeDrillIndex = Math.max(0, Math.min(drillIndex || 0, assignment.workout.drills.length - 1)); 
+        const safeDrillIndex = Math.max(0, Math.min(drillIndex || 0, assignment.workout.drills.length - 1));
         setDrillIndex(safeDrillIndex);
     }
 
@@ -284,9 +301,9 @@ export default function Page() {
                                     Submission Video
                                 </ThemedText>
                                 {!!submission.submitted_drills[drillIndex]?.videoURL &&
-                                    <VideoView 
+                                    <VideoView
                                         player={subDrillPlayer}
-                                        style={{ 
+                                        style={{
                                             borderBottomLeftRadius: 12,
                                             borderBottomRightRadius: 12,
                                             height: Dimensions.get("screen").height * 0.25,
@@ -299,7 +316,7 @@ export default function Page() {
                                 }
                                 {!submission.submitted_drills[drillIndex]?.videoURL &&
                                     <View
-                                        style={{ 
+                                        style={{
                                             justifyContent: 'center',
                                             alignItems: 'center',
                                             borderBottomLeftRadius: 12,
@@ -361,50 +378,45 @@ export default function Page() {
                                         </ThemedText>
                                     </View>
                                     <InputText
+                                        value={grades[drillIndex] || ''}
+                                        onChangeText={(text: string) => setGrades(prev => ({ ...prev, [drillIndex]: text }))}
+                                        placeholder="0-100"
                                         wrapperStyle={{
                                             flexShrink: 1,
                                         }}
                                         inputStyle={{
-                                            height: 44,
-                                            borderRadius: 0,
-                                            fontSize: 14,
-                                            fontWeight: 400,
-                                            letterSpacing: theme.letterSpacing.sm,
-                                            shadowOpacity: 0,
-                                        }}
-                                        value={grades[drillIndex]}
-                                        onChangeText={(text) => {
-                                            setGrades(grades => ({
-                                                ...grades,
-                                                [drillIndex]: text
-                                            }));
+                                            borderTopLeftRadius: 0,
+                                            borderBottomLeftRadius: 0,
                                         }}
                                     />
-                                    <View
+                                </View>
+                                <View
+                                    style={{
+                                        paddingVertical: 10,
+                                        marginHorizontal: 12,
+                                    }}
+                                >
+                                    <ThemedText
                                         style={{
-                                            height: 44,
-                                            width: 44,
-                                            padding: theme.padding.md,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            borderWidth: 1,
-                                            borderLeftWidth: 0,
-                                            borderTopRightRadius: theme.borderRadius.base,
-                                            borderBottomRightRadius: theme.borderRadius.base,
-                                            borderColor: theme.colors.schemes.light.outlineVariant,
+                                            fontSize: theme.fontSize.base,
+                                            fontWeight: 500,
+                                            letterSpacing: theme.letterSpacing.sm,
+                                            color: theme.colors.schemes.light.onSurfaceVariant,
+                                            marginBottom: 8,
                                         }}
                                     >
-                                        <ThemedText
-                                            style={{
-                                                fontSize: 14,
-                                                fontWeight: 500,
-                                                letterSpacing: theme.letterSpacing.sm,
-                                                color: theme.colors.schemes.light.onSurfaceVariant,
-                                            }}
-                                        >
-                                            %
-                                        </ThemedText>
-                                    </View>
+                                        Feedback
+                                    </ThemedText>
+                                    <InputText
+                                        value={feedbacks[drillIndex] || ''}
+                                        onChangeText={(text: string) => setFeedbacks(prev => ({ ...prev, [drillIndex]: text }))}
+                                        placeholder="Write feedback for this drill..."
+                                        multiline={true}
+                                        inputStyle={{
+                                            minHeight: 80,
+                                            textAlignVertical: 'top',
+                                        }}
+                                    />
                                 </View>
                                 {(grades[drillIndex] && /\D/.test(grades[drillIndex])) &&
                                     <ErrorMessage
@@ -423,13 +435,12 @@ export default function Page() {
                                 }}
                             >
                                 <ButtonHalfWidth
-                                    {...((drillIndex !== 0) ? buttonTheme.black : buttonTheme.disabled)}
-                                    onPress={prevDrill}
+                                    {...buttonTheme.black}
+                                    onPress={drillIndex !== 0 ? prevDrill : () => router.back()}
                                 >
                                     <MoveLeft
                                         color={"white"}
                                         size={18}
-                                        opacity={drillIndex !== 0 ? 1: 0.75}
                                     />
                                     <ThemedText
                                         style={{
@@ -438,7 +449,6 @@ export default function Page() {
                                             letterSpacing: theme.letterSpacing.lg,
                                             color: "white",
                                             textAlign: "center",
-                                            opacity: drillIndex !== 0 ? 1: 0.75
                                         }}
                                     >
                                         Back
@@ -466,28 +476,46 @@ export default function Page() {
                                         />
                                     </ButtonHalfWidth>
                                 }
-                                {(drillIndex === assignment.workout.drills.length - 1) &&
-                                    <ButtonHalfWidth
-                                        disabled={Object.entries(grades).filter(([drillIndex, grade]) => !([null, undefined] as any).includes(grade)).map(grade => Number(grade[0])).length !== assignment.workout.drills.length}
-                                        {...((Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0])).length === assignment.workout.drills.length) ? buttonTheme.blue : buttonTheme.disabled)}
+                                {(drillIndex === assignment.workout.drills.length - 1) && (() => {
+                                    const allGraded = submission.submitted_drills.every((_, i) => {
+                                        const g = parseInt(grades[i], 10);
+                                        return !isNaN(g) && g >= 0 && g <= 100;
+                                    });
+                                    return <ButtonHalfWidth
+                                        {...(allGraded ? buttonTheme.blue : buttonTheme.disabled)}
                                         onPress={async () => {
-                                            if (!token)
-                                                return;
-                                            const output = await gradeSubmission(token, submission.id, Object.fromEntries(Object.entries(grades).map(([drillIndex, grade]) => [drillIndex, Number(grade)])));
-                                            if (output) {
+                                            if (!allGraded || !token || !submission) return;
+                                            setIsGrading(true);
+                                            try {
+                                                // Grade each submitted drill with feedback
+                                                for (const [idx, gradeStr] of Object.entries(grades)) {
+                                                    const grade = parseInt(gradeStr, 10);
+                                                    if (isNaN(grade)) continue;
+                                                    const sd = submission.submitted_drills[Number(idx)];
+                                                    if (sd) {
+                                                        await gradeSubmittedDrill(token, sd.id, grade, feedbacks[Number(idx)] || undefined);
+                                                    }
+                                                }
+                                                // Calculate average and grade the overall submission
+                                                const gradeValues = Object.values(grades).map(g => parseInt(g, 10)).filter(g => !isNaN(g));
+                                                if (gradeValues.length > 0) {
+                                                    const avg = Math.round(gradeValues.reduce((a, b) => a + b, 0) / gradeValues.length);
+                                                    await gradeSubmission(token, submission.id, avg);
+                                                }
                                                 router.back();
-                                                return;
+                                            } catch (err) {
+                                                console.error("Grading error:", err);
+                                            } finally {
+                                                setIsGrading(false);
                                             }
-                                            alert('Could Not Grade Submission!')
                                         }}
                                     >
-                                        {false &&
+                                        {isGrading ?
                                             <ActivityIndicator
                                                 color="white"
                                                 size={18}
                                             />
-                                        }
-                                        {true &&
+                                        :
                                             <CheckIcon
                                                 color="white"
                                                 size={18}
@@ -504,8 +532,8 @@ export default function Page() {
                                         >
                                             Complete Grading
                                         </ThemedText>
-                                    </ButtonHalfWidth>
-                                }
+                                    </ButtonHalfWidth>;
+                                })()}
                             </View>
                         </View>
                     </KeyboardAwareScrollView>

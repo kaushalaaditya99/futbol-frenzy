@@ -10,7 +10,6 @@ import ThemedText from '@/components/ui/ThemedText';
 import { useCallback, useEffect, useState } from 'react';
 import { Assignment, getAssignment, getClassByAssignment } from '@/services/assignments';
 import { Class } from '@/services/classes';
-import SimpleButton from '@/components/ui/button/SimpleButton';
 
 export default function Page() {
     const { role, token, loaded } = useAuth();
@@ -18,26 +17,20 @@ export default function Page() {
     const [assignment, setAssignment] = useState<Assignment>();
     const [assignmentClass, setAssignmentClass] = useState<Class>();
 
-    useFocusEffect(
-        useCallback(() => {
-            const load = async () => {
-                if (!token)
-                    return;
-                const assignment = await getAssignment(token, Number(id));
-                if (!assignment)
-                    return;
-                setAssignment(assignment);
+    const loadData = useCallback(async () => {
+        if (!token) return;
+        const assignmentData = await getAssignment(token, Number(id));
+        if (assignmentData) setAssignment(assignmentData);
 
-                console.log('ID', id);
-                const assignmentClass = await getClassByAssignment(token, Number(id));
-                if (!assignmentClass)
-                    return;
-                setAssignmentClass(assignmentClass);
-            }
-            load();
-        }, [])
-    );
-    
+        const classData = await getClassByAssignment(token, Number(id));
+        if (classData) setAssignmentClass(classData);
+    }, [token, id]);
+
+    useEffect(() => { loadData(); }, []);
+
+    // Refresh when screen regains focus (e.g. student submitted while coach was away)
+    useFocusEffect(useCallback(() => { loadData(); }, [loadData]));
+
     return (
         <SafeAreaView
             edges={["top"]}

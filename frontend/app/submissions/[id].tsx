@@ -15,10 +15,10 @@ import { getUserByID, User } from "@/services/user";
 
 export default function Page() {
     const { role, token } = useAuth();
-    const { submissionID, assignmentID, studentID } = useLocalSearchParams<{ 
-        submissionID?: string, 
-        assignmentID?: string, 
-        studentID?: string 
+    const { submissionID, assignmentID, studentID } = useLocalSearchParams<{
+        submissionID?: string,
+        assignmentID?: string,
+        studentID?: string
     }>();
 
     const [student, setStudent] = useState<User>();
@@ -103,7 +103,7 @@ export default function Page() {
                     submissionID={([null, undefined] as any).includes(submissionID) ? -1 : Number(submissionID)}
                 />
             }
-        </>  
+        </>
         </SafeAreaView>
     )
 }

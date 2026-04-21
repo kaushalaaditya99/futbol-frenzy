@@ -34,23 +34,38 @@ export default function RecordDrillRoute() {
     const assignmentId = parseInt(params.assignmentId as string, 10) || 1;
     const returnTo = params.returnTo as string | undefined;
 
-    // Fetch drill data
+    // Fetch drill data from the assignment's workout drills
     useEffect(() => {
         const fetchDrill = async () => {
             try {
                 setIsLoading(true);
                 const token = await AsyncStorage.getItem('authToken');
 
+                // Fetch from assignment which includes workout with drills
                 const response = await axios.get(
-                    resolveEndpoint(`/api/drills/${drillId}/`),
-                    {
-                        headers: {
-                            Authorization: `Token ${token}`,
-                        },
-                    }
+                    resolveEndpoint(`/api/assignments/${assignmentId}/`),
+                    { headers: { Authorization: `Token ${token}` } }
                 );
 
-                setDrill(response.data);
+                const workout = response.data.workout;
+                if (workout?.drills) {
+                    const drillData = workout.drills.find(
+                        (d: any) => d.drillID === drillId || d.id === drillId
+                    );
+                    if (drillData) {
+                        setDrill({
+                            id: drillData.drillID || drillData.id,
+                            drillName: drillData.drillName || 'Drill',
+                            url: drillData.url || '',
+                            instructions: drillData.instructions || '',
+                            difficultyLevel: drillData.difficultyLevel || '',
+                        });
+                    } else {
+                        setError('Drill not found in assignment');
+                    }
+                } else {
+                    setError('No drills found in assignment');
+                }
             } catch (err: any) {
                 console.error('Failed to fetch drill:', err);
                 setError('Failed to load drill data');
@@ -60,7 +75,7 @@ export default function RecordDrillRoute() {
         };
 
         fetchDrill();
-    }, [drillId]);
+    }, [drillId, assignmentId]);
 
     // Check if camera is available on mount
     useEffect(() => {

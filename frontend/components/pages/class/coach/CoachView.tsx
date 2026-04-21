@@ -113,13 +113,13 @@ export default function CoachView(props: CoachViewProps) {
     const loadSessionsToday = (assignments: Array<Assignment>) => {
         const todaysSessions: Array<Assignment> = [];
         const today = new Date();
-        const todayDate = today.getDate();
-        const todayMonth = today.getMonth();
-        const todayFullYear = today.getFullYear();
+        const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
 
         for (const assignment of assignments) {
-            const sameDayAsToday = assignment.dueDate.getDate() === todayDate && assignment.dueDate.getMonth() === todayMonth &&  assignment.dueDate.getFullYear() === todayFullYear;
-            if (sameDayAsToday) {
+            const dueStr = assignment.dueDate instanceof Date
+                ? assignment.dueDate.toISOString().split('T')[0]
+                : String(assignment.dueDate).split('T')[0];
+            if (dueStr === todayStr) {
                 todaysSessions.push(assignment);
             }
         }
