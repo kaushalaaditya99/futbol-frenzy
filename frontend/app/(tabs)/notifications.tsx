@@ -17,7 +17,7 @@ function getDateGroup(date: Date): string {
 }
 
 export default function Notifications() {
-    const { notifications, markRead, markAllRead } = useNotifications();
+    const { notifications, markRead, markAllRead, clearAll } = useNotifications();
 
     // Group notifications by day label
     const groups: { [key: string]: Notification[] } = {};
@@ -47,15 +47,26 @@ export default function Notifications() {
                 }}>
                     Notifications
                 </ThemedText>
-                <Pressable onPress={markAllRead}>
-                    <ThemedText style={{
-                        fontSize: fontSize.md,
-                        fontWeight: "500",
-                        color: colors.coreColors.primary,
-                    }}>
-                        Mark all read
-                    </ThemedText>
-                </Pressable>
+                <View style={{ flexDirection: "row", columnGap: padding.lg }}>
+                    <Pressable onPress={markAllRead}>
+                        <ThemedText style={{
+                            fontSize: fontSize.md,
+                            fontWeight: "500",
+                            color: colors.coreColors.primary,
+                        }}>
+                            Mark all read
+                        </ThemedText>
+                    </Pressable>
+                    <Pressable onPress={clearAll}>
+                        <ThemedText style={{
+                            fontSize: fontSize.md,
+                            fontWeight: "500",
+                            color: "#D32F2F",
+                        }}>
+                            Clear all
+                        </ThemedText>
+                    </Pressable>
+                </View>
             </View>
 
             {/* Notification list */}

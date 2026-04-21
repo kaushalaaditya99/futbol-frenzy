@@ -268,24 +268,41 @@ def student_schedule(request):
 def student_results(request):
     student = request.user
 
-    # Get graded submissions for this student
-    submissions = Submission.objects.filter(
+    # Get all submissions for this student that have been graded
+    # Since each drill may create a separate submission, group by assignment
+    # and use the submission that has a grade
+    all_submissions = Submission.objects.filter(
         studentID=student,
-        grade__isnull=False,
-    ).select_related('assignmentID', 'assignmentID__workoutID').order_by('-dateGraded')[:10]
+    ).select_related('assignmentID', 'assignmentID__workoutID').order_by('-dateGraded')
 
+    # Group by assignment, pick the graded submission for each
+    seen_assignments = set()
     results = []
-    for sub in submissions:
-        workout = sub.assignmentID.workoutID
+    for sub in all_submissions:
+        assignment_id = sub.assignmentID_id
+        if assignment_id in seen_assignments:
+            continue
+        # Check if any submission for this assignment has a grade
+        graded_sub = Submission.objects.filter(
+            studentID=student,
+            assignmentID=assignment_id,
+            grade__isnull=False,
+        ).order_by('-dateGraded').first()
+        seen_assignments.add(assignment_id)
+        if not graded_sub:
+            continue
+        workout = graded_sub.assignmentID.workoutID
         results.append({
-            'id': sub.id,
+            'id': graded_sub.id,
             'name': workout.workoutName,
             'type': workout.workoutType,
-            'score': sub.grade,
-            'date': sub.dateGraded.strftime('%b %d') if sub.dateGraded else sub.dateSubmitted.strftime('%b %d'),
-            'imageBackgroundColor': sub.imageBackgroundColor or '#1C1C1C',
-            'imageTextColor': sub.imageTextColor or '#FFFFFF',
+            'score': graded_sub.grade,
+            'date': graded_sub.dateGraded.strftime('%b %d') if graded_sub.dateGraded else graded_sub.dateSubmitted.strftime('%b %d'),
+            'imageBackgroundColor': graded_sub.imageBackgroundColor or '#1C1C1C',
+            'imageTextColor': graded_sub.imageTextColor or '#FFFFFF',
         })
+        if len(results) >= 10:
+            break
 
     return Response(results)
 

@@ -1,6 +1,8 @@
 import ThemedText from "@/components/ui/ThemedText";
 import { borderRadius, colors, fontSize, padding, shadow } from "@/theme";
-import { View } from "react-native";
+import { ChevronDown, ChevronUp } from "lucide-react-native";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 
 interface FeedbackCardProps {
     drillName: string;
@@ -24,6 +26,8 @@ export default function FeedbackCard({
     feedback,
 }: FeedbackCardProps) {
     const scoreColor = score / maxScore >= 0.7 ? colors.coreColors.tertiary : colors.coreColors.primary;
+    const [expanded, setExpanded] = useState(false);
+    const isLong = feedback.split('\n').length > 2 || feedback.length > 120;
 
     return (
         <View
@@ -169,11 +173,37 @@ export default function FeedbackCard({
                         color: colors.schemes.light.onSurfaceVariant,
                         lineHeight: 20,
                         paddingLeft: 40 + padding.md,
-                        // backgroundColor: 'blue'
                     }}
+                    numberLines={!expanded && isLong ? 2 : undefined}
                 >
                     {feedback}
                 </ThemedText>
+                {isLong && (
+                    <Pressable
+                        onPress={() => setExpanded(!expanded)}
+                        style={{
+                            paddingLeft: 40 + padding.md,
+                            paddingTop: padding.sm,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 4,
+                        }}
+                    >
+                        <ThemedText
+                            style={{
+                                fontSize: fontSize.md,
+                                fontWeight: "500",
+                                color: colors.coreColors.primary,
+                            }}
+                        >
+                            {expanded ? "Show less" : "Show more"}
+                        </ThemedText>
+                        {expanded
+                            ? <ChevronUp size={14} color={colors.coreColors.primary} />
+                            : <ChevronDown size={14} color={colors.coreColors.primary} />
+                        }
+                    </Pressable>
+                )}
             </View>
         </View>
     );

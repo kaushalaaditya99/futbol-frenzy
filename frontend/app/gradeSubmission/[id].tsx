@@ -80,11 +80,17 @@ export default function Page() {
             const submission = await getSubmission(token, parseInt(submissionID));
             if (!submission)
                 return router.back();
-            setSubmission(submission);
 
             const assignment = await getAssignment(token, submission.assignmentID);
             if (!assignment)
                 return;
+
+            // Merge submitted drills from all submissions for this student+assignment
+            const allSubmissions = assignment.submissions?.filter(
+                s => s.studentID === submission.studentID
+            ) || [];
+            const mergedDrills = allSubmissions.flatMap(s => s.submitted_drills || []);
+            setSubmission({ ...submission, submitted_drills: mergedDrills });
             setAssignment(assignment);
         }
         else if (assignmentID && studentID) {
@@ -379,7 +385,7 @@ export default function Page() {
                                         </ThemedText>
                                     </View>
                                     <InputText
-                                        value={grades[drillIndex] || ''}
+                                        value={grades[drillIndex] ?? ''}
                                         onChangeText={(text: string) => setGrades(prev => ({ ...prev, [drillIndex]: text }))}
                                         placeholder="Enter a whole number from 0 to 100"
                                         wrapperStyle={{

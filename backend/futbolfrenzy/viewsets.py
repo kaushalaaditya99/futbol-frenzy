@@ -384,6 +384,16 @@ class ClassMemberViewSet(viewsets.ModelViewSet):
     serializer_class = ClassMemberSerializer
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        class_id = self.request.query_params.get("classID")
+        student_id = self.request.query_params.get("studentID")
+        if class_id:
+            queryset = queryset.filter(classID=class_id)
+        if student_id:
+            queryset = queryset.filter(studentID=student_id)
+        return queryset
+
     # Notifies coach when a student joins their class
     def perform_create(self, serializer):
         instance = serializer.save()
