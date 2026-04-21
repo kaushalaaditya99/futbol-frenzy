@@ -1,6 +1,6 @@
 import useFunctionalDate from "@/hooks/useFunctionalDate";
 import { getSessions, Session } from "@/services/sessions";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { MarkedDates } from "react-native-calendars/src/types";
 import Tabs from "./Tabs";
@@ -14,7 +14,8 @@ import TabProgress from "./TabProgress/TabProgress";
 import { router } from "expo-router";
 import { Drill, getDrills } from "@/services/drills";
 import { Class, defaultClass } from "@/services/classes";
-import { Assignment, getAssignments } from "@/services/assignments";
+import { Assignment, getAssignments, getAssignmentsbyClass } from "@/services/assignments";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface CoachViewProps {
   param_class: Class;
@@ -42,8 +43,8 @@ export default function CoachView(props: CoachViewProps) {
     const [assignmentsOnDate, setAssignmentsOnDate] =  useState<Array<Assignment>>([]);
     const [assignmentsOnDateLabel, setAssignmentsOnDateLabel] = useState("");
     const assignmentsOnDateSearchBar = useSearchBar<Assignment>(
-        assignmentsOnDate, 
-        getAssignmentName, 
+        assignmentsOnDate,
+        getAssignmentName,
         getAssignmentName
     );
 
@@ -66,7 +67,7 @@ export default function CoachView(props: CoachViewProps) {
     useEffect(() => {
         loadAssignments();
         //loadStudents(classID);
-    }, []);
+    }, [token, props.param_class]);
 
 
     useEffect(() => {
@@ -97,9 +98,10 @@ export default function CoachView(props: CoachViewProps) {
     // }
 
     const loadAssignments = async () => {
-        if (!token) 
+        if (!token)
             return;
-        const assignments = await getAssignments(token);
+        //const assignments = await getAssignments(token);
+        const assignments = await getAssignmentsbyClass(token, props.param_class.id);
         setAssignments(assignments);
     }
 
