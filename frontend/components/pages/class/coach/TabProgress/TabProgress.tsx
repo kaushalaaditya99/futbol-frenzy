@@ -16,12 +16,17 @@ import { Student } from "@/services/students";
 import { Drill } from "@/services/drills";
 import ThemedText from "@/components/ui/ThemedText";
 import { Assignment } from "@/services/assignments";
-
+import resolveEndpoint from "@/services/resolveEndpoint";
+import { useCallback } from "react";
+import { Class } from "@/services/classes";
 interface TabProgressProps {
     drills: Array<Drill>;
     assignments: Array<Assignment>;
     students: Array<Student>;
+    param_class: Class;
 }
+
+const API_URL = resolveEndpoint("/api");
 
 const getStudentFullName = (student: Student) => `${student.first_name} ${student.last_name}`;
 
@@ -36,7 +41,7 @@ export default function TabProgress(props: TabProgressProps) {
         {value: 74},
         {value: 98},
     ];
-  
+
     const lineData2 = [
         {value: 0},
         {value: 20},
@@ -58,20 +63,20 @@ export default function TabProgress(props: TabProgressProps) {
     const [instances, setInstances] = useState<number[]>([]);
 
     const studentSearchBar = useSearchBar<Student>(
-        props.students, 
-        getStudentFullName, 
+        props.students,
+        getStudentFullName,
         getStudentFullName
     );
 
     const drillSearchBar = useSearchBar<Drill>(
-        props.drills, 
-        (drill: Drill) => `${drill.drillName}`, 
+        props.drills,
+        (drill: Drill) => `${drill.drillName}`,
         (drill: Drill) => `${drill.drillName}`
     );
 
     const assignmentSearchBar = useSearchBar<Assignment>(
-        props.assignments, 
-        (assignment: Assignment) => `${assignment.workout.workoutName}`, 
+        props.assignments,
+        (assignment: Assignment) => `${assignment.workout.workoutName}`,
         (assignment: Assignment) => `${assignment.workout.workoutName}`
     );
 
@@ -90,10 +95,54 @@ export default function TabProgress(props: TabProgressProps) {
             year: "numeric"
         }));
     }, []);
-    
+
     const closeDisclosure = () => {
         setShowDisclosure("");
     }
+
+    const buildQuery = (params: { studentIDs: number[]; startDate: string; endDate: string }) => {
+      const q = new URLSearchParams();
+      if (params.startDate) q.append("start_date", params.startDate);
+      if (params.endDate) q.append("end_date", params.endDate);
+      if (params.studentIDs && params.studentIDs.length > 0) q.append("student_ids", params.studentIDs.join(","));
+      return q.toString();
+    };
+
+    const fetchAnalytics = useCallback(async (signal?: AbortSignal) => {
+      try {
+        const query = buildQuery({ studentIDs, startDate, endDate });
+        const url = `${API_URL}/get_class_submission_workout_analytics/${props.param_class.id}/${query ? `?${query}` : ""}`;
+
+        const res = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          signal
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.warn("Analytics fetch failed:", res.status, text);
+          return;
+        }
+
+        const data = await res.json();
+        // handle data (set state, update charts, etc.)
+        console.log("analytics:", data);
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
+        console.error("fetchAnalytics error:", err);
+      }
+    }, [studentIDs, startDate, endDate, props.param_class]);
+
+    // example: fetch whenever filters change (debounce or throttle if needed)
+    useEffect(() => {
+      const controller = new AbortController();
+      fetchAnalytics(controller.signal);
+      return () => controller.abort();
+    }, [fetchAnalytics]);
 
 
     return (
@@ -225,8 +274,8 @@ export default function TabProgress(props: TabProgressProps) {
             </View>
             <View>
                 <View>
-                    <LineChart 
-                        disableScroll={true} 
+                    <LineChart
+                        disableScroll={true}
                         backgroundColor={"white"}
                         width={Dimensions.get("screen").width}
                         adjustToWidth

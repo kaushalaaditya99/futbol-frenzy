@@ -213,6 +213,7 @@ export default function CoachView(props: CoachViewProps) {
                     drills={drills}
                     assignments={assignments}
                     students={students}
+                    param_class={props.param_class}
                 />
             }
         </ScrollView>
