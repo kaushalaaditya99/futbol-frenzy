@@ -123,8 +123,14 @@ export default function StudentView(props: StudentViewProps) {
         }
     };
 
+    // Filter submissions to only those belonging to this class's assignments
+    const classAssignmentIds = new Set(assignments.map(a => a.id));
+    const classSubmissions = mySubmissions.filter(s => classAssignmentIds.has(s.assignmentID));
+    const classSubmissionIds = new Set(classSubmissions.map(s => s.id));
+    const classSubmittedDrills = mySubmittedDrills.filter(sd => classSubmissionIds.has(sd.submissionID));
+
     // Build a set of assignment IDs the student has submitted
-    const submittedAssignmentIds = new Set(mySubmissions.map(s => s.assignmentID));
+    const submittedAssignmentIds = new Set(classSubmissions.map(s => s.assignmentID));
 
     // Convert assignments to Session objects for the calendar/list components
     const assignmentAsSessions: Session[] = assignments.map(a => ({
@@ -191,16 +197,13 @@ export default function StudentView(props: StudentViewProps) {
         const totalAssignments = assignments.length;
         const completedCount = assignments.filter(a => submittedAssignmentIds.has(a.id)).length;
 
-        // Compute average grade across all graded submitted drills
-        let totalGraded = 0;
-        let gradeSum = 0;
-        for (const sd of mySubmittedDrills) {
-            if (sd.grade !== null && sd.grade !== undefined) {
-                gradeSum += sd.grade;
-                totalGraded++;
-            }
+        // Compute average grade from graded submissions
+        const gradedSubs = classSubmissions.filter(s => s.dateGraded !== null && s.grade !== null);
+        let avgGrade = "--";
+        if (gradedSubs.length > 0) {
+            const gradeSum = gradedSubs.reduce((sum, s) => sum + (s.grade ?? 0), 0);
+            avgGrade = (gradeSum / gradedSubs.length).toFixed(1);
         }
-        const avgGrade = totalGraded > 0 ? (gradeSum / totalGraded).toFixed(1) : "--";
 
         // Find latest graded drill for feedback
         let latestFeedback: {
@@ -215,34 +218,50 @@ export default function StudentView(props: StudentViewProps) {
         } | null = null;
 
         // Find the most recently graded submission
-        const gradedSubmissions = mySubmissions
+        const gradedSubmissions = classSubmissions
             .filter(s => s.dateGraded !== null)
             .sort((a, b) => new Date(b.dateGraded!).getTime() - new Date(a.dateGraded!).getTime());
 
         if (gradedSubmissions.length > 0) {
             const latestSub = gradedSubmissions[0];
-            const gradedDrills = mySubmittedDrills.filter(
-                sd => sd.submissionID === latestSub.id && sd.grade !== null
+            const assignment = assignments.find(a => a.id === latestSub.assignmentID);
+            const subGrade = latestSub.grade ?? 0;
+            // Collect drills from all submissions for this assignment
+            const allSubIdsForAssignment = new Set(
+                classSubmissions.filter(s => s.assignmentID === latestSub.assignmentID).map(s => s.id)
             );
-            if (gradedDrills.length > 0) {
-                const sd = gradedDrills[0];
-                const assignment = assignments.find(a => a.id === latestSub.assignmentID);
-                const defaultFeedback = sd.grade! >= 80
-                    ? "Great work on this drill! Keep it up."
-                    : sd.grade! >= 60
-                    ? "Good effort! Keep practicing to improve your form."
-                    : "Keep working on this drill. Watch the example video and try again.";
-                latestFeedback = {
-                    drillName: "Drill",
-                    drillEmoji: "⚽",
-                    sessionLabel: assignment?.workout?.workoutName || "Assignment",
-                    score: sd.grade!,
-                    maxScore: 100,
-                    coachName: "Coach",
-                    coachInitials: "C",
-                    feedback: sd.feedback || defaultFeedback,
+            const drillsForSub = classSubmittedDrills.filter(
+                sd => allSubIdsForAssignment.has(sd.submissionID)
+            );
+            // Build per-drill feedback summaries
+            const drillFeedbacks = drillsForSub.map((sd, i) => {
+                const drill = assignment?.workout?.drills?.find((d: any) => (d.drillID || d.id) === sd.drillID);
+                return {
+                    drillName: drill?.drillName || drill?.name || `Drill ${i + 1}`,
+                    grade: sd.grade ?? 0,
+                    feedback: sd.feedback || null,
                 };
-            }
+            });
+            // Combine all drill feedbacks into one summary
+            const feedbackLines = drillFeedbacks.map(df => {
+                const line = `${df.drillName}: ${df.grade}/100`;
+                return df.feedback ? `${line} — ${df.feedback}` : line;
+            }).join('\n');
+            const defaultFeedback = subGrade >= 80
+                ? "Great work! Keep it up."
+                : subGrade >= 60
+                ? "Good effort! Keep practicing to improve."
+                : "Keep working on these drills. Watch the example videos and try again.";
+            latestFeedback = {
+                drillName: assignment?.workout?.workoutName || "Assignment",
+                drillEmoji: "⚽",
+                sessionLabel: `${drillsForSub.length} drill${drillsForSub.length !== 1 ? 's' : ''} graded`,
+                score: subGrade,
+                maxScore: 100,
+                coachName: "Coach",
+                coachInitials: "C",
+                feedback: feedbackLines || defaultFeedback,
+            };
         }
 
         // Find next upcoming assignment (not yet submitted, due today or later)

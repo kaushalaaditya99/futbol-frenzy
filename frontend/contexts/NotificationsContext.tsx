@@ -49,6 +49,7 @@ interface NotificationsContextType {
     notifications: Notification[];
     markRead: (id: string) => void;
     markAllRead: () => void;
+    clearAll: () => void;
     unreadCount: number;
     refreshNotifications: () => void;
 }
@@ -133,6 +134,27 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const clearAll = async () => {
+        const ids = notifications.map(n => n.id);
+        setNotifications([]);
+
+        try {
+            await Promise.all(
+                ids.map(id =>
+                    fetch(`${API_URL}notifications/${id}/`, {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: `Token ${token}`,
+                        },
+                    })
+                )
+            );
+        } catch (error) {
+            console.error("Error clearing notifications:", error);
+            fetchNotifications();
+        }
+    };
+
     const unreadCount = notifications.filter(n => !n.read).length;
 
     return (
@@ -141,6 +163,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
                 notifications,
                 markRead,
                 markAllRead,
+                clearAll,
                 unreadCount,
                 refreshNotifications: fetchNotifications,
             }}

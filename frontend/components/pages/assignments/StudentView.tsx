@@ -1,10 +1,10 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/contexts/ProfileContext";
 import { Assignment, getAssignment } from "@/services/assignments";
 import { colors, shadow, theme } from "@/theme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { CheckCircle, Video } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import ThemedText from "@/components/ui/ThemedText";
 import RowCard from "@/components/ui/RowCard";
@@ -15,42 +15,29 @@ interface StudentViewProps {
 
 export default function StudentView(props: StudentViewProps) {
     const { token } = useAuth();
+    const { profile } = useProfile();
+    const studentId = profile.id || null;
     const [assignment, setAssignment] = useState<Assignment | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [studentId, setStudentId] = useState<number | null>(null);
     const [completedDrillIds, setCompletedDrillIds] = useState<Set<number>>(new Set());
 
-    useEffect(() => {
-        loadAssignment();
-        loadStudentId();
-    }, [token, props.assignmentID]);
-
-    const loadStudentId = async () => {
-        const storedUserID = await AsyncStorage.getItem('userID');
-        if (storedUserID) {
-            setStudentId(parseInt(storedUserID, 10));
-        }
-    };
-
     const loadAssignment = async () => {
-        if (!token) return;
-        setIsLoading(true);
+        if (!token || !studentId) return;
         try {
             const assignmentData = await getAssignment(token, props.assignmentID);
             if (assignmentData) {
                 setAssignment(assignmentData);
-                // Extract completed drill IDs from student's submission
-                if (studentId !== null) {
-                    const mySubmission = assignmentData.submissions?.find(
-                        sub => sub.studentID === studentId
-                    );
-                    if (mySubmission?.submitted_drills) {
-                        const completedIds = new Set(
-                            mySubmission.submitted_drills.map(sd => sd.drillID)
-                        );
-                        setCompletedDrillIds(completedIds);
-                    }
-                }
+                const mySubmissions = assignmentData.submissions?.filter(
+                    sub => sub.studentID === studentId
+                ) || [];
+                const completedIds = new Set(
+                    mySubmissions.flatMap(sub =>
+                        (sub.submitted_drills || [])
+                            .filter(sd => sd.videoURL)
+                            .map(sd => sd.drillID)
+                    )
+                );
+                setCompletedDrillIds(completedIds);
             }
         } catch (err) {
             console.error("Failed to load assignment:", err);
@@ -59,12 +46,21 @@ export default function StudentView(props: StudentViewProps) {
         }
     };
 
-    // Refresh assignment when screen regains focus (returning from recording)
+    // Initial load
     useEffect(() => {
-        if (token && props.assignmentID) {
+        if (studentId && token) {
             loadAssignment();
         }
-    }, [token, props.assignmentID]);
+    }, [studentId, token, props.assignmentID]);
+
+    // Refresh when returning from recording screen
+    useFocusEffect(
+        useCallback(() => {
+            if (token && studentId) {
+                loadAssignment();
+            }
+        }, [token, studentId, props.assignmentID])
+    );
 
     const handleRecordDrill = (drillId: number) => {
         router.push(`/record-drill?drillId=${drillId}&assignmentId=${props.assignmentID}&returnTo=assignment`);
@@ -93,6 +89,8 @@ export default function StudentView(props: StudentViewProps) {
     const totalDrills = drills.length;
     const completedCount = completedDrillIds.size;
 
+
+
     return (
         <ScrollView style={{ flex: 1, backgroundColor: theme.colors.schemes.light.background }}>
             {/* Assignment Header */}
@@ -116,7 +114,7 @@ export default function StudentView(props: StudentViewProps) {
                         color: theme.colors.schemes.light.onSurfaceVariant,
                     }}>
                         {assignment.dueDate
-                            ? `Due: ${new Date(assignment.dueDate).toLocaleDateString()}`
+                            ? `Due: ${new Date(assignment.dueDate).toLocaleDateString('en-US', { timeZone: 'UTC' })}`
                             : "No Due Date"
                         }
                     </ThemedText>

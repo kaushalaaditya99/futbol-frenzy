@@ -50,7 +50,7 @@ export default function Page() {
                                 color: theme.colors.schemes.light.onSurfaceVariant
                             }}
                         >
-                            {assignment?.workout.workoutName} due {assignment?.dueDate.toLocaleDateString('en-US', {'month': 'long', 'day': '2-digit', 'year': 'numeric'})}
+                            {assignment?.workout.workoutName} due {assignment?.dueDate.toLocaleDateString('en-US', {'month': 'long', 'day': '2-digit', 'year': 'numeric', 'timeZone': 'UTC'})}
                         </ThemedText>
                     </View>
                 }
