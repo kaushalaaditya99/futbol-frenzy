@@ -11,7 +11,7 @@ import { useCameraPermission } from '@/hooks/useCameraPermission';
 import { RecordingState, CameraFacing, PoseLandmark } from '@/types/pose';
 import { comparePoses } from '@/utils/poseComparison';
 import { comparePoseSequences } from '@/utils/fastDTW';
-import { uploadVideo, createSubmission, saveSubmittedDrillWithUrl } from '@/services/cloud';
+import { uploadVideo, getOrCreateSubmission, saveSubmittedDrillWithUrl } from '@/services/cloud';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface RecordDrillScreenProps {
@@ -321,8 +321,8 @@ export function RecordDrillScreen({
             const storedUserID = await AsyncStorage.getItem('userID');
             const studentID = storedUserID ? parseInt(storedUserID, 10) : 1;
 
-            // Create a submission for the assignment
-            const submission = await createSubmission({
+            // Get existing submission or create a new one for this assignment
+            const submission = await getOrCreateSubmission({
                 studentID,
                 assignmentID: assignmentId,
                 imageBackgroundColor: '#000000',
@@ -337,6 +337,7 @@ export function RecordDrillScreen({
             const finalGrade = finalScore !== null ? Math.round(finalScore) : undefined;
 
             // Save submitted drill record with grade
+            console.log("[RecordDrillScreen] Saving submitted drill - drillID:", drillId, "submissionID:", submission.id);
             await saveSubmittedDrillWithUrl({
                 submissionID: submission.id,
                 drillID: drillId,

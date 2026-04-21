@@ -190,30 +190,69 @@ export function comparePoses(
 }
 
 /**
+ * Apply a lenient grading curve for young children
+ * Makes failing grades harder to get but still possible
+ * Uses standard grading scale: A(90+), B(80-89), C(70-79), D(60-69), F(<60)
+ *
+ * Curve design:
+ * - Raw 0-15 → Curved to 45-60 (F to D- range - failing still possible)
+ * - Raw 15-35 → Curved to 60-75 (D to C range)
+ * - Raw 35-55 → Curved to 75-85 (C to B range)
+ * - Raw 55-75 → Curved to 85-95 (B to A range)
+ * - Raw 75-100 → Curved to 95-100 (A range)
+ */
+export function applyLenientCurve(rawScore: number): number {
+    if (rawScore < 0) return 45;
+    if (rawScore > 100) return 100;
+
+    // Piecewise linear interpolation for smooth curve
+    if (rawScore < 15) {
+        // 0-15 maps to 45-60 (F to D- range)
+        return 45 + (rawScore / 15) * 15;
+    } else if (rawScore < 35) {
+        // 15-35 maps to 60-75 (D to C range)
+        return 60 + ((rawScore - 15) / 20) * 15;
+    } else if (rawScore < 55) {
+        // 35-55 maps to 75-85 (C to B range)
+        return 75 + ((rawScore - 35) / 20) * 10;
+    } else if (rawScore < 75) {
+        // 55-75 maps to 85-95 (B to A range)
+        return 85 + ((rawScore - 55) / 20) * 10;
+    } else {
+        // 75-100 maps to 95-100 (A range)
+        return 95 + ((rawScore - 75) / 25) * 5;
+    }
+}
+
+/**
  * Convert a numeric score to a letter grade
+ * Uses standard grading scale: A(90+), B(80-89), C(70-79), D(60-69), F(<60)
  */
 export function scoreToGrade(score: number): { letter: string; color: string } {
-    if (score >= 95) return { letter: 'A+', color: '#00FF88' };
-    if (score >= 90) return { letter: 'A', color: '#00FF88' };
-    if (score >= 85) return { letter: 'A-', color: '#88FF00' };
-    if (score >= 80) return { letter: 'B+', color: '#88FF00' };
-    if (score >= 75) return { letter: 'B', color: '#FFFF00' };
-    if (score >= 70) return { letter: 'B-', color: '#FFFF00' };
-    if (score >= 65) return { letter: 'C+', color: '#FFAA00' };
-    if (score >= 60) return { letter: 'C', color: '#FFAA00' };
-    if (score >= 55) return { letter: 'C-', color: '#FF8800' };
-    if (score >= 50) return { letter: 'D', color: '#FF5500' };
+    if (score >= 97) return { letter: 'A+', color: '#00FF88' };
+    if (score >= 93) return { letter: 'A', color: '#00FF88' };
+    if (score >= 90) return { letter: 'A-', color: '#88FF00' };
+    if (score >= 87) return { letter: 'B+', color: '#88FF00' };
+    if (score >= 83) return { letter: 'B', color: '#FFFF00' };
+    if (score >= 80) return { letter: 'B-', color: '#FFFF00' };
+    if (score >= 77) return { letter: 'C+', color: '#FFAA00' };
+    if (score >= 73) return { letter: 'C', color: '#FFAA00' };
+    if (score >= 70) return { letter: 'C-', color: '#FF8800' };
+    if (score >= 67) return { letter: 'D+', color: '#FF5500' };
+    if (score >= 63) return { letter: 'D', color: '#FF5500' };
+    if (score >= 60) return { letter: 'D-', color: '#FF5500' };
     return { letter: 'F', color: '#FF0000' };
 }
 
 /**
  * Get feedback based on score
+ * Note: Score should already be curved
  */
 export function getScoreFeedback(score: number): string {
     if (score >= 90) return "Excellent form! Your pose matches the instructor very closely.";
     if (score >= 80) return "Great job! Your form is very similar to the instructor's.";
     if (score >= 70) return "Good effort! Some minor adjustments could improve your form.";
-    if (score >= 60) return "Keep practicing! Try to match the instructor's arm and leg positions more closely.";
-    if (score >= 50) return "You're getting there! Focus on the key body positions shown in the example.";
+    if (score >= 65) return "Keep practicing! Try to match the instructor's arm and leg positions more closely.";
+    if (score >= 55) return "You're getting there! Focus on the key body positions shown in the example.";
     return "Keep trying! Watch the instructor's pose carefully and try to match the positions.";
 }
