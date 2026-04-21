@@ -60,14 +60,17 @@ export default function CoachView(props: CoachViewProps) {
 
     const [drills, setDrills] = useState<Array<Drill>>([]);
 
-  useEffect(() => {
-    setStudents(props.param_class.students)
-  }, [props.param_class])
+  useFocusEffect(
+      useCallback(() => {
+        setStudents(props.param_class.students)
+      }, [token, props.param_class])
+  );
 
-    useEffect(() => {
-        loadAssignments();
-        //loadStudents(classID);
-    }, [token, props.param_class]);
+  useFocusEffect(
+      useCallback(() => {
+        loadAssignments()
+      }, [token, props.param_class])
+  );
 
 
     useEffect(() => {
