@@ -16,6 +16,7 @@ import useSearchBar from "@/hooks/useSearchBar";
 import NoSessions from "../../NoSessions";
 import { Assignment } from "@/services/assignments";
 import RowCardAssignment from "@/components/pages/home/RowCardAssignment";
+import { useNavigationState } from '@react-navigation/native';
 
 interface TabWorkoutProps {
     onAssignPress: () => void;

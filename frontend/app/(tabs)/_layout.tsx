@@ -166,13 +166,6 @@ function TabsLayout() {
                 }}
             />
             <Tabs.Screen
-                name="classes/[id]"
-                options={{
-                    headerShown: false,
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
                 name="edit-profile"
                 options={{
                     headerShown: false,
@@ -194,13 +187,6 @@ function TabsLayout() {
                 }}
             />
             <Tabs.Screen
-                name="assignments/[id]"
-                options={{
-                    headerShown: false,
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
                 name="drills/[id]"
                 options={{
                     headerShown: false,
@@ -213,14 +199,8 @@ function TabsLayout() {
                     headerShown: false,
                     href: null,
                 }}
-        />
-          <Tabs.Screen
-              name="submissions/[id]"
-              options={{
-                  headerShown: false,
-                  href: null,
-              }}
-          />
+            />
+          
         </Tabs>
   );
 }

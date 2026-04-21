@@ -48,15 +48,15 @@ export default function CoachView(props: ViewProps) {
                         style={{
                             height: 90,
                             justifyContent: 'center',
-                            backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#b1f0c2' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828',
+                            backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#b1f0c2' : props.submission.grade > 60 ? '#f9ca5d' : '#ffc1c1',
                             borderRadius: theme.borderRadius.base,
-                            ...theme.shadow.sm
+                            // ...theme.shadow.sm
                         }}
                     >
                         <LinearGradient
                             colors={[
-                                props.submission.grade === null ? '' : props.submission.grade > 80 ? '#ffffff' : props.submission.grade > 60 ? '#ffffff' : '#e02828',
-                                props.submission.grade === null ? '' : props.submission.grade > 80 ? '#94cfa4' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828'
+                                props.submission.grade === null ? '' : props.submission.grade > 80 ? '#ffffff' : props.submission.grade > 60 ? '#ffffff' : '#ffc1c1',
+                                props.submission.grade === null ? '' : props.submission.grade > 80 ? '#94cfa4' : props.submission.grade > 60 ? '#f9ca5d' : '#ffc1c1'
                             ]}
                             start={{ 
                                 x: 0, 
@@ -75,35 +75,39 @@ export default function CoachView(props: ViewProps) {
                         >
                             <View
                                 style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'flex-end',
                                     height: 86,
                                     marginHorizontal: 1,
                                     padding: theme.padding.md,
-                                    flexDirection: 'row',
                                     flexShrink: 1,
                                     borderRadius: theme.borderRadius.base - 2,
-                                    backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#d0f8db' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828',
+                                    backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#d0f8db' : props.submission.grade > 60 ? '#ffecc1' : '#ffc1c1',
                                 }}
                             >
                                 <ThemedText
                                     style={{
                                         fontSize: 64,
                                         fontWeight: 500,
-                                        letterSpacing: theme.letterSpacing.xl * -10,
+                                        // letterSpacing: theme.letterSpacing.xl * -10,
                                         color: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#56be74' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828'
                                     }}
                                 >
-                                    {props.submission.grade}
-                                    <ThemedText
-                                        style={{
-                                            fontSize: 32,
-                                            fontWeight: 500,
-                                            letterSpacing: theme.letterSpacing.sm,
-                                            color: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#78ce90' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828'
-                                        }}
-                                    >
-                                        {' / 100'}
-                                    </ThemedText>
+                                    {props.submission.grade}%
                                 </ThemedText>
+                                {/* <ThemedText
+                                    style={{
+                                        fontSize: 32,
+                                        fontWeight: 500,
+                                        opacity: 0.5,
+                                        letterSpacing: -1.5,
+                                        color: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#78ce90' : props.submission.grade > 60 ? '#f9ca5d' : '#e02828'
+                                    }}
+                                >
+                                    {'/ 100'}
+                                </ThemedText> */}
                             </View>
                         </LinearGradient>
                     </View>
@@ -225,14 +229,15 @@ export default function CoachView(props: ViewProps) {
                                         alignItems: "center",
                                         borderRadius: 1000,
                                         borderWidth: 1,
-                                        borderColor: drill.grade === null ? '' : drill.grade > 80 ? '#5bcc79' : drill.grade > 60 ? '#e0a928' : '#e02828',
+                                        borderStyle: drill.grade === null ? 'dashed' : 'solid',
+                                        borderColor: drill.grade === null ? theme.colors.schemes.light.outlineVariant : drill.grade > 80 ? '#32a852' : drill.grade > 60 ? '#e0a928' : '#e02828',
                                         backgroundColor: drill.grade === null ? '' : drill.grade > 80 ? '#32a852' : drill.grade > 60 ? '#e0a928' : '#e02828'
                                     }}
                                 >
                                     <LinearGradient
                                         colors={[
-                                            drill.grade === null ? '' : drill.grade > 80 ? '#ffffff' : drill.grade > 60 ? '#ffffff' : '#e02828',
-                                            drill.grade === null ? '' : drill.grade > 80 ? '#64d181' : drill.grade > 60 ? '#f9ca5d' : '#e02828'
+                                            drill.grade === null ? '' : drill.grade > 80 ? '#ffffff' : drill.grade > 60 ? '#ffffff' : '#ffffff',
+                                            drill.grade === null ? '' : drill.grade > 80 ? '#b1f0c2' : drill.grade > 60 ? '#fff18a' : '#ffc1c1'
                                         ]}
                                         start={{ 
                                             x: 0, 
@@ -257,7 +262,7 @@ export default function CoachView(props: ViewProps) {
                                                 justifyContent: "center",
                                                 alignItems: "center",
                                                 borderRadius: 1000,
-                                                backgroundColor: drill.grade === null ? '' : drill.grade > 80 ? "#b1f0c2" : drill.grade > 60 ? '#ffe5a8' : '#e02828'
+                                                backgroundColor: drill.grade === null ? '' : drill.grade > 80 ? "#b1f0c2" : drill.grade > 60 ? '#fff18a' : '#ffc1c1'
                                             }}
                                         >
                                             <ThemedText
@@ -266,7 +271,7 @@ export default function CoachView(props: ViewProps) {
                                                     fontWeight: 500,
                                                     letterSpacing: -0.1,
                                                     textAlignVertical: 'center',
-                                                    color: drill.grade === null ? '' : drill.grade > 80 ? '#32a852' : drill.grade > 60 ? '#c7900e' : '#e02828',
+                                                    color: drill.grade === null ? '' : drill.grade > 80 ? '#32a852' : drill.grade > 60 ? '#e0a928' : '#e02828',
                                                 }}
                                             >
                                                 {drill.grade}
@@ -300,7 +305,7 @@ export default function CoachView(props: ViewProps) {
                     )
                 })}
                 <Button
-                    onPress={() => router.push(`/(tabs)/gradeSubmission/${props.submission.id}`)}
+                    onPress={() => router.push(`/gradeSubmission/${props.submission.id}`)}
                     {...buttonTheme.blue}
                     outerStyle={{
                         marginVertical: theme.margin.xs

@@ -12,44 +12,26 @@ import { router } from "expo-router";
 
 interface CoachViewProps {
     assignmentID: number;
+    assignment: Assignment;
+    assignmentClass: Class;
 }
 
 export default function CoachView(props: CoachViewProps) {
     const { token } = useAuth();
-    const [soccerClass, setSoccerClass] = useState<Class>();
-    const [assignment, setAssignment] = useState<Assignment>();
     const [extendedSubmissions, setExtendedSubmissions] = useState<Submission[]>([]);
 
     useEffect(() => {
-        loadAssignment();
-    }, [token]);
-
-    useEffect(() => {
         loadExtendedSubmissions();
-    }, [token, soccerClass, assignment]);
-
-    const loadAssignment = async () => {
-        if (!token)
-            return;
-        const assignment = await getAssignment(token, props.assignmentID);
-        if (!assignment)
-            return;
-        setAssignment(assignment);
-
-        const soccerClass = await getClassByAssignment(token, props.assignmentID);
-        if (!soccerClass)
-            return;
-        setSoccerClass(soccerClass);
-    }
+    }, [token, props.assignmentClass, props.assignment]);
 
     const loadExtendedSubmissions = () => {
-        if (!soccerClass || !assignment)
+        if (!props.assignmentClass || !props.assignment)
             return;
 
         const extendedSubmissions: Submission[] = [];
 
-        for (const student of soccerClass.students) {
-            const submission = assignment.submissions.find(a => a.studentID === student.id);
+        for (const student of props.assignmentClass.students) {
+            const submission = props.assignment.submissions.find(a => a.studentID === student.id);
             if (submission) {
                 extendedSubmissions.push(submission);
             }
@@ -91,7 +73,7 @@ export default function CoachView(props: CoachViewProps) {
                     <View key={i}>
                         <RowCard
                             title={`${submission.student.first_name} ${submission.student.last_name}`}
-                            onPress={() => (submission.id !== null && submission.id !== -1) && router.push(`/(tabs)/submissions/${submission.id}`)}
+                            onPress={() => (submission.id !== null && submission.id !== -1) && router.push(`/submissions/${submission.id}`)}
                             descriptions={[submission.dateSubmitted ? 'Submitted' : 'Not Submitted', submission.dateGraded ? 'Graded' : 'Not Graded']}
                             titleTagClose={true}
                             imageText={`${submission.student.first_name[0]}${submission.student.last_name[0]}`}

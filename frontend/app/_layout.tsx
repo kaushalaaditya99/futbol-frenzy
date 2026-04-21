@@ -99,6 +99,34 @@ export default function RootLayout() {
           headerShown: false
         }}
       />
+      <Stack.Screen
+          name="submissions/[id]"
+          options={{
+            headerTitle: "",
+            headerShown: false
+          }}
+      />
+      <Stack.Screen
+          name="classes/[id]"
+          options={{
+            headerTitle: "",
+            headerShown: false
+          }}
+      />
+      <Stack.Screen
+          name="assignments/[id]"
+          options={{
+            headerTitle: "",
+            headerShown: false
+          }}
+      />
+      <Stack.Screen
+          name="gradeSubmission/[id]"
+          options={{
+            headerTitle: "",
+            headerShown: false
+          }}
+      />
     </Stack>
     </ProfileProvider>
     </AuthProvider>
