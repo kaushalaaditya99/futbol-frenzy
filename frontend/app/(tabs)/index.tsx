@@ -62,6 +62,7 @@ export default function Home() {
         drills: [],
         isNew: false,
         isDue: !item.submitted,
+        isCompleted: item.submitted,
         imageBackgroundColor: item.imageBackgroundColor || "#1C1C1C",
         imageTextColor: item.imageTextColor,
         imageText: item.imageText || "",
@@ -200,6 +201,7 @@ export default function Home() {
                                         <Fragment key={i}>
                                             <RowCardSession
                                                 {...session}
+                                                showTag={true}
                                             />
                                         </Fragment>
                                     ))}

@@ -158,6 +158,49 @@ export async function createDrill(drillData: {
     return response.data;
 }
 
+// Get existing submission for a student+assignment, or create a new one
+export async function getOrCreateSubmission(params: {
+    studentID: number;
+    assignmentID: number;
+    imageBackgroundColor?: string;
+    imageText?: string;
+    imageTextColor?: string;
+}): Promise<{ id: number; isNew: boolean }> {
+    const API_URL = resolveEndpoint("/api/");
+    const headers = await authHeaders();
+
+    console.log("[cloud] getOrCreateSubmission - studentID:", params.studentID, "assignmentID:", params.assignmentID);
+
+    // First, try to get existing submission for this student+assignment
+    try {
+        const response = await axios.get(
+            `${API_URL}submissions/?studentID=${params.studentID}&assignmentID=${params.assignmentID}`,
+            { headers }
+        );
+
+        console.log("[cloud] getOrCreateSubmission - found submissions:", response.data?.length || 0);
+
+        if (response.data && response.data.length > 0) {
+            // Found existing submission
+            console.log("[cloud] getOrCreateSubmission - reusing submission:", response.data[0].id);
+            return { id: response.data[0].id, isNew: false };
+        }
+    } catch (err) {
+        console.log("[cloud] getOrCreateSubmission - query failed, creating new one");
+    }
+
+    // Create new submission
+    console.log("[cloud] getOrCreateSubmission - creating new submission");
+    const response = await axios.post(
+        `${API_URL}submissions/`,
+        params,
+        { headers }
+    );
+
+    console.log("[cloud] getOrCreateSubmission - created submission:", response.data.id);
+    return { id: response.data.id, isNew: true };
+}
+
 // Create a new submission
 export async function createSubmission(submissionData: {
     studentID: number;
@@ -189,11 +232,15 @@ export async function createSubmittedDrill(submittedDrillData: {
     const API_URL = resolveEndpoint("/api/");
     const headers = await authHeaders();
 
+    console.log("[cloud] createSubmittedDrill - sending:", JSON.stringify(submittedDrillData));
+
     const response = await axios.post(
         `${API_URL}submitteddrills/`,
         submittedDrillData,
         { headers }
     );
+
+    console.log("[cloud] createSubmittedDrill - response:", JSON.stringify(response.data));
 
     return response.data;
 }
@@ -206,6 +253,7 @@ export async function saveSubmittedDrillWithUrl(params: {
     grade?: number;
     touchCount?: number;
 }): Promise<{ id: number; videoURL: string; grade?: number }> {
+    console.log("[cloud] saveSubmittedDrillWithUrl - drillID:", params.drillID, "submissionID:", params.submissionID);
     return createSubmittedDrill({
         submissionID: params.submissionID,
         drillID: params.drillID,

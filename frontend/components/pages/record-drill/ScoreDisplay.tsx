@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text, Animated } from 'react-native';
-import { scoreToGrade, getScoreFeedback } from '@/utils/poseComparison';
+import { scoreToGrade, getScoreFeedback, applyLenientCurve } from '@/utils/poseComparison';
 
 interface ScoreDisplayProps {
     score: number | null;
@@ -39,12 +39,14 @@ interface LiveScoreBadgeProps {
 export function LiveScoreBadge({ score }: LiveScoreBadgeProps) {
     if (score === null) return null;
 
-    const { letter, color } = scoreToGrade(score);
+    // Apply lenient curve to raw real-time score
+    const curvedScore = applyLenientCurve(score);
+    const { letter, color } = scoreToGrade(curvedScore);
 
     return (
         <View style={[styles.badgeContainer, { backgroundColor: color }]}>
             <Text style={styles.badgeLetter}>{letter}</Text>
-            <Text style={styles.badgeScore}>{score}</Text>
+            <Text style={styles.badgeScore}>{Math.round(curvedScore)}</Text>
         </View>
     );
 }

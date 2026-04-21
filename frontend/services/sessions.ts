@@ -12,6 +12,7 @@ export interface Session {
     drills: Array<Drill>;
     isNew: boolean;
     isDue: boolean;
+    isCompleted?: boolean;
     imageBackgroundColor: string;
     imageTextColor?: string;
     uploadedBy: string;
@@ -83,7 +84,7 @@ export async function getSession(token: string, sessionID: number): Promise<Sess
             durationInMins: 0,
             coach: workout.coach,
             class: "",
-            drills: workout.drills,
+            drills: workout.drills || [],
             isNew: false,
             isDue: workout.dueDate ? new Date(workout.dueDate) >= new Date() : false,
             imageBackgroundColor: workout.imageBackgroundColor || "#1C1C1C",

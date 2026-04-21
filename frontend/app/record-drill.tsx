@@ -29,6 +29,7 @@ export default function RecordDrillRoute() {
     const drillId = parseInt(params.drillId as string, 10) || 1;
     const assignmentId = parseInt(params.assignmentId as string, 10) || 1;
     const returnTo = params.returnTo as string | undefined;
+    console.log("[RecordDrill] Route params - drillId:", drillId, "assignmentId:", assignmentId);
 
     // Fetch drill data
     useEffect(() => {
@@ -47,6 +48,7 @@ export default function RecordDrillRoute() {
                 );
 
                 setDrill(response.data);
+                console.log("[RecordDrill] Fetched drill - id:", response.data.id, "name:", response.data.drillName);
             } catch (err: any) {
                 console.error('Failed to fetch drill:', err);
                 setError('Failed to load drill data');
@@ -108,7 +110,7 @@ export default function RecordDrillRoute() {
                         if (router.canGoBack()) {
                             router.back();
                         } else {
-                            router.replace('/(tabs)/demonstration');
+                            router.replace('/assignments/${assignmentId}');
                         }
                     }}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
