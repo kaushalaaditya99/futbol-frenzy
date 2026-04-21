@@ -25,6 +25,8 @@ import TimePicker from "@/components/pages/createSession/TimePicker";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/contexts/ProfileContext";
 import { createSession } from "@/services/sessions";
+import InputInlineRadioGroup from "@/components/ui/input/InputInlineRadioGroup";
+
 // ─── Draggable Drill Row ─────────────────────────────────────────────────────
 
 const ITEM_HEIGHT = 76;
@@ -185,6 +187,7 @@ export default function CreateSession() {
     ));
     const [showCalendarPicker, setShowCalendarPicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
+    const [accessControl, setAccessControl] = useState("public");
 
     const displayTime = selectedDate.toLocaleTimeString("en-US", {
         hour: "2-digit",
@@ -266,7 +269,7 @@ export default function CreateSession() {
                 imageBackgroundColor: "#1C1C1C",
                 imageText: name.trim().substring(0, 3).toUpperCase(),
                 imageTextColor: "#FFFFFF",
-                publicWorkout: true,
+                publicWorkout: accessControl == "public",
                 drills: selectedDrills.map((drill) => ({
                     drillID: drill.id,
                     minutes: drill.time || 5,
@@ -425,6 +428,12 @@ export default function CreateSession() {
                                 </ThemedText>
                             </Pressable>
                         </View>
+                      <InputInlineRadioGroup
+                          label="Access Control"
+                          value={accessControl}
+                          options={[["public", "Public"], ["private", "Private"]]}
+                          onChange={setAccessControl}
+                      />
                     </View>
                 </View>
 
@@ -559,7 +568,8 @@ export default function CreateSession() {
                         paddingVertical: theme.margin.sm,
                         paddingHorizontal: theme.margin.sm,
                     }}
-                >
+          >
+
                     <Button
                         onPress={canCreate ? onCreateSession : undefined}
                         {...(canCreate ? buttonTheme.blue : buttonTheme.disabled)}
@@ -672,7 +682,8 @@ export default function CreateSession() {
                     setShowTimePicker(false);
                 }}
                 onClose={() => setShowTimePicker(false)}
-            />
+                />
+
         </SafeAreaView>
     );
 }
