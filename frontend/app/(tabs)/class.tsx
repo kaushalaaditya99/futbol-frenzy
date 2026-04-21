@@ -64,7 +64,7 @@ export default function Class() {
             ) : role === "Coach" && soccerClass ? (
                 <CoachView param_class={soccerClass} />
             ) : (
-                <StudentView />
+                <StudentView classId={soccerClass?.id} />
             )}
         </SafeAreaView>
     );

@@ -21,7 +21,7 @@ export default function Tabs(props: TabsProps) {
                     onPress={() => props.setTab(tab)}
                     style={{
                         paddingVertical: padding.lg,
-                        paddingHorizontal: padding.lg,
+                        paddingHorizontal: padding.sm,
                         flex: 1,
                         borderTopWidth: 1,
                         borderBottomWidth: 1,

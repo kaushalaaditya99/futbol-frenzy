@@ -68,7 +68,7 @@ export default function StudentTabOverview(props: StudentTabOverviewProps) {
                     valueIconSide="right"
                 />
                 <CardMetric
-                    label="Sessions Done"
+                    label="Completed"
                     value={`${props.sessionsCompleted}/${props.sessionsTotal}`}
                 />
                 <CardMetric
@@ -128,7 +128,7 @@ export default function StudentTabOverview(props: StudentTabOverviewProps) {
                                 color: colors.schemes.light.onBackground,
                             }}
                         >
-                            Next Session
+                            Next Assignment
                         </ThemedText>
                         <NextSessionCard
                             sessionName={props.nextSession.name}

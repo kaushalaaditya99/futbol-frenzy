@@ -43,7 +43,7 @@ export default function StudentTabWorkout(props: StudentTabWorkoutProps) {
                     enableSort={true}
                     sortDirection={props.searchBar.sortDirection}
                     setSortDirection={props.searchBar.setSortDirection}
-                    placeholder="Search Sessions..."
+                    placeholder="Search Assignments..."
                     viewType={props.viewType}
                     setViewType={props.setViewType}
                 />
