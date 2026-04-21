@@ -186,21 +186,6 @@ function TabsLayout() {
                     href: null,
                 }}
             />
-            <Tabs.Screen
-                name="drills/[id]"
-                options={{
-                    headerShown: false,
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
-                name="workouts/[id]"
-                options={{
-                    headerShown: false,
-                    href: null,
-                }}
-            />
-          
         </Tabs>
   );
 }

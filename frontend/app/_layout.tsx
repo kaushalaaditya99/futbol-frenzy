@@ -127,6 +127,20 @@ export default function RootLayout() {
             headerShown: false
           }}
       />
+      <Stack.Screen
+          name="drills/[id]"
+          options={{
+            headerTitle: "",
+            headerShown: false
+          }}
+      />
+      <Stack.Screen
+          name="workouts/[id]"
+          options={{
+            headerTitle: "",
+            headerShown: false
+          }}
+      />
     </Stack>
     </ProfileProvider>
     </AuthProvider>

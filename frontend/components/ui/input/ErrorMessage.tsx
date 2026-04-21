@@ -25,7 +25,7 @@ export default function ErrorMessage(props: ErrorMessageProps) {
                 flexDirection: "row",
                 alignItems: "flex-start",
                 columnGap: 6,
-                borderWidth: 1,
+                // borderWidth: 1,
                 borderColor: colors.schemes.light.error,
                 borderStyle: "dashed",
                 borderRadius: 8,
@@ -34,7 +34,7 @@ export default function ErrorMessage(props: ErrorMessageProps) {
         >
             <CircleX
                 size={14}
-                color={colors.schemes.light.onErrorContainer}
+                color={'#ca2323'}
                 style={{
                     position: "relative",
                     top: 1.5
@@ -50,8 +50,8 @@ export default function ErrorMessage(props: ErrorMessageProps) {
                         flexShrink: 1,
                         fontSize: 14,
                         fontWeight: 400,
-                        letterSpacing: 0.25,
-                        color: colors.schemes.light.onErrorContainer
+                        letterSpacing: 0.5,
+                        color: '#ca2323'
                     }}
                 >
                     {props.message}

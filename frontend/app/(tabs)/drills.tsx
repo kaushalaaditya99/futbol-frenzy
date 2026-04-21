@@ -49,6 +49,8 @@ export default function Drills() {
     );
 
     const loadDrills = async (id: number) => {
+        if (!token)
+            return;
         const drills = await getDrills(token);
         setDrills(drills);
     }
@@ -86,17 +88,21 @@ export default function Drills() {
                 <ScrollView
                     style={{
                         height: "100%",
-                        paddingVertical: theme.margin.sm,
-                        paddingHorizontal: theme.margin.sm,
                         flex: 1,
                         flexGrow: 1,
                     }}
                 >
+                    {/* Section 1 */}
                     <View
                         style={{
-                            paddingBottom: theme.margin.sm,
+                            paddingVertical: theme.padding.md,
+                            paddingHorizontal: theme.padding.md,
                             flex: 1,
-                            rowGap: theme.padding.md
+                            rowGap: theme.padding.md,
+                            borderBottomWidth: 1,
+                            borderStyle: "dashed",
+                            borderColor: theme.colors.schemes.light.outlineVariant,
+                            backgroundColor: theme.colors.schemes.light.surfaceContainerLow
                         }}
                     >
                         <View
@@ -114,6 +120,10 @@ export default function Drills() {
                                 options={feedOptions as [string, string][]}
                                 buttonStyle={{
                                     borderRadius: 8,
+                                    height: 36,
+                                    minHeight: 36,
+                                    maxHeight: 36,
+                                    paddingHorizontal: theme.padding.lg,
                                 }}
                             />
                             {role === "Coach" && (
@@ -121,23 +131,22 @@ export default function Drills() {
                                     onPress={() => router.push("/createDrill")}
                                 />
                             )}
-                       </View>
-                       <Filter
-                            viewType={viewType}
-                            setViewType={setViewType}
-                            drillSearchBar={drillSearchBar}
-                       />
-                       <ThemedText
-                            style={{
-                                marginTop: theme.margin.sm,
-                                fontSize: fontSize.lg,
-                                fontWeight: "500",
-                                letterSpacing: letterSpacing.xs,
-                                color: theme.colors.schemes.light.onBackground,
-                            }}
-                        >
-                            Found {drillSearchBar.filtered.length} Drills
-                        </ThemedText>
+                    </View>
+                    <Filter
+                        viewType={viewType}
+                        setViewType={setViewType}
+                        drillSearchBar={drillSearchBar}
+                    />
+                    </View>
+                    {/* Section 2 */}
+                    <View
+                        style={{
+                            flex: 1,
+                            paddingHorizontal: theme.padding.md,
+                            paddingVertical: theme.padding.lg,
+                            rowGap: theme.margin.sm
+                        }}
+                    >
                        {viewType === "grid" &&
                             <View>
                                 <FlatList<Drill>
