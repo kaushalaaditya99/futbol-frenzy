@@ -7,8 +7,8 @@ import InputText from "@/components/ui/input/InputText";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment, Submission } from "@/services/assignments";
-import { createSubmission, getSubmission, gradeSubmittedDrill, gradeSubmission } from "@/services/submissions";
-import { shadow, theme } from "@/theme";
+import { createSubmission, getSubmission, gradeSubmittedDrill, gradeSubmission, gradeSubmissionGivenGrades } from "@/services/submissions";
+import { padding, shadow, theme } from "@/theme";
 import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -45,7 +45,7 @@ export default function Page() {
         player.loop = true;
     });
 
-    const [grades, setGrades] = useState<Record<number, string>>({});
+    const [grades, setGrades] = useState<{[drillIndex: number]: string}>({});
     const [feedbacks, setFeedbacks] = useState<Record<number, string>>({});
     const [isGrading, setIsGrading] = useState(false);
 
@@ -364,6 +364,7 @@ export default function Page() {
                                             borderTopLeftRadius: theme.borderRadius.base,
                                             borderBottomLeftRadius: theme.borderRadius.base,
                                             borderColor: theme.colors.schemes.light.outlineVariant,
+                                            backgroundColor: theme.colors.schemes.light.background
                                         }}
                                     >
                                         <ThemedText
@@ -380,20 +381,51 @@ export default function Page() {
                                     <InputText
                                         value={grades[drillIndex] || ''}
                                         onChangeText={(text: string) => setGrades(prev => ({ ...prev, [drillIndex]: text }))}
-                                        placeholder="0-100"
+                                        placeholder="Enter a whole number from 0 to 100"
                                         wrapperStyle={{
                                             flexShrink: 1,
                                         }}
                                         inputStyle={{
                                             borderTopLeftRadius: 0,
                                             borderBottomLeftRadius: 0,
+                                            borderRadius: 0,
+                                            shadowOpacity: 0
                                         }}
                                     />
+                                    <View
+                                        style={{
+                                            height: 44,
+                                            padding: theme.padding.md,
+                                            justifyContent: 'center',
+                                            borderWidth: 1,
+                                            borderLeftWidth: 0,
+                                            borderTopRightRadius: theme.borderRadius.base,
+                                            borderBottomRightRadius: theme.borderRadius.base,
+                                            borderColor: theme.colors.schemes.light.outlineVariant,
+                                            backgroundColor: theme.colors.schemes.light.background
+                                        }}
+                                    >
+                                        <ThemedText
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: 400,
+                                                letterSpacing: theme.letterSpacing.xl,
+                                                color: theme.colors.schemes.light.onSurfaceVariant,
+                                            }}
+                                        >
+                                            %
+                                        </ThemedText>
+                                    </View>
                                 </View>
+                                {(grades[drillIndex] && /\D/.test(grades[drillIndex])) &&
+                                    <ErrorMessage
+                                        message="Must enter a whole number."
+                                    />
+                                }
                                 <View
                                     style={{
                                         paddingVertical: 10,
-                                        marginHorizontal: 12,
+                                        // marginHorizontal: 12,
                                     }}
                                 >
                                     <ThemedText
@@ -413,16 +445,13 @@ export default function Page() {
                                         placeholder="Write feedback for this drill..."
                                         multiline={true}
                                         inputStyle={{
+                                            paddingHorizontal: padding.lg,
+                                            paddingVertical: padding.lg,
                                             minHeight: 80,
                                             textAlignVertical: 'top',
                                         }}
                                     />
                                 </View>
-                                {(grades[drillIndex] && /\D/.test(grades[drillIndex])) &&
-                                    <ErrorMessage
-                                        message="Must enter a whole number."
-                                    />
-                                }
                             </View>
                             <View
                                 style={{
@@ -484,27 +513,19 @@ export default function Page() {
                                     return <ButtonHalfWidth
                                         {...(allGraded ? buttonTheme.blue : buttonTheme.disabled)}
                                         onPress={async () => {
-                                            if (!allGraded || !token || !submission) return;
+                                            if (!allGraded || !token || !submission) 
+                                                return;
+                                            
                                             setIsGrading(true);
                                             try {
-                                                // Grade each submitted drill with feedback
-                                                for (const [idx, gradeStr] of Object.entries(grades)) {
-                                                    const grade = parseInt(gradeStr, 10);
-                                                    if (isNaN(grade)) continue;
-                                                    const sd = submission.submitted_drills[Number(idx)];
-                                                    if (sd) {
-                                                        await gradeSubmittedDrill(token, sd.id, grade, feedbacks[Number(idx)] || undefined);
-                                                    }
+                                               const output = await gradeSubmissionGivenGrades(token, submission.id, Object.fromEntries(Object.entries(grades).map(([drillIndex, grade]) => [drillIndex, Number(grade)])), feedbacks);
+                                                if (output) {
+                                                    router.back();
+                                                    return;
                                                 }
-                                                // Calculate average and grade the overall submission
-                                                const gradeValues = Object.values(grades).map(g => parseInt(g, 10)).filter(g => !isNaN(g));
-                                                if (gradeValues.length > 0) {
-                                                    const avg = Math.round(gradeValues.reduce((a, b) => a + b, 0) / gradeValues.length);
-                                                    await gradeSubmission(token, submission.id, avg);
-                                                }
-                                                router.back();
+                                                alert('Error Grading Submission!')
                                             } catch (err) {
-                                                console.error("Grading error:", err);
+                                                console.error("Grading Error:", err);
                                             } finally {
                                                 setIsGrading(false);
                                             }

@@ -34,6 +34,29 @@ export async function gradeSubmission(token: string, submissionId: number, grade
     }
 }
 
+export async function gradeSubmissionGivenGrades(token: string, submissionID: number, grades: {[drillIndex: number]: number }, feedback: {[drillIndex: number]: string}): Promise<boolean> {
+    try {
+        console.log('feedback', feedback)
+        const gradeValues = Object.values(grades);
+        const grade = gradeValues.reduce((sum, g) => sum + g, 0) / gradeValues.length;
+
+        const response = await fetch(`${API_URL}/grade_submission/${submissionID}/`, {
+            method: "POST",
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ grade, grades, feedback }),
+        });
+
+        return response.ok;
+    } 
+    catch (err) {
+        console.error("Error Grading Submission\n", err);
+        return false;
+    }
+}
+
 export async function getSubmission(token: string, submissionID: number): Promise<Submission|null> {
     try {
         const response = await fetch(`${API_URL}/submissions/${submissionID}/`, {

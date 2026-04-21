@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment, Submission } from "@/services/assignments";
 import { getSubmission } from "@/services/submissions";
 import { User } from "@/services/user";
-import { borderRadius, shadow, theme } from "@/theme";
+import { borderRadius, colors, letterSpacing, shadow, theme } from "@/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useVideoPlayer, VideoView } from "expo-video";
@@ -141,6 +141,34 @@ function DrillVideoItem({ drill, i }: DrillVideoItemProps) {
                     }}
                 />
             </View>
+            <View
+                style={{
+                    backgroundColor: theme.colors.schemes.light.surfaceContainerHigh,
+                    padding: 8,
+                    paddingHorizontal: 8,
+                    borderRadius: borderRadius.base
+                }}
+            >
+                <ThemedText
+                    style={{
+                        fontSize: 14,
+                        letterSpacing: letterSpacing.xl,
+                        color: colors.schemes.light.onSurface,
+                    }}
+                >
+                    <ThemedText
+                        style={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: colors.schemes.light.onSurfaceVariant,
+                            letterSpacing: letterSpacing.lg
+                        }}
+                    >
+                        Coach's Feedback {' '}
+                    </ThemedText>
+                    {drill.feedback}
+                </ThemedText>
+            </View>
         </View>
     );
 }
@@ -159,17 +187,6 @@ export default function CoachView(props: ViewProps) {
                         marginBottom: 6
                     }}
                 >
-                    {/* <ThemedText
-                        style={{
-                            marginBottom: 4,
-                            fontSize: 13,
-                            fontWeight: 500,
-                            letterSpacing: theme.letterSpacing.xl,
-                            color: theme.colors.schemes.light.onSurfaceVariant
-                        }}
-                    >
-                        GRADE
-                    </ThemedText> */}
                     <View
                         style={{
                             height: 90,
@@ -177,7 +194,6 @@ export default function CoachView(props: ViewProps) {
                             borderWidth: 1,
                             borderColor: theme.colors.schemes.light.outlineVariant,
                             backgroundColor: 'white',
-                            // backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#b1f0c2' : props.submission.grade > 60 ? '#f9ca5d' : '#ffc1c1',
                             borderRadius: theme.borderRadius.base,
                             ...theme.shadow.sm
                         }}
@@ -193,7 +209,6 @@ export default function CoachView(props: ViewProps) {
                                 padding: theme.padding.md,
                                 flexShrink: 1,
                                 borderRadius: theme.borderRadius.base - 2,
-                                // backgroundColor: props.submission.grade === null ? '' : props.submission.grade > 80 ? '#d0f8db' : props.submission.grade > 60 ? '#ffecc1' : '#ffc1c1',
                                 backgroundColor: theme.colors.schemes.light.surfaceContainer,
                             }}
                         >
@@ -201,7 +216,6 @@ export default function CoachView(props: ViewProps) {
                                 style={{
                                     fontSize: 64,
                                     fontWeight: 500,
-                                    // letterSpacing: theme.letterSpacing.xl * -10,
                                     color: (props.submission?.grade === null || props.submission?.grade === undefined) ? '' : props.submission?.grade as any > 80 ? '#56be74' : props.submission?.grade as any > 60 ? '#efbc47' : '#e02828'
                                 }}
                             >
@@ -229,7 +243,6 @@ export default function CoachView(props: ViewProps) {
                         style={{
                             fontSize: 16,
                             fontWeight: 400,
-                            // letterSpacing: theme.letterSpacing.xl,
                             color: theme.colors.schemes.light.onSurfaceVariant
                         }}
                     >
@@ -264,7 +277,6 @@ export default function CoachView(props: ViewProps) {
                         style={{
                             fontSize: 16,
                             fontWeight: 400,
-                            // letterSpacing: theme.letterSpacing.xl,
                             color: theme.colors.schemes.light.onSurfaceVariant
                         }}
                     >
@@ -291,10 +303,10 @@ export default function CoachView(props: ViewProps) {
                     <DrillVideoItem key={i} drill={drill} i={i} />
                 ))}
                 <Button
-                    // onPress={() => router.push(`/gradeSubmission/${props.submission.id}`)}
                     onPress={() => props.submission?.dateSubmitted && router.push({
                         pathname: `/gradeSubmission/[id]`,
                         params: { 
+                            id: -1,
                             submissionID: props.submissionID, 
                             // assignmentID: props.assignment.id, 
                             // studentID: submission.student.id 
