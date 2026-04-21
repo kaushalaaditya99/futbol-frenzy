@@ -71,8 +71,13 @@ export default function WorkoutCardList(props: WorkoutCardListProps) {
                     aspectRatio: 1,
                     borderRadius: theme.borderRadius.sm,
                     backgroundColor: props.imageBackgroundColor,
+                    justifyContent: "center",
+                    alignItems: "center",
                 }}
             >
+                <ThemedText style={{ fontSize: 36 }}>
+                    {props.imageText}
+                </ThemedText>
             </View>
             <Pressable
                 onPress={() => router.push(`/workouts/${props.id}`)}

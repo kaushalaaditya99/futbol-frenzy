@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 import CardMetric from "@/components/pages/CardMetric";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import { Student } from "@/services/students";
 import ButtonShare from "../ButtonShare";
 import ButtonSettings from "../ButtonSettings";
@@ -18,6 +18,7 @@ interface TabOverviewProps {
     setShowSettings: (settings: boolean) => void;
     setShowShareClass: (shareClass: boolean) => void;
     assignmentsToday: Assignment[];
+    assignments: Assignment[];
     students: Student[];
     classId?: number;
     className?: string;
@@ -25,6 +26,21 @@ interface TabOverviewProps {
 }
 
 export default function TabOverview(props: TabOverviewProps) {
+    const ungradedCount = useMemo(() => {
+        let count = 0;
+        for (const assignment of props.assignments) {
+            const subs = assignment.submissions || [];
+            // Group by studentID — if any submission for a student is graded, they're graded
+            const studentIds = new Set(subs.map(s => s.studentID));
+            for (const sid of studentIds) {
+                const studentSubs = subs.filter(s => s.studentID === sid);
+                const anyGraded = studentSubs.some(s => s.dateGraded);
+                if (!anyGraded && studentSubs.length > 0) count++;
+            }
+        }
+        return count;
+    }, [props.assignments]);
+
     return (
         <View
             style={{
@@ -84,7 +100,7 @@ export default function TabOverview(props: TabOverviewProps) {
                 />
                 <CardMetric
                     label={"Assignments\nUngraded"}
-                    value="5"
+                    value={""+ungradedCount}
                 />
             </View>
             <View

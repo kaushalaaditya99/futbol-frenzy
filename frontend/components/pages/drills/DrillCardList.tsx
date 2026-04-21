@@ -30,15 +30,22 @@ export default function DrillCardList(props: DrillCardListProps) {
     const videoPlayer = useVideoPlayer(null, (player) => {
         player.muted = true;
         player.audioMixingMode = "mixWithOthers";
+        player.pause();
     });
 
     useEffect(() => {
-        loadVideo(props.url);
-    }, []);
+        if (props.url) {
+            loadVideo(props.url);
+        }
+    }, [props.url]);
 
     const loadVideo = async (url: string) => {
         const resolvedURL = await resolveURL(url);
-        videoPlayer.replaceAsync(resolvedURL);
+        if (resolvedURL) {
+            await videoPlayer.replaceAsync(resolvedURL);
+            videoPlayer.currentTime = 0;
+            videoPlayer.pause();
+        }
     }
 
      const resolveURL = async (url: string) => {

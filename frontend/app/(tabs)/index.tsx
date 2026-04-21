@@ -25,6 +25,7 @@ import { getStudentStats, getStudentSchedule, getStudentResults, StudentStats, S
 export default function Home() {
     const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
     const [results, setResults] = useState<StudentResult[]>([]);
+    const [showAllResults, setShowAllResults] = useState(false);
     const [stats, setStats] = useState<StudentStats>({ daysStreak: 0, thisWeek: 0, dueToday: 0 });
 
     const sideBar = useSideBar();
@@ -310,7 +311,7 @@ export default function Home() {
                                         </View>
                                         :
                                         <>
-                                            {results.map((result, i) => (
+                                            {(showAllResults ? results : results.slice(0, 3)).map((result, i) => (
                                                 <Fragment key={i}>
                                                     <CardResult
                                                         name={result.name}
@@ -322,7 +323,9 @@ export default function Home() {
                                                     />
                                                 </Fragment>
                                             ))}
-                                            <ViewAllButton/>
+                                            {results.length > 3 &&
+                                                <ViewAllButton onPress={() => setShowAllResults(!showAllResults)} />
+                                            }
                                         </>
                                     }
                                 </View>

@@ -112,7 +112,7 @@ export default function StudentTabWorkout(props: StudentTabWorkoutProps) {
                 )}
                 {props.sessionsOnDate.map((session: any, i: number) => (
                     <Fragment key={i}>
-                        <RowCardSession {...session} />
+                        <RowCardSession {...session} showTag={true} />
                     </Fragment>
                 ))}
                 {!props.sessionsOnDate.length && <NoSessions />}
