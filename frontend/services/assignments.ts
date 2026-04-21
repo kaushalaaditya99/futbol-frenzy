@@ -51,6 +51,31 @@ export interface Submission {
 
 const API_URL = resolveEndpoint("/api");
 
+export async function getAssignmentsbyClass(token: string, class_id: number): Promise<Array<Assignment>> {
+    try {
+        const response = await fetch (`${API_URL}/get_assignments_for_class/${class_id}`, {
+            headers: {
+                Authorization: `Token ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            return [];
+        }
+
+        const assignments = await response.json();
+        for (const assignment of assignments)
+            assignment.dueDate = new Date(assignment.dueDate || "");
+
+        return assignments;
+    }
+    catch (err) {
+        console.error("Error Fetching Assignments\n", err);
+        return [];
+    }
+}
+
 export async function getAssignments(token: string): Promise<Array<Assignment>> {
     try {
         const response = await fetch (`${API_URL}/assignments/`, {
@@ -67,7 +92,7 @@ export async function getAssignments(token: string): Promise<Array<Assignment>> 
         const assignments = await response.json();
         for (const assignment of assignments)
             assignment.dueDate = new Date(assignment.dueDate || "");
-        
+
         return assignments;
     }
     catch (err) {
@@ -85,7 +110,7 @@ export async function getAssignment(token: string, assignmentID: number): Promis
             },
         });
 
-        if (!response.ok) 
+        if (!response.ok)
             return null;
 
         const assignment = await response.json();
@@ -93,7 +118,7 @@ export async function getAssignment(token: string, assignmentID: number): Promis
             assignment.dueDate = new Date(assignment.dueDate || "");
 
         return assignment;
-    } 
+    }
     catch (err) {
         console.error("Error Fetching Assignment\n", err);
         return null;
