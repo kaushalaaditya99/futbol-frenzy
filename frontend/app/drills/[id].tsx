@@ -40,7 +40,6 @@ export default function ShowDrill() {
         player.loop = true;
     });
 
-
     useEffect(() => {
         loadDrill();
     }, [token]);
@@ -49,6 +48,7 @@ export default function ShowDrill() {
     useEffect(() => {
         if (!drill)
             return;
+        console.log('here');
         loadVideo(drill.url);
     }, [drill]);
 
@@ -56,7 +56,9 @@ export default function ShowDrill() {
     const loadDrill = async () => {
         if (!token)
             return;
+        console.log('hello')
         const drill = await getDrill(token, Number(id));
+        console.log('goodbye')
         if (drill)
             setDrill(drill);
     }

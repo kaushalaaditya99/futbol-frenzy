@@ -79,17 +79,23 @@ class SettingsSerializer(serializers.ModelSerializer):
 
 class DrillSerializer(serializers.ModelSerializer):
     coach = serializers.SerializerMethodField()
+    bookmarked = serializers.SerializerMethodField()
 
     class Meta:
         model = Drill
         fields = ['id', 'drillName', 'drillType', 'coachID', 'url',
                   'difficultyLevel', 'instructions', 'imageBackgroundColor',
-                  'imageText', 'imageTextColor', 'publicDrill', 'coach']
-        read_only_fields = ['id', 'coach']
+                  'imageText', 'imageTextColor', 'publicDrill', 'coach', 'bookmarked']
+        read_only_fields = ['id', 'coach', 'bookmarked']
     
     def get_coach(self, obj):
         return UserSerializer(obj.coachID).data
-
+    
+    def get_bookmarked(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        return False
 
 class DrillBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
@@ -121,6 +127,7 @@ class WorkoutDrillSerializer(serializers.ModelSerializer):
 class WorkoutSerializer(serializers.ModelSerializer):
     coach = serializers.SerializerMethodField()
     drills = WorkoutDrillSerializer(source='workoutdrill_set', many=True, read_only=True)
+    bookmarked = serializers.SerializerMethodField()
 
     class Meta:
         model = Workout
@@ -135,9 +142,9 @@ class WorkoutSerializer(serializers.ModelSerializer):
             "imageTextColor",
             "drills",
             "publicWorkout",
-            'coach'
+            'coach', 'bookmarked'
         ]
-        read_only_fields = ["id", 'coach', 'drills']
+        read_only_fields = ["id", 'coach', 'drills', 'bookmarked']
 
     def get_coach(self, obj):
         return UserSerializer(obj.coachID).data
@@ -153,6 +160,12 @@ class WorkoutSerializer(serializers.ModelSerializer):
                 repetitions=drill_data.get('repetitions')
             )
         return workout
+
+    def get_bookmarked(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        return WorkoutBookmark.objects.filter(workoutID=obj, userID=request.user).exists()
 
 class SubmittedDrillSerializer(serializers.ModelSerializer):
     drill = serializers.SerializerMethodField()

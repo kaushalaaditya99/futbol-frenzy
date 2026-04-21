@@ -61,6 +61,7 @@ export async function getDrills(token: string): Promise<Drill[]> {
 
 export async function getDrill(token: string, drillID: number): Promise<Drill|null> {
   try {
+    console.log(drillID);
     const res = await fetch(`${API_URL}drills/${drillID}`,
     {
         headers: {

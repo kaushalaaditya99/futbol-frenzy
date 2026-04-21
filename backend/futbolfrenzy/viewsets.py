@@ -82,6 +82,13 @@ class DrillViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
+        publicDrills = Drill.objects.filter(publicDrill=True)
+    
+        if not self.request.user.is_authenticated:
+            return publicDrills
+        
+        userDrills = Drill.objects.filter(coachID=self.request.user)
+        return publicDrills | userDrills
         #all drills marked public
         publicDrills = Drill.objects.filter(publicDrill=True)
         #all drills belonging to a coach

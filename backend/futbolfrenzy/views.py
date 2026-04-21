@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember, WorkoutDrill
+from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember, WorkoutDrill, WorkoutBookmark, DrillBookmark
 from .serializers import SoccerClassSerializer, AssignmentSerializer, SubmissionSerializer
 import os
 import boto3
@@ -646,3 +646,40 @@ def create_submission(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+@api_view(['POST'])
+def bookmark_drill(request, drill_id):
+    try:
+        drill = Drill.objects.get(id=drill_id)
+        bookmark = DrillBookmark.objects.filter(drillID=drill, userID=request.user)
+
+        if bookmark.exists():
+            bookmark.delete()
+            return Response({"bookmarked": False}, status=status.HTTP_200_OK)
+        else:
+            DrillBookmark.objects.create(drillID=drill, userID=request.user)
+            return Response({"bookmarked": True}, status=status.HTTP_201_CREATED)
+
+    except Drill.DoesNotExist:
+        return Response({"error": "Drill not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def bookmark_workout(request, workout_id):
+    try:
+        workout = Workout.objects.get(id=workout_id)
+        bookmark = WorkoutBookmark.objects.filter(workoutID=workout, userID=request.user)
+
+        if bookmark.exists():
+            bookmark.delete()
+            return Response({"bookmarked": False}, status=status.HTTP_200_OK)
+        else:
+            WorkoutBookmark.objects.create(workoutID=workout, userID=request.user)
+            return Response({"bookmarked": True}, status=status.HTTP_201_CREATED)
+
+    except Workout.DoesNotExist:
+        return Response({"error": "Workout not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -50,4 +50,6 @@ urlpatterns = [
     path('api/get_class_submission_workout_analytics/<int:class_id>/', get_class_submission_workout_analytics),
     path('api/grade_submission/<int:submission_id>/', grade_submission),
     path('api/create_submission/', create_submission),
+    path('api/drills/<int:drill_id>/bookmark/', views.bookmark_drill),
+    path('api/workouts/<int:workout_id>/bookmark/', views.bookmark_workout),
 ]

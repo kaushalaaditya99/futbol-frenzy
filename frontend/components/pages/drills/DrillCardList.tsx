@@ -75,7 +75,12 @@ export default function DrillCardList(props: DrillCardListProps) {
                 contentFit="cover"
             />
             <Pressable
-                onPress={() => router.push("/drill")}
+                onPress={() => router.push({
+                    pathname: "/drills/[id]",
+                    params: {
+                        id: props.id
+                    }
+                })}
                 style={{
                     flex: 1,
                     paddingVertical: padding.sm,

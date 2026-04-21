@@ -14,8 +14,13 @@ export default function CreateDrillButton(props: CreateDrillButtonProps) {
             onPress={props.onPress}
             borderRadius={8}
             {...buttonTheme.white}
+            outerStyle={{
+                height: 36,
+                minHeight: 36,
+                maxHeight: 36,
+            }}
             innerMostStyle={{
-                height: "100%",
+                height: '100%',
                 paddingVertical: theme.padding.sm - 1,
                 paddingHorizontal: theme.padding.lg,
             }}
