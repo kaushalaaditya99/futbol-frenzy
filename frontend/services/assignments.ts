@@ -114,8 +114,9 @@ export async function getAssignment(token: string, assignmentID: number): Promis
             return null;
 
         const assignment = await response.json();
-        if (assignment)
-            assignment.dueDate = new Date(assignment.dueDate || "");
+        if (assignment && assignment.dueDate) {
+            assignment.dueDate = new Date(assignment.dueDate);
+        }
 
         return assignment;
     }
