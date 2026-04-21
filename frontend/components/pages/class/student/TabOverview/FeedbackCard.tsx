@@ -1,5 +1,5 @@
 import ThemedText from "@/components/ui/ThemedText";
-import { borderRadius, colors, fontSize, padding, shadow } from "@/theme";
+import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "@/theme";
 import { ChevronDown, ChevronUp } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
@@ -169,9 +169,10 @@ export default function FeedbackCard({
                 </View>
                 <ThemedText
                     style={{
-                        fontSize: fontSize.base,
+                        fontSize: fontSize.md,
                         color: colors.schemes.light.onSurfaceVariant,
                         lineHeight: 20,
+                        letterSpacing: letterSpacing.xl,
                         paddingLeft: 40 + padding.md,
                     }}
                     numberLines={!expanded && isLong ? 2 : undefined}

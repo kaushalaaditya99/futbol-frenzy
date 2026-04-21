@@ -4,6 +4,8 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { PoseOverlay } from './PoseOverlay';
 import { PoseLandmark, CameraFacing } from '@/types/pose';
 import { analyzeFrame } from '@/services/poseAnalysis';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { manipulateAsync } from 'expo-image-manipulator';
 
 interface StudentCameraProps {
     isRecording: boolean;
@@ -52,13 +54,21 @@ export const StudentCamera = forwardRef<StudentCameraRef, StudentCameraProps>(fu
         try {
             // Take a snapshot for pose analysis
             const photo = await cameraRef.current.takePictureAsync({
-                quality: 0.3, // Lower quality for faster upload
+                quality: 0.1, // Lower quality for faster upload
                 base64: true,
                 skipProcessing: true, // Skip additional processing for speed
             });
 
             if (photo?.base64) {
                 // Send to backend for analysis
+                // const resized = await manipulateAsync(
+                //     photo.uri,
+                //     [{ resize: { width: 256, height: 256 } }],
+                //     { base64: true, compress: 0.1 }
+                // );
+
+                // const result = await analyzeFrame(resized.base64!);
+                
                 const result = await analyzeFrame(photo.base64);
 
                 if (result.success && result.landmarks.length > 0) {
@@ -77,7 +87,8 @@ export const StudentCamera = forwardRef<StudentCameraRef, StudentCameraProps>(fu
 
     // Start/stop frame analysis based on camera ready state
     useEffect(() => {
-        if (cameraReady && !isRecording) {
+        if (cameraReady) {
+            console.log("HELLOOOOO");
             // Start periodic frame analysis
             analysisInterval.current = setInterval(captureAndAnalyze, FRAME_ANALYSIS_INTERVAL);
         }
@@ -145,7 +156,7 @@ export const StudentCamera = forwardRef<StudentCameraRef, StudentCameraProps>(fu
                 mute={true} // Mute camera sounds
             />
             {/* Pose overlay */}
-            <PoseOverlay landmarks={landmarks} />
+            <PoseOverlay landmarks={landmarks} facing={facing}/>
         </View>
     );
 });

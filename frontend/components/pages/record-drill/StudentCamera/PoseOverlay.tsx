@@ -7,6 +7,7 @@ interface PoseOverlayProps {
     landmarks: PoseLandmark[];
     width?: number;
     height?: number;
+    facing?: 'front' | 'back';
 }
 
 // Colors for the pose overlay
@@ -25,7 +26,7 @@ const LINE_WIDTH = {
 
 const POINT_RADIUS = 5;
 
-export function PoseOverlay({ landmarks, width, height }: PoseOverlayProps) {
+export function PoseOverlay({ landmarks, width, height, facing }: PoseOverlayProps) {
     // Get screen dimensions if not provided
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
@@ -45,7 +46,10 @@ export function PoseOverlay({ landmarks, width, height }: PoseOverlayProps) {
     }
 
     // Convert normalized coordinates (0-1) to pixel coordinates
-    const toPixelX = (normalizedX: number): number => normalizedX * viewWidth;
+    const toPixelX = (normalizedX: number): number => {
+        const flipped = facing === 'front' ? 1 - normalizedX : normalizedX;
+        return flipped * viewWidth;
+    };
     const toPixelY = (normalizedY: number): number => normalizedY * viewHeight;
 
     // Check if a landmark is valid (not undefined and has reasonable visibility)

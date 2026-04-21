@@ -159,7 +159,7 @@ export default function StudentView(props: StudentViewProps) {
                     return (
                         <RowCard
                             key={drillId}
-                            onPress={() => !isCompleted && handleRecordDrill(drillId)}
+                            onPress={() => handleRecordDrill(drillId)}
                             title={`${index + 1}. ${drill.drillName || drill.name || 'Drill'}`}
                             descriptions={[
                                 drill.drillType || drill.type || "Drill",
@@ -180,7 +180,7 @@ export default function StudentView(props: StudentViewProps) {
                                     alignItems: "center",
                                     borderRadius: 1000,
                                     borderWidth: 1,
-                                    borderColor: colors.schemes.light.outlineVariant,
+                                    borderColor: isCompleted ? colors.coreColors.primary : colors.schemes.light.outlineVariant,
                                     ...shadow.sm,
                                     backgroundColor: isCompleted
                                         ? theme.colors.coreColors.primary
