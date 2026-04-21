@@ -175,6 +175,7 @@ export default function CoachView(props: CoachViewProps) {
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
                     assignmentsToday={assignmentsToday}
+                    assignments={assignments}
                     students={students}
                     classId={props.param_class.id}
                     className={props.param_class.className}

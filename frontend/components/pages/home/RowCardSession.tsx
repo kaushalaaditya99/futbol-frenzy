@@ -53,6 +53,29 @@ export default function RowCardSession(props: RowCardSessionProps) {
                             </ThemedText>
                         </View>
                     }
+                    {!props["isNew"] && !props["isDue"] &&
+                        <View
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                paddingVertical: 0,
+                                paddingHorizontal: 8,
+                                backgroundColor: "#c3f7c8",
+                                borderRadius: 100
+                            }}
+                        >
+                            <ThemedText
+                                style={{
+                                    fontSize: 10,
+                                    fontWeight: 600,
+                                    color: "#2e7d32",
+                                }}
+                            >
+                                COMPLETED
+                            </ThemedText>
+                        </View>
+                    }
                 </>
             }
         />

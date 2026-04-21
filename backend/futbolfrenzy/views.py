@@ -345,7 +345,7 @@ def coach_stats(request):
         submissions_count = Submission.objects.filter(
             assignmentID__in=assignment_ids_today,
             studentID__in=class_student_ids,
-        ).count()
+        ).values('studentID', 'assignmentID').distinct().count()
         completion_values.append(round((submissions_count / total_expected) * 100))
 
     avg_completion = round(sum(completion_values) / len(completion_values)) if completion_values else 0
@@ -388,12 +388,12 @@ def coach_class_progress(request):
         assignment_ids = list(todays_assignments.values_list('id', flat=True))
         total_expected = total_students * len(assignment_ids)
 
-        # Count total submissions from class members for today's assignments
+        # Count distinct student-assignment pairs (not raw submissions, since each drill creates a separate one)
         class_student_ids = ClassMember.objects.filter(classID=sc).values_list('studentID', flat=True)
         submissions_count = Submission.objects.filter(
             assignmentID__in=assignment_ids,
             studentID__in=class_student_ids,
-        ).count()
+        ).values('studentID', 'assignmentID').distinct().count()
 
         completion = round((submissions_count / total_expected) * 100) if total_expected > 0 else 0
 
