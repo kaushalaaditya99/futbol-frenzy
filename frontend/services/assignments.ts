@@ -47,6 +47,7 @@ export interface Submission {
     imageText: string;
     imageTextColor: string;
     student: User;
+    feedback: string;
     submitted_drills: SubmittedDrill[]
 }
 

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
+from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember, WorkoutDrill
 from .serializers import SoccerClassSerializer, AssignmentSerializer, SubmissionSerializer
 import os
 import boto3
@@ -588,11 +588,27 @@ def grade_submission(request, submission_id):
         data = json.loads(request.body)
         grade = data.get("grade")
         grades = data.get("grades", {})
+        feedbacks = data.get("feedback", {})
+        print(feedbacks)
 
         submission = Submission.objects.get(id=submission_id)
         submission.grade = grade
         submission.dateGraded = timezone.now()
         submission.save()
+
+        submitted_drills = SubmittedDrill.objects.filter(submissionID=submission_id)
+
+        if not submitted_drills.exists():
+            # Get the drills from the assignment's workout
+            submission = Submission.objects.get(id=submission_id)
+            workout_drills = WorkoutDrill.objects.filter(workoutID=submission.assignmentID.workoutID)
+            
+            for workout_drill in workout_drills:
+                SubmittedDrill.objects.create(
+                    submissionID=submission,
+                    drillID=workout_drill.drillID,
+                    videoURL="",
+                )
 
         submitted_drills = SubmittedDrill.objects.filter(
             submissionID=submission_id
@@ -601,6 +617,9 @@ def grade_submission(request, submission_id):
         for index, drill in enumerate(submitted_drills):
             if str(index) in grades:
                 drill.grade = grades[str(index)]
+                drill.save()            
+            if str(index) in feedbacks:
+                drill.feedback = feedbacks[str(index)]
                 drill.save()
 
         return Response({"success": True}, status=200)
