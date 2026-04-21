@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, Text, StyleSheet, Alert } from 'react-native';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RecordDrillScreen } from '@/components/pages/record-drill/RecordDrillScreen';
@@ -8,8 +8,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import resolveEndpoint from '@/services/resolveEndpoint';
 import { MoveLeft } from 'lucide-react-native';
 import { Pressable } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { uploadVideo, createSubmission, createSubmittedDrill } from '@/services/cloud';
 
 interface DrillData {
     id: number;
@@ -26,8 +24,6 @@ export default function RecordDrillRoute() {
     const [drill, setDrill] = useState<DrillData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [cameraFailed, setCameraFailed] = useState(false);
 
     // Get drill ID and assignment ID from route params
     const drillId = parseInt(params.drillId as string, 10) || 1;
@@ -63,20 +59,6 @@ export default function RecordDrillRoute() {
 
         fetchDrill();
     }, [drillId]);
-
-    // Check if camera is available on mount
-    useEffect(() => {
-        (async () => {
-            try {
-                const { status } = await ImagePicker.requestCameraPermissionsAsync();
-                if (status !== 'granted') {
-                    setCameraFailed(true);
-                }
-            } catch {
-                setCameraFailed(true);
-            }
-        })();
-    }, []);
 
     // Loading state
     if (isLoading) {
@@ -118,55 +100,6 @@ export default function RecordDrillRoute() {
         );
     }
 
-    const handlePickVideo = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['videos'] });
-        if (result.canceled) return;
-
-        const uri = result.assets[0].uri;
-        try {
-            setIsSubmitting(true);
-            const token = await AsyncStorage.getItem('authToken');
-            const meRes = await fetch(resolveEndpoint('/api/users/me/'), {
-                headers: { Authorization: `Token ${token}` },
-            });
-            const me = await meRes.json();
-            const studentID = me.id;
-
-            const submission = await createSubmission({
-                studentID,
-                assignmentID: assignmentId,
-                imageBackgroundColor: '#000000',
-                imageText: drill.drillName,
-                imageTextColor: '#FFFFFF',
-            });
-
-            const { videoUrl } = await uploadVideo(uri);
-
-            await createSubmittedDrill({
-                submissionID: submission.id,
-                drillID: drill.id,
-                videoURL: videoUrl,
-            });
-
-            Alert.alert('Success', 'Drill submitted!', [
-                { text: 'OK', onPress: () => router.back() },
-            ]);
-        } catch (err) {
-            console.error('Submission error:', err);
-            Alert.alert('Error', 'Failed to submit. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const goBack = () => {
-        if (router.canGoBack()) {
-            router.back();
-        } else {
-            router.replace('/(tabs)/demonstration');
-        }
-    };
-
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
             {/* Header */}
@@ -190,31 +123,14 @@ export default function RecordDrillRoute() {
                 <View style={{ width: 24 }} />
             </View>
 
-            {cameraFailed ? (
-                // Fallback for simulator or no camera permission
-                isSubmitting ? (
-                    <View style={styles.fallbackContainer}>
-                        <ActivityIndicator size="large" color="#00FF88" />
-                        <Text style={styles.loadingText}>Uploading video...</Text>
-                    </View>
-                ) : (
-                    <View style={styles.fallbackContainer}>
-                        <Text style={styles.fallbackText}>Camera not available</Text>
-                        <Pressable style={styles.retryButton} onPress={handlePickVideo}>
-                            <Text style={styles.retryText}>Pick Video from Library</Text>
-                        </Pressable>
-                    </View>
-                )
-            ) : (
-                // Real device with camera — show the split-screen recording UI
-                <RecordDrillScreen
-                    drillId={drill.id}
-                    drillName={drill.drillName}
-                    instructorVideoUrl={drill.url}
-                    assignmentId={assignmentId}
-                    returnToAssignment={returnTo === 'assignment'}
-                />
-            )}
+            {/* Main recording screen */}
+            <RecordDrillScreen
+                drillId={drill.id}
+                drillName={drill.drillName}
+                instructorVideoUrl={drill.url}
+                assignmentId={assignmentId}
+                returnToAssignment={returnTo === 'assignment'}
+            />
         </SafeAreaView>
     );
 }
@@ -275,16 +191,5 @@ const styles = StyleSheet.create({
         color: 'black',
         fontWeight: '600',
         fontSize: 16,
-    },
-    fallbackContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    fallbackText: {
-        color: '#999',
-        fontSize: 16,
-        marginBottom: 20,
     },
 });

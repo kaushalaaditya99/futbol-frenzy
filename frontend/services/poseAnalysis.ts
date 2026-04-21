@@ -25,13 +25,17 @@ export async function analyzeFrame(imageBase64: string): Promise<PoseResult> {
     try {
         const headers = await authHeaders();
 
-        // Use React Native compatible FormData with base64 data URI
+        // Convert base64 to blob for upload
+        const byteCharacters = atob(imageBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+
         const formData = new FormData();
-        formData.append('image', {
-            uri: `data:image/jpeg;base64,${imageBase64}`,
-            type: 'image/jpeg',
-            name: 'frame.jpg',
-        } as any);
+        formData.append('image', blob, 'frame.jpg');
 
         const response = await axios.post(
             resolveEndpoint('/analyze-pose/'),
@@ -41,7 +45,7 @@ export async function analyzeFrame(imageBase64: string): Promise<PoseResult> {
                     ...headers,
                     'Content-Type': 'multipart/form-data',
                 },
-                timeout: 5000,
+                timeout: 5000, // 5 second timeout for real-time feel
             }
         );
 
@@ -50,7 +54,7 @@ export async function analyzeFrame(imageBase64: string): Promise<PoseResult> {
             success: true,
         };
     } catch (error: any) {
-        // Only log once, not every frame
+        console.error('Frame analysis error:', error.message);
         return {
             landmarks: [],
             success: false,
