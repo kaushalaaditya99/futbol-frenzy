@@ -40,13 +40,14 @@ export async function getSessions(token: string): Promise<Array<Session>> {
         const data = await response.json();
 
         return data.map((workout: any) => ({
+            ...workout,
             id: workout.id,
             date: workout.dueDate ? new Date(workout.dueDate) : new Date(),
             name: workout.workoutName,
             type: workout.workoutType,
             durationInMins: 0,
             class: "",
-            drills: [],
+            drills: workout.drills || [],
             isNew: false,
             isDue: workout.dueDate ? new Date(workout.dueDate) >= new Date() : false,
             imageBackgroundColor: workout.imageBackgroundColor || "#1C1C1C",

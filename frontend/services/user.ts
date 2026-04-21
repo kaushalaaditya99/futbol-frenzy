@@ -56,3 +56,23 @@ export async function getUserSettings(token: string) {
     // console.log("User Settings", data);
     return data;
 }
+
+
+export async function getUserByID(token: string, userID: number): Promise<User|null> {
+    try {
+        const response = await fetch(`${API_URL}/user/${userID}/`, {
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok)
+            return null;
+
+        return await response.json();
+    } catch (err) {
+        console.error("Error Fetching User\n", err);
+        return null;
+    }
+}

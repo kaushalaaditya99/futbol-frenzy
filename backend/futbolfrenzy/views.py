@@ -21,7 +21,9 @@ from .mediapipe import PoseService, VideoPoseService
 from rest_framework import status
 from django.utils.dateparse import parse_datetime, parse_date
 from django.db.models import Q
+from django.utils import timezone
 
+load_dotenv(override=True)
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
 GOOGLE_IOS_CLIENT_ID = os.getenv('GOOGLE_IOS_CLIENT_ID')
@@ -29,9 +31,6 @@ GOOGLE_ANDROID_CLIENT_ID = os.getenv('GOOGLE_ANDROID_CLIENT_ID')
 
 pose_service = PoseService()
 video_service = VideoPoseService()
-
-
-load_dotenv()
 # Create your views here.
 
 def home(request):
@@ -566,3 +565,65 @@ def get_class_submission_workout_analytics(request, class_id):
 
     serializer = SubmissionSerializer(submissions_qs, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
+@api_view(['POST'])
+def grade_submission(request, submission_id):
+    try:
+        data = json.loads(request.body)
+        grade = data.get("grade")
+        grades = data.get("grades", {})
+
+        submission = Submission.objects.get(id=submission_id)
+        submission.grade = grade
+        submission.dateGraded = timezone.now()
+        submission.save()
+
+        submitted_drills = SubmittedDrill.objects.filter(
+            submissionID=submission_id
+        ).order_by("id")
+
+        for index, drill in enumerate(submitted_drills):
+            if str(index) in grades:
+                drill.grade = grades[str(index)]
+                drill.save()
+
+        return Response({"success": True}, status=200)
+
+    except Submission.DoesNotExist:
+        return Response({"error": "Submission not found"}, status=404)
+    
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+    
+@api_view(['POST'])
+def create_submission(request):
+    if request.method != "POST":
+        return Response({"error": "Method not allowed"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        assignment_id = data.get("assignmentID")
+        student_id = data.get("studentID")
+
+        # Return existing submission if one already exists
+        existing = Submission.objects.filter(
+            assignmentID=assignment_id,
+            studentID=student_id
+        ).first()
+
+        if existing:
+            serializer = SubmissionSerializer(existing)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        submission = Submission.objects.create(
+            assignmentID_id=assignment_id,
+            studentID_id=student_id,
+            imageBackgroundColor="#FFFFFF",
+            imageText="",
+            imageTextColor="#000000",
+        )
+        
+        serializer = SubmissionSerializer(submission)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)

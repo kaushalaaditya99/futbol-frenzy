@@ -20,7 +20,6 @@ import CalendarNavigate from "@/components/ui/calendar/CalendarNavigate";
 import WeekButtonGroup from "@/components/ui/calendar/WeekButtonGroup";
 import CoachHome from "@/components/pages/home/CoachHome";
 import { useAuth } from "@/contexts/AuthContext";
-import { router } from "expo-router";
 import { getStudentStats, getStudentSchedule, getStudentResults, StudentStats, ScheduleItem, StudentResult } from "@/services/studentHome";
 
 export default function Home() {
@@ -68,6 +67,7 @@ export default function Home() {
         uploadedBy: "",
         bookmarked: false,
         accessControl: "private",
+        coach: {} as any,
     }));
 
     if (role === "Coach") return <CoachHome />;
@@ -148,7 +148,7 @@ export default function Home() {
                                     }
                                 />
                                 <CardMetric
-                                    label="This Week"
+                                    label="Submitted"
                                     value={String(stats.thisWeek)}
                                 />
                                 <CardMetric
@@ -196,14 +196,26 @@ export default function Home() {
                                         rowGap: padding.lg
                                     }}
                                 >
+                                    {sessions.length === 0 && (
+                                        <ThemedText
+                                            style={{
+                                                textAlign: "center",
+                                                color: colors.schemes.light.onSurfaceVariant,
+                                                fontSize: fontSize.md,
+                                                paddingVertical: padding.xl,
+                                            }}
+                                        >
+                                            No assignments due on this day
+                                        </ThemedText>
+                                    )}
                                     {sessions.map((session: any, i: number) => (
                                         <Fragment key={i}>
                                             <RowCardSession
                                                 {...session}
+                                                showTag={true}
                                             />
                                         </Fragment>
                                     ))}
-                                    <ViewAllButton/>
                                 </View>
                             </View>
                             <View

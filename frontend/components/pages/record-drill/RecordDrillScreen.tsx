@@ -3,8 +3,8 @@ import { View, StyleSheet, Alert, Platform, Text, Pressable, ActivityIndicator, 
 import { useRouter } from 'expo-router';
 import { SplitScreenLayout } from './SplitScreenLayout';
 import { InstructorVideo } from './InstructorVideo';
-import { StudentCamera } from './StudentCamera';
-import type { StudentCameraRef } from './StudentCamera';
+import { StudentCamera } from './StudentCamera/StudentCamera.native';
+import type { StudentCameraRef } from './StudentCamera/StudentCamera.native';
 import { CameraControls } from './CameraControls';
 import { LiveScoreBadge, ScoreDisplay } from './ScoreDisplay';
 import { useCameraPermission } from '@/hooks/useCameraPermission';

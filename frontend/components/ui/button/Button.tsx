@@ -14,6 +14,7 @@ export interface ButtonProps {
     borderColor?: string;
     backgroundColor?: string;
     borderRadius?: number;
+    disabled?: boolean;
 }
 
 export default function Button(props: ButtonProps) {
@@ -24,7 +25,12 @@ export default function Button(props: ButtonProps) {
 
     return (
         <Pressable
-            onPress={props.onPress}
+            onPress={() => {
+                if (props.disabled)
+                    return;
+                if (props.onPress)
+                    props.onPress();
+            }}
             style={{
                 padding: 1,
                 flex: 1,

@@ -51,9 +51,9 @@ export interface Submission {
 
 const API_URL = resolveEndpoint("/api");
 
-export async function getAssignmentsbyClass(token: string, class_id: number): Promise<Array<Assignment>> {
+export async function getAssignmentsByClass(token: string, class_id: number): Promise<Array<Assignment>> {
     try {
-        const response = await fetch (`${API_URL}/assignments/?classID=${class_id}`, {
+        const response = await fetch (`${API_URL}/get_assignments_for_class/${class_id}/`, {
             headers: {
                 Authorization: `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -167,9 +167,13 @@ export async function createAssignment(token: string, data: CreateAssignmentData
         });
 
         let workoutName = "Assignment";
+        let workoutBgColor = "#1C1C1C";
+        let workoutTextColor = "#FFFFFF";
         if (workoutResponse.ok) {
             const workout = await workoutResponse.json();
             workoutName = workout.workoutName || "Assignment";
+            workoutBgColor = workout.imageBackgroundColor || "#1C1C1C";
+            workoutTextColor = workout.imageTextColor || "#FFFFFF";
         }
 
         const response = await fetch(`${API_URL}/assignments/`, {
@@ -181,9 +185,9 @@ export async function createAssignment(token: string, data: CreateAssignmentData
             body: JSON.stringify({
                 workoutID: data.workoutID,
                 dueDate: data.dueDate,
-                imageBackgroundColor: data.imageBackgroundColor || "#1C1C1C",
+                imageBackgroundColor: data.imageBackgroundColor || workoutBgColor,
                 imageText: data.imageText || workoutName.substring(0, 2).toUpperCase(),
-                imageTextColor: data.imageTextColor || "#FFFFFF",
+                imageTextColor: data.imageTextColor || workoutTextColor,
                 soccer_classes: data.classIds,
             }),
         });
@@ -199,5 +203,22 @@ export async function createAssignment(token: string, data: CreateAssignmentData
     } catch (err) {
         console.error("Error creating assignment:", err);
         return { success: false, error: String(err) };
+    }
+}
+
+export async function deleteAssignment(token: string, assignmentID: number): Promise<boolean> {
+    try {
+        const response = await fetch(`${API_URL}/assignments/${assignmentID}/`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        return response.ok;
+    } catch (err) {
+        console.error("Error Deleting Assignment\n", err);
+        return false;
     }
 }

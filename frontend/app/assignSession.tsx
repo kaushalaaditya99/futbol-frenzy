@@ -40,8 +40,8 @@ function SessionCard({ session, onPress }: SessionCardProps) {
                     justifyContent: "center",
                 }}
             >
-                <ThemedText style={{ fontSize: fontSize.lg }}>
-                    {session.imageText}
+                <ThemedText style={{ fontSize: fontSize.sm, fontWeight: "500", color: session.imageTextColor || "black" }}>
+                    {session.imageText?.toUpperCase().slice(0, 2) || ""}
                 </ThemedText>
             </View>
 

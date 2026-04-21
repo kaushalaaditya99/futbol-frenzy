@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ScrollView } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { MarkedDates } from "react-native-calendars/src/types";
 import Tabs from "../coach/Tabs";
 import StudentTabOverview from "./TabOverview/TabOverview";
@@ -11,7 +12,7 @@ import { Session } from "@/services/sessions";
 import { getStudents, Student } from "@/services/students";
 import StudentTabStudent from "./TabStudent/TabStudent";
 import StudentTabProgress from "./TabProgress/TabProgress";
-import { Assignment, getAssignmentsbyClass } from "@/services/assignments";
+import { Assignment, getAssignmentsByClass } from "@/services/assignments";
 import { router } from "expo-router";
 import { useProfile } from "@/contexts/ProfileContext";
 import resolveEndpoint from "@/services/resolveEndpoint";
@@ -82,9 +83,21 @@ export default function StudentView(props: StudentViewProps) {
 
     const loadAssignments = async () => {
         if (!token) return;
-        const data = await getAssignmentsbyClass(token, classID);
+        const data = await getAssignmentsByClass(token, classID);
         setAssignments(data);
     };
+
+    // Reload assignments when screen regains focus (e.g. after assigning)
+    useFocusEffect(
+        useCallback(() => {
+            if (token && classID > 0) {
+                loadAssignments();
+                if (studentId !== null) {
+                    loadMySubmissions();
+                }
+            }
+        }, [token, classID, studentId])
+    );
 
     const loadMySubmissions = async () => {
         if (!token || studentId === null) return;
