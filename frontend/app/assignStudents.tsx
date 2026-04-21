@@ -92,7 +92,7 @@ function ClassRow({ classItem, checked, editMode, onToggle }: ClassRowProps) {
                             : colors.schemes.light.onSurfaceVariant,
                     }}
                 >
-                    {classItem.imageText || classItem.className?.substring(0, 2).toUpperCase()}
+                    {(classItem.imageText || classItem.className || "").toUpperCase().slice(0, 2)}
                 </ThemedText>
             </View>
 
@@ -210,12 +210,20 @@ export default function AssignStudents() {
             });
 
             if (result.success) {
+                const goBack = () => {
+                    // Go back to class page and force refresh
+                    if (router.canDismiss()) {
+                        router.dismiss(2);
+                    } else {
+                        router.back();
+                    }
+                };
                 if (Platform.OS === 'web') {
                     window.alert('Assignment created successfully!');
-                    router.back();
+                    goBack();
                 } else {
                     Alert.alert('Success', 'Assignment created successfully!', [
-                        { text: 'OK', onPress: () => router.back() },
+                        { text: 'OK', onPress: goBack },
                     ]);
                 }
             } else {
@@ -302,8 +310,8 @@ export default function AssignStudents() {
                             justifyContent: "center",
                         }}
                     >
-                        <ThemedText style={{ fontSize: fontSize.lg }}>
-                            {session.imageText}
+                        <ThemedText style={{ fontSize: fontSize.sm, fontWeight: "500", color: session.imageTextColor || "black" }}>
+                            {session.imageText?.toUpperCase().slice(0, 2) || ""}
                         </ThemedText>
                     </View>
                     <View style={{ flex: 1, rowGap: 2 }}>

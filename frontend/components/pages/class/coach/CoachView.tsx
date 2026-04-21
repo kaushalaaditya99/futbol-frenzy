@@ -66,8 +66,16 @@ export default function CoachView(props: CoachViewProps) {
 
     useEffect(() => {
         loadAssignments();
-        //loadStudents(classID);
     }, [token, props.param_class]);
+
+    // Reload assignments when screen regains focus (e.g. after assigning)
+    useFocusEffect(
+        useCallback(() => {
+            if (token && props.param_class.id > 0) {
+                loadAssignments();
+            }
+        }, [token, props.param_class.id])
+    );
 
 
     useEffect(() => {
