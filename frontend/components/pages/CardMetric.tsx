@@ -1,4 +1,4 @@
-import { borderRadius, colors, fontSize, letterSpacing, padding, shadow } from "@/theme";
+import { borderRadius, colors, fontSize, letterSpacing, padding, shadow, theme } from "@/theme";
 import { TextStyle, View } from "react-native";
 import { ReactNode } from "react";
 import ThemedText from "../ui/ThemedText";
@@ -45,6 +45,7 @@ export default function CardMetric(props: CardMetricProps) {
                         fontWeight: 500,
                         fontSize: fontSize.base,
                         color: colors.coreColors.primary,
+                        letterSpacing: theme.letterSpacing.lg,
                         ...props.labelStyle
                     }}
                 >
@@ -61,7 +62,7 @@ export default function CardMetric(props: CardMetricProps) {
                     fontSize: fontSize.sm,
                     fontWeight: 500,
                     textAlign: "center",
-                    letterSpacing: letterSpacing.lg,
+                    letterSpacing: letterSpacing.xl * 1.5,
                     color: colors.schemes.light.onSurfaceVariant,
                 }}
             >

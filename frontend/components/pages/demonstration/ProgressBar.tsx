@@ -1,5 +1,5 @@
 import { Pressable, View } from "react-native";
-import { colors, fontSize, padding } from "@/theme";
+import { colors, fontSize, padding, shadow, theme } from "@/theme";
 import ThemedText from "@/components/ui/ThemedText";
 import { CheckIcon, CircleCheck } from "lucide-react-native";
 import { Drill } from "@/services/drills";
@@ -16,7 +16,11 @@ export default function ProgressBar(props: ProgressBarProps) {
         <View
             style={{
                 display: "flex",
-                flexDirection: "row"
+                flexDirection: "row",
+                columnGap: 8,
+                marginHorizontal: 12,
+                borderRadius: 12,
+                ...shadow.sm
             }}    
         >
             {props.drills.map((drill, i) => (
@@ -31,7 +35,15 @@ export default function ProgressBar(props: ProgressBarProps) {
                         columnGap: 4,
                         paddingVertical: padding.sm,
                         paddingHorizontal: Math.max(padding.md, 24),
-                        backgroundColor: i === props.drillIndex ? colors.coreColors.primary : colors.palettes.neutral[0],
+                        backgroundColor: i === props.drillIndex ? colors.coreColors.primary : colors.schemes.light.surfaceContainerLow,
+                        borderRadius: 8,
+                        // borderTopLeftRadius: i === 0 ? 12 : 0,
+                        // borderBottomLeftRadius: i === 0 ? 12 : 0,
+                        // borderTopRightRadius: i === props.drills.length - 1 ? 12 : 0,
+                        // borderBottomRightRadius: i === props.drills.length - 1 ? 12 : 0,
+                        borderWidth: 1,
+                        // borderLeftWidth: i === props.drills.length - 1 ? 0 : 1,
+                        borderColor: i === props.drillIndex ? colors.coreColors.primary : theme.colors.schemes.light.outlineVariant,
                         // borderTopWidth: 1,
                         // borderColor: props.submittedDrills.findIndex(n => i === n) !== -1 ? "#3AB82C" : colors.schemes.light.outlineVariant
                     }}
@@ -45,7 +57,7 @@ export default function ProgressBar(props: ProgressBarProps) {
                             style={{
                                 fontSize: fontSize.base,
                                 fontWeight: 500,
-                                color: colors.schemes.light.onPrimary,
+                                color: i === props.drillIndex ? colors.schemes.light.onPrimary : colors.schemes.light.onSurfaceVariant,
                                 textAlign: "center",
                             }}
                         >
@@ -61,7 +73,7 @@ export default function ProgressBar(props: ProgressBarProps) {
                             >
                                 <CircleCheck
                                     size={16}
-                                    color='#ffffff'
+                                    color={i === props.drillIndex ? colors.schemes.light.onPrimary : colors.schemes.light.onSurfaceVariant}
                                 />
                             </View>
                         }

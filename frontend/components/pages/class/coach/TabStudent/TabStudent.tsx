@@ -16,7 +16,7 @@ export default function TabStudent(props: TabStudentProps) {
     return (
         <View
             style={{
-                marginHorizontal: margin.sm,
+                marginHorizontal: margin["2xs"],
                 marginVertical: margin["2xs"],
                 rowGap: padding.lg,
                 backgroundColor: colors.schemes.light.background,

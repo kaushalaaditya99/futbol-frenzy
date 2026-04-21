@@ -10,6 +10,7 @@ import ThemedText from '@/components/ui/ThemedText';
 import { useCallback, useEffect, useState } from 'react';
 import { Assignment, getAssignment, getClassByAssignment } from '@/services/assignments';
 import { Class } from '@/services/classes';
+import SimpleButton from '@/components/ui/button/SimpleButton';
 
 export default function Page() {
     const { role, token, loaded } = useAuth();

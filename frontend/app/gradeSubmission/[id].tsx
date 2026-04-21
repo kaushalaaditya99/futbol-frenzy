@@ -17,6 +17,8 @@ import { CheckIcon, MoveLeft, MoveRightIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import ErrorMessage from "@/components/ui/input/ErrorMessage";
 
 export default function Page() {
     const { token } = useAuth();
@@ -111,7 +113,7 @@ export default function Page() {
         >
             {(assignment && submission) &&
                 <>
-                    <ScrollView
+                    <KeyboardAwareScrollView
                         style={{
                             flex: 1,
                         }}
@@ -135,125 +137,85 @@ export default function Page() {
                             containerStyle={{
                                 paddingVertical: theme.margin.xs,
                                 paddingHorizontal: theme.margin.sm,
+                                // borderBottomWidth: 0
                             }}
                             buttonStyle={{
                                 backgroundColor: "#00000010"
                             }}
                         />
-                        <VideoView
-                            player={refDrillPlayer}
-                            style={{
-                                height: Dimensions.get("screen").height * 0.25,
-                                backgroundColor: theme.colors.palettes.neutral[0]
-                            }}
-                            contentFit="cover"
-                        />
                         <View
                             style={{
                                 width: "100%",
+                                paddingBottom: 36,
                                 flex: 1,
+                                rowGap: 12,
                                 backgroundColor: theme.colors.schemes.light.surface,
                                 ...shadow.lg
                             }}
                         >
-                            <ProgressBar
-                                drills={assignment.workout.drills}
-                                drillIndex={drillIndex}
-                                submittedDrills={Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0]))}
-                                setDrillIndex={(drillIndex: number) => safelySetDrillIndex(drillIndex)}
-                            />
                             <View
                                 style={{
-                                    paddingTop: theme.margin.sm,
+                                    rowGap: theme.margin.md,
+                                    paddingVertical: theme.margin.md,
+                                    backgroundColor: 'white',
                                     borderBottomWidth: 1,
-                                    borderColor: theme.colors.schemes.light.outlineVariant,
-                                    borderStyle: "solid",
-                                    backgroundColor: theme.colors.schemes.light.background
+                                    borderColor: theme.colors.schemes.light.outlineVariant
                                 }}
                             >
-                                <View>
-                                    <ThemedText
-                                        style={{
-                                            paddingHorizontal: 12,
-                                            paddingBottom: theme.padding.xs,
-                                            fontSize: 12,
-                                            fontWeight: 600,
-                                            letterSpacing: theme.letterSpacing.xl,
-                                            color: theme.colors.schemes.light.onSurfaceVariant
-                                        }}
-                                    >
-                                        {(assignment.workout?.workoutName || "").toUpperCase()}
-                                    </ThemedText>
-                                    <ThemedText
-                                        style={{
-                                            paddingHorizontal: 12,
-                                            paddingBottom: theme.padding.sm,
-                                            fontSize: 20,
-                                            fontWeight: 600,
-                                            letterSpacing: theme.letterSpacing.sm,
-                                            marginBottom: 2
-                                        }}
-                                    >
-                                        {assignment.workout.drills[drillIndex].drillName}
-                                    </ThemedText>
-                                    <ThemedText
-                                        style={{
-                                            paddingHorizontal: 12,
-                                            marginBottom: theme.margin.sm,
-                                            fontSize: theme.fontSize.base,
-                                            letterSpacing: theme.letterSpacing.xl,
-                                            color: theme.colors.schemes.light.onSurfaceVariant
-                                        }}
-                                    >
-                                        {assignment.workout.drills[drillIndex].instructions}
-                                    </ThemedText>
-                                </View>
+                                <ProgressBar
+                                    drills={assignment.workout.drills}
+                                    drillIndex={drillIndex}
+                                    submittedDrills={Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0]))}
+                                    setDrillIndex={(drillIndex: number) => safelySetDrillIndex(drillIndex)}
+                                />
                                 <View
                                     style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        borderTopWidth: 1,
-                                        borderStyle: "dashed",
+                                        // borderBottomWidth: 1,
                                         borderColor: theme.colors.schemes.light.outlineVariant,
+                                        borderStyle: "solid",
+                                        // backgroundColor: theme.colors.schemes.light.background
                                     }}
                                 >
-                                    {[
-                                        assignment.workout.drills[drillIndex].drillType, 
-                                        assignment.workout.drills[drillIndex].difficultyLevel,
-                                        assignment.workout.drills[drillIndex].minutes ? `${assignment.workout.drills[drillIndex].minutes} mins` : `${assignment.workout.drills[drillIndex].repetitions} reps`
-                                    ].map((tag, i) => (
-                                        <View
-                                            key={i}
+                                    <View>
+                                        <ThemedText
                                             style={{
-                                                flex: 1,
-                                                justifyContent: "center",
-                                                paddingVertical: theme.padding.md,
-                                                paddingHorizontal: theme.padding.lg,
-                                                borderLeftWidth: i === 0 ? 0 : 1,
-                                                borderColor: theme.colors.schemes.light.outlineVariant,
-                                                backgroundColor: theme.colors.schemes.light.surface,
+                                                paddingHorizontal: 12,
+                                                paddingBottom: theme.padding.sm,
+                                                fontSize: 20,
+                                                fontWeight: 600,
+                                                letterSpacing: theme.letterSpacing.sm,
+                                                marginBottom: 2
                                             }}
                                         >
-                                            <ThemedText
-                                                style={{
-                                                    fontSize: 12,
-                                                    fontWeight: 600,
-                                                    letterSpacing: 0.25,
-                                                    textAlign: "center",
-                                                    color: theme.colors.schemes.light.onSurfaceVariant
-                                                }}
-                                            >
-                                                {tag.toUpperCase()}
-                                            </ThemedText>
-                                        </View>
-                                    ))}
+                                            Drill {drillIndex + 1}: {assignment.workout.drills[drillIndex].drillName}
+                                        </ThemedText>
+                                        <ThemedText
+                                            style={{
+                                                paddingHorizontal: 12,
+                                                // marginBottom: theme.margin.sm,
+                                                fontSize: 16,
+                                                letterSpacing: theme.letterSpacing.xl * 2,
+                                                color: theme.colors.schemes.light.onSurfaceVariant
+                                            }}
+                                        >
+                                            {assignment.workout.drills[drillIndex].instructions}
+                                        </ThemedText>
+                                    </View>
                                 </View>
                             </View>
                             <View
                                 style={{
-                                    paddingVertical: 12,
+                                    paddingTop: 12,
                                     paddingHorizontal: 0,
+                                    marginHorizontal: 12,
                                     rowGap: 12,
+                                    borderRadius: 12,
+                                    borderTopLeftRadius: 12,
+                                    borderTopRightRadius: 12,
+                                    backgroundColor: 'white',
+                                    borderWidth: 1,
+                                    borderColor: theme.colors.schemes.light.outlineVariant,
+                                    ...shadow.sm
                                 }}
                             >
                                 <ThemedText
@@ -261,35 +223,118 @@ export default function Page() {
                                         // paddingBottom: 12,
                                         paddingHorizontal: 12,
                                         marginHorizontal: 12,
-                                        fontSize: 18,
-                                        fontWeight: 600,
-                                        letterSpacing: -0.25,
+                                        fontSize: 14,
+                                        fontWeight: 500,
+                                        // letterSpacing: 0.125,
                                         textAlign: "center",
                                         // borderBottomWidth: 1,
-                                        borderColor: theme.colors.schemes.light.outlineVariant
+                                        color: theme.colors.schemes.light.onSurface,
+                                        // opacity: 0.5
+                                        // borderColor: theme.colors.schemes.light.outlineVariant,
+                                        // backgroundColor: 'blue'.
+                                    }}
+                                >
+                                    Reference Video
+                                </ThemedText>
+                                <VideoView
+                                    player={refDrillPlayer}
+                                    style={{
+                                        // marginHorizontal: 12,
+                                        borderBottomLeftRadius: 12,
+                                        borderBottomRightRadius: 12,
+                                        height: Dimensions.get("screen").height * 0.25,
+                                        borderTopWidth: 1,
+                                        borderColor: theme.colors.schemes.light.outlineVariant,
+                                        backgroundColor: theme.colors.schemes.light.surfaceContainer
+                                    }}
+                                    contentFit="cover"
+                                />
+                            </View>
+                            <View
+                                style={{
+                                    paddingTop: 12,
+                                    paddingHorizontal: 0,
+                                    marginHorizontal: 12,
+                                    rowGap: 12,
+                                    borderRadius: 12,
+                                    borderTopLeftRadius: 12,
+                                    borderTopRightRadius: 12,
+                                    backgroundColor: 'white',
+                                    borderWidth: 1,
+                                    borderColor: theme.colors.schemes.light.outlineVariant,
+                                    ...shadow.sm
+                                }}
+                            >
+                                <ThemedText
+                                    style={{
+                                        // paddingBottom: 12,
+                                        paddingHorizontal: 12,
+                                        marginHorizontal: 12,
+                                        fontSize: 14,
+                                        fontWeight: 500,
+                                        // letterSpacing: 0.125,
+                                        textAlign: "center",
+                                        // borderBottomWidth: 1,
+                                        color: theme.colors.schemes.light.onSurface,
+                                        // opacity: 0.5
+                                        // borderColor: theme.colors.schemes.light.outlineVariant,
+                                        // backgroundColor: 'blue'.
                                     }}
                                 >
                                     Submission Video
                                 </ThemedText>
-                                {!!submission.submitted_drills[drillIndex].videoURL &&
+                                {!!submission.submitted_drills[drillIndex]?.videoURL &&
                                     <VideoView 
                                         player={subDrillPlayer}
                                         style={{ 
-                                            width: "auto", 
-                                            height: 240,
-                                            marginHorizontal: 12,
-                                            borderRadius: 12,
-                                            backgroundColor: theme.colors.palettes.neutral[0]
+                                            borderBottomLeftRadius: 12,
+                                            borderBottomRightRadius: 12,
+                                            height: Dimensions.get("screen").height * 0.25,
+                                            borderTopWidth: 1,
+                                            borderColor: theme.colors.schemes.light.outlineVariant,
+                                            backgroundColor: theme.colors.schemes.light.surfaceContainer
                                         }}
                                         contentFit="cover"
                                     />
                                 }
+                                {!submission.submitted_drills[drillIndex]?.videoURL &&
+                                    <View
+                                        style={{ 
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            borderBottomLeftRadius: 12,
+                                            borderBottomRightRadius: 12,
+                                            height: Dimensions.get("screen").height * 0.25,
+                                            borderTopWidth: 1,
+                                            borderColor: theme.colors.schemes.light.outlineVariant,
+                                            backgroundColor: theme.colors.schemes.light.surfaceContainer
+                                        }}
+                                    >
+                                        <ThemedText
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: 500,
+                                                // opacity: 0.5,
+                                                color: theme.colors.schemes.light.onSurfaceVariant
+                                            }}
+                                        >
+                                            No Submission
+                                        </ThemedText>
+                                    </View>
+                                }
+                            </View>
+                            <View
+                                style={{
+                                    marginHorizontal: 12,
+                                    rowGap: 4
+                                }}
+                            >
                                 <View
                                     style={{
                                         height: 44,
-                                        marginHorizontal: 12,
                                         flexDirection: 'row',
                                         flexShrink: 1,
+                                        ...theme.shadow.sm
                                     }}
                                 >
                                     <View
@@ -302,14 +347,13 @@ export default function Page() {
                                             borderTopLeftRadius: theme.borderRadius.base,
                                             borderBottomLeftRadius: theme.borderRadius.base,
                                             borderColor: theme.colors.schemes.light.outlineVariant,
-                                            ...theme.shadow.sm
                                         }}
                                     >
                                         <ThemedText
                                             style={{
-                                                fontSize: theme.fontSize.base,
+                                                fontSize: 14,
                                                 fontWeight: 400,
-                                                letterSpacing: theme.letterSpacing.sm,
+                                                letterSpacing: theme.letterSpacing.xl,
                                                 color: theme.colors.schemes.light.onSurfaceVariant,
                                             }}
                                         >
@@ -323,9 +367,10 @@ export default function Page() {
                                         inputStyle={{
                                             height: 44,
                                             borderRadius: 0,
-                                            fontSize: theme.fontSize.base,
+                                            fontSize: 14,
                                             fontWeight: 400,
                                             letterSpacing: theme.letterSpacing.sm,
+                                            shadowOpacity: 0,
                                         }}
                                         value={grades[drillIndex]}
                                         onChangeText={(text) => {
@@ -347,12 +392,11 @@ export default function Page() {
                                             borderTopRightRadius: theme.borderRadius.base,
                                             borderBottomRightRadius: theme.borderRadius.base,
                                             borderColor: theme.colors.schemes.light.outlineVariant,
-                                            ...theme.shadow.sm
                                         }}
                                     >
                                         <ThemedText
                                             style={{
-                                                fontSize: theme.fontSize.base,
+                                                fontSize: 14,
                                                 fontWeight: 500,
                                                 letterSpacing: theme.letterSpacing.sm,
                                                 color: theme.colors.schemes.light.onSurfaceVariant,
@@ -362,25 +406,49 @@ export default function Page() {
                                         </ThemedText>
                                     </View>
                                 </View>
-                                <View
-                                    style={{
-                                        display: "flex",
-                                        paddingTop: 12,
-                                        marginHorizontal: 12,
-                                        rowGap: 12,
-                                        borderTopWidth: 1,
-                                        borderColor: theme.colors.schemes.light.outlineVariant
-                                    }}
+                                {(grades[drillIndex] && /\D/.test(grades[drillIndex])) &&
+                                    <ErrorMessage
+                                        message="Must enter a whole number."
+                                    />
+                                }
+                            </View>
+                            <View
+                                style={{
+                                    display: "flex",
+                                    paddingTop: 12,
+                                    marginHorizontal: 12,
+                                    rowGap: 12,
+                                    borderTopWidth: 1,
+                                    borderColor: theme.colors.schemes.light.outlineVariant
+                                }}
+                            >
+                                <ButtonHalfWidth
+                                    {...((drillIndex !== 0) ? buttonTheme.black : buttonTheme.disabled)}
+                                    onPress={prevDrill}
                                 >
-                                    <ButtonHalfWidth
-                                        {...((drillIndex !== 0) ? buttonTheme.black : buttonTheme.disabled)}
-                                        onPress={prevDrill}
+                                    <MoveLeft
+                                        color={"white"}
+                                        size={18}
+                                        opacity={drillIndex !== 0 ? 1: 0.75}
+                                    />
+                                    <ThemedText
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: 500,
+                                            letterSpacing: theme.letterSpacing.lg,
+                                            color: "white",
+                                            textAlign: "center",
+                                            opacity: drillIndex !== 0 ? 1: 0.75
+                                        }}
                                     >
-                                        <MoveLeft
-                                            color={"white"}
-                                            size={18}
-                                            opacity={drillIndex !== 0 ? 1: 0.75}
-                                        />
+                                        Back
+                                    </ThemedText>
+                                </ButtonHalfWidth>
+                                {(drillIndex !== assignment.workout.drills.length - 1) &&
+                                    <ButtonHalfWidth
+                                        {...buttonTheme.black}
+                                        onPress={nextDrill}
+                                    >
                                         <ThemedText
                                             style={{
                                                 fontSize: 14,
@@ -388,79 +456,59 @@ export default function Page() {
                                                 letterSpacing: theme.letterSpacing.lg,
                                                 color: "white",
                                                 textAlign: "center",
-                                                opacity: drillIndex !== 0 ? 1: 0.75
                                             }}
                                         >
-                                            Back
+                                            Next
                                         </ThemedText>
+                                        <MoveRightIcon
+                                            color={"white"}
+                                            size={18}
+                                        />
                                     </ButtonHalfWidth>
-                                    {(drillIndex !== assignment.workout.drills.length - 1) &&
-                                        <ButtonHalfWidth
-                                            {...buttonTheme.black}
-                                            onPress={nextDrill}
-                                        >
-                                            <ThemedText
-                                                style={{
-                                                    fontSize: 14,
-                                                    fontWeight: 500,
-                                                    letterSpacing: theme.letterSpacing.lg,
-                                                    color: "white",
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                Next
-                                            </ThemedText>
-                                            <MoveRightIcon
-                                                color={"white"}
+                                }
+                                {(drillIndex === assignment.workout.drills.length - 1) &&
+                                    <ButtonHalfWidth
+                                        disabled={Object.entries(grades).filter(([drillIndex, grade]) => !([null, undefined] as any).includes(grade)).map(grade => Number(grade[0])).length !== assignment.workout.drills.length}
+                                        {...((Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0])).length === assignment.workout.drills.length) ? buttonTheme.blue : buttonTheme.disabled)}
+                                        onPress={async () => {
+                                            if (!token)
+                                                return;
+                                            const output = await gradeSubmission(token, submission.id, Object.fromEntries(Object.entries(grades).map(([drillIndex, grade]) => [drillIndex, Number(grade)])));
+                                            if (output) {
+                                                router.back();
+                                                return;
+                                            }
+                                            alert('Could Not Grade Submission!')
+                                        }}
+                                    >
+                                        {false &&
+                                            <ActivityIndicator
+                                                color="white"
                                                 size={18}
                                             />
-                                        </ButtonHalfWidth>
-                                    }
-                                    {(drillIndex === assignment.workout.drills.length - 1) &&
-                                        <ButtonHalfWidth
-                                            disabled={Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0])).length !== assignment.workout.drills.length}
-                                            // {...buttonTheme.blue}
-                                            {...((Object.entries(grades).filter(([drillIndex, grade]) => grade).map(grade => Number(grade[0])).length === assignment.workout.drills.length) ? buttonTheme.blue : buttonTheme.disabled)}
-                                            onPress={async () => {
-                                                if (!token)
-                                                    return;
-                                                const output = await gradeSubmission(token, submission.id, Object.fromEntries(Object.entries(grades).map(([drillIndex, grade]) => [drillIndex, Number(grade)])));
-                                                if (output) {
-                                                    router.back();
-                                                    return;
-                                                }
-                                                alert('Could Not Grade Submission!')
+                                        }
+                                        {true &&
+                                            <CheckIcon
+                                                color="white"
+                                                size={18}
+                                            />
+                                        }
+                                        <ThemedText
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: 500,
+                                                letterSpacing: theme.letterSpacing.lg,
+                                                color: "white",
+                                                textAlign: "center"
                                             }}
                                         >
-                                            {false &&
-                                                <ActivityIndicator
-                                                    color="white"
-                                                    size={18}
-                                                />
-                                            }
-                                            {true &&
-                                                <CheckIcon
-                                                    color="white"
-                                                    size={18}
-                                                />
-                                            }
-                                            <ThemedText
-                                                style={{
-                                                    fontSize: 14,
-                                                    fontWeight: 500,
-                                                    letterSpacing: theme.letterSpacing.lg,
-                                                    color: "white",
-                                                    textAlign: "center"
-                                                }}
-                                            >
-                                                Complete Grading
-                                            </ThemedText>
-                                        </ButtonHalfWidth>
-                                    }
-                                </View>
+                                            Complete Grading
+                                        </ThemedText>
+                                    </ButtonHalfWidth>
+                                }
                             </View>
                         </View>
-                    </ScrollView>
+                    </KeyboardAwareScrollView>
                 </>
             }
         </SafeAreaView>

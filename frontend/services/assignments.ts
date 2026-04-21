@@ -201,3 +201,20 @@ export async function createAssignment(token: string, data: CreateAssignmentData
         return { success: false, error: String(err) };
     }
 }
+
+export async function deleteAssignment(token: string, assignmentID: number): Promise<boolean> {
+    try {
+        const response = await fetch(`${API_URL}/assignments/${assignmentID}/`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        return response.ok;
+    } catch (err) {
+        console.error("Error Deleting Assignment\n", err);
+        return false;
+    }
+}

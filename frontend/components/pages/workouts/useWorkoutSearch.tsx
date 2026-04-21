@@ -1,5 +1,4 @@
 import useSearchBar, { Key } from "@/hooks/useSearchBar";
-import { Drillv2 as Drill } from "@/services/drills";
 import { Session } from "@/services/sessions";
 import { useEffect, useState } from "react";
 

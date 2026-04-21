@@ -10,6 +10,8 @@ import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 import { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Student } from "@/services/students";
+import { getUserByID, User } from "@/services/user";
 
 export default function Page() {
     const { role, token } = useAuth();
@@ -19,6 +21,7 @@ export default function Page() {
         studentID?: string 
     }>();
 
+    const [student, setStudent] = useState<User>();
     const [submission, setSubmission] = useState<Submission>();
     const [assignment, setAssignment] = useState<Assignment>();
 
@@ -32,32 +35,23 @@ export default function Page() {
         if (!token)
             return;
 
-        if (submissionID) {
-            // Existing submission
+        if (submissionID !== null && submissionID !== undefined && Number(submissionID) >= 0) {
             const submission = await getSubmission(token, parseInt(submissionID));
-            if (!submission)
-                return router.back();
-            setSubmission(submission);
+            if (submission) {
+                setSubmission(submission);
+            }
+        }
 
-            const assignment = await getAssignment(token, submission.assignmentID);
-            if (!assignment)
-                return;
-            setAssignment(assignment);
-        } 
-        else if (assignmentID && studentID) {
-            // No submission yet — create one first
-            const submission = await createSubmission(token, parseInt(assignmentID), parseInt(studentID));
-            if (!submission)
-                return router.back();
-            setSubmission(submission);
+        if (assignmentID !== null && assignmentID !== undefined && Number(assignmentID) >= 0) {
+            const assignment = await getAssignment(token, Number(assignmentID));
+            if (assignment)
+                setAssignment(assignment);
+        }
 
-            const assignment = await getAssignment(token, parseInt(assignmentID));
-            if (!assignment)
-                return;
-            setAssignment(assignment);
-        } 
-        else {
-            router.back();
+        if (studentID !== null && studentID !== undefined && Number(studentID) >= 0) {
+            const student = await getUserByID(token, Number(studentID));
+            if (student)
+                setStudent(student);
         }
     }
 
@@ -80,7 +74,7 @@ export default function Page() {
                                 color: theme.colors.schemes.light.onSurfaceVariant
                             }}
                         >
-                            {submission?.student.first_name} {submission?.student.last_name}, {assignment?.workout.workoutName}
+                            {student?.first_name} {student?.last_name}, {assignment?.workout.workoutName}
                         </ThemedText>
                     </View>
                 )}
@@ -94,24 +88,22 @@ export default function Page() {
                     backgroundColor: "#00000010"
                 }}
             />
-            {assignment && submission && 
-                <>
-                    {role === 'Coach' &&
-                        <CoachView
-                            submission={submission}
-                            assignment={assignment}
-                            submissionID={submission.id}
-                        />
-                    }
-                    {role !== 'Coach' &&
-                        <StudentView
-                            submission={submission}
-                            assignment={assignment}
-                            submissionID={submission.id}
-                        />
-                    }
-                </>    
+            <>
+            {role === 'Coach'
+                ? <CoachView
+                    student={student}
+                    submission={submission}
+                    assignment={assignment}
+                    submissionID={([null, undefined] as any).includes(submissionID) ? -1 : Number(submissionID)}
+                />
+                :
+                <StudentView
+                    submission={submission}
+                    assignment={assignment}
+                    submissionID={([null, undefined] as any).includes(submissionID) ? -1 : Number(submissionID)}
+                />
             }
+        </>  
         </SafeAreaView>
     )
 }
