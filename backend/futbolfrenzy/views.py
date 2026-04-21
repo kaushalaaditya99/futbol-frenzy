@@ -3,7 +3,7 @@ from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
-from .serializers import SoccerClassSerializer
+from .serializers import SoccerClassSerializer, AssignmentSerializer
 import os
 import boto3
 from rest_framework.decorators import api_view
@@ -18,6 +18,8 @@ import os
 from dotenv import load_dotenv
 import uuid
 from .mediapipe import PoseService, VideoPoseService
+from rest_framework import status
+
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
 GOOGLE_IOS_CLIENT_ID = os.getenv('GOOGLE_IOS_CLIENT_ID')
@@ -490,7 +492,7 @@ def get_class_by_assignment(request, assignment_id):
         return Response(SoccerClassSerializer(soccer_class).data)
     except Assignment.DoesNotExist:
         return Response({'error': 'Assignment not found'}, status=404)
-    
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def analyze_pose(request):
@@ -512,3 +514,14 @@ def analyze_video_pose(request):
 
     result = video_service.process_video(video)
     return Response(result)
+
+@api_view(['GET'])
+def get_assignments_for_class(request, class_id):
+    try:
+        soccer_class = SoccerClass.objects.get(id=class_id)
+    except SoccerClass.DoesNotExist:
+        return Response({'error': 'Class not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    assignments_qs = soccer_class.assignments.all()
+    serializer = AssignmentSerializer(assignments_qs, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
