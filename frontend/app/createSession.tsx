@@ -19,6 +19,8 @@ import DrillPickerSheet from "@/components/pages/createSession/DrillPickerSheet"
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/contexts/ProfileContext";
 import { createSession } from "@/services/sessions";
+import InputInlineRadioGroup from "@/components/ui/input/InputInlineRadioGroup";
+
 // ─── Draggable Drill Row ─────────────────────────────────────────────────────
 
 const ITEM_HEIGHT = 76;
@@ -148,6 +150,7 @@ function DraggableDrillRow(props: DraggableDrillRowProps) {
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function CreateSession() {
+    const [accessControl, setAccessControl] = useState("public");
     const [name, setName] = useState("");
     const [selectedDrills, setSelectedDrills] = useState<Drill[]>([]);
     const [showDrillPicker, setShowDrillPicker] = useState(false);
@@ -216,7 +219,7 @@ export default function CreateSession() {
                 imageBackgroundColor: "#1C1C1C",
                 imageText: name.trim().substring(0, 3).toUpperCase(),
                 imageTextColor: "#FFFFFF",
-                publicWorkout: true,
+                publicWorkout: accessControl == "public",
                 drills: selectedDrills.map((drill) => ({
                     drillID: drill.id,
                     minutes: drill.time || 5,
@@ -284,6 +287,12 @@ export default function CreateSession() {
                         errorMessage={nameError}
                     />
 
+                    <InputInlineRadioGroup
+                        label="Access Control"
+                        value={accessControl}
+                        options={[["public", "Public"], ["private", "Private"]]}
+                        onChange={setAccessControl}
+                    />
                 </View>
 
                 {/* ── Drills ── */}
@@ -417,7 +426,8 @@ export default function CreateSession() {
                         paddingVertical: theme.margin.sm,
                         paddingHorizontal: theme.margin.sm,
                     }}
-                >
+          >
+
                     <Button
                         onPress={canCreate ? onCreateSession : undefined}
                         {...(canCreate ? buttonTheme.blue : buttonTheme.disabled)}

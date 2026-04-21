@@ -60,22 +60,17 @@ export default function CoachView(props: CoachViewProps) {
 
     const [drills, setDrills] = useState<Array<Drill>>([]);
 
-  useEffect(() => {
-    setStudents(props.param_class.students)
-  }, [props.param_class])
+  useFocusEffect(
+      useCallback(() => {
+        setStudents(props.param_class.students)
+      }, [token, props.param_class])
+  );
 
-    useEffect(() => {
-        loadAssignments();
-    }, [token, props.param_class]);
-
-    // Reload assignments when screen regains focus (e.g. after assigning)
-    useFocusEffect(
-        useCallback(() => {
-            if (token && props.param_class.id > 0) {
-                loadAssignments();
-            }
-        }, [token, props.param_class.id])
-    );
+  useFocusEffect(
+      useCallback(() => {
+        loadAssignments()
+      }, [token, props.param_class])
+  );
 
 
     useEffect(() => {
