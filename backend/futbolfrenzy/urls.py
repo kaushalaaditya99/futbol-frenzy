@@ -4,7 +4,7 @@ from . import views
 from . import viewsets
 from .views import me, detailed_user_info, change_password, student_stats, student_schedule, student_results, coach_submissions, coach_stats, coach_class_progress
 from .views import get_class_by_assignment, me, detailed_user_info, change_password, coach_submissions, coach_stats, coach_class_progress
-from .views import me, detailed_user_info, analyze_pose, analyze_video_pose, get_assignments_for_class
+from .views import me, detailed_user_info, analyze_pose, analyze_video_pose, get_assignments_for_class, get_class_submission_workout_analytics
 
 
 api_router = DefaultRouter()
@@ -46,4 +46,5 @@ urlpatterns = [
     path('analyze-pose/', analyze_pose),
     path('analyze-video-pose/', analyze_video_pose),
     path('api/get_assignments_for_class/<int:class_id>/', get_assignments_for_class),
+    path('api/get_class_submission_workout_analytics/<int:class_id>/', get_class_submission_workout_analytics),
 ]

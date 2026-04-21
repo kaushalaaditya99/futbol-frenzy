@@ -3,7 +3,7 @@ from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember
-from .serializers import SoccerClassSerializer, AssignmentSerializer
+from .serializers import SoccerClassSerializer, AssignmentSerializer, SubmissionSerializer
 import os
 import boto3
 from rest_framework.decorators import api_view
@@ -19,6 +19,8 @@ from dotenv import load_dotenv
 import uuid
 from .mediapipe import PoseService, VideoPoseService
 from rest_framework import status
+from django.utils.dateparse import parse_datetime, parse_date
+from django.db.models import Q
 
 
 GOOGLE_WEB_CLIENT_ID = os.getenv('GOOGLE_WEB_CLIENT_ID')
@@ -524,4 +526,43 @@ def get_assignments_for_class(request, class_id):
 
     assignments_qs = soccer_class.assignments.all()
     serializer = AssignmentSerializer(assignments_qs, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_class_submission_workout_analytics(request, class_id):
+    try:
+        soccer_class = SoccerClass.objects.get(id=class_id)
+    except SoccerClass.DoesNotExist:
+        return Response({'error': 'Class not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # parse params
+    start = request.query_params.get('start_date')
+    end = request.query_params.get('end_date')
+    student_ids_param = request.query_params.get('student_ids')  # e.g. "1,2,3"
+
+    # build filters
+    submissions_qs = Submission.objects.filter(assignmentID__in=soccer_class.assignments.all())
+
+    if student_ids_param:
+        try:
+            student_ids = [int(s) for s in student_ids_param.split(',') if s.strip()]
+            submissions_qs = submissions_qs.filter(studentID__id__in=student_ids)
+        except ValueError:
+            return Response({'error': 'student_ids must be comma separated integers'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if start:
+        dt_start = parse_datetime(start) or parse_date(start)
+        if not dt_start:
+            return Response({'error': 'Invalid start_date'}, status=status.HTTP_400_BAD_REQUEST)
+        submissions_qs = submissions_qs.filter(dateSubmitted__gte=dt_start)
+
+    if end:
+        dt_end = parse_datetime(end) or parse_date(end)
+        if not dt_end:
+            return Response({'error': 'Invalid end_date'}, status=status.HTTP_400_BAD_REQUEST)
+        submissions_qs = submissions_qs.filter(dateSubmitted__lte=dt_end)
+
+    submissions_qs = submissions_qs.order_by('dateSubmitted')  # ascending;
+
+    serializer = SubmissionSerializer(submissions_qs, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
