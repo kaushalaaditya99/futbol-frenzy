@@ -159,7 +159,7 @@ class SubmittedDrillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubmittedDrill
-        fields = ["id", "submissionID", "drillID", "videoURL", "grade", "touchCount", 'drill']
+        fields = ["id", "submissionID", "drillID", "videoURL", "grade", "touchCount", "feedback", 'drill']
         read_only_fields = ["id", 'drill']
     
     def get_drill(self, obj):

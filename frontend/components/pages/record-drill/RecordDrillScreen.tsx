@@ -13,6 +13,7 @@ import { comparePoses } from '@/utils/poseComparison';
 import { comparePoseSequences } from '@/utils/fastDTW';
 import { uploadVideo, createSubmission, saveSubmittedDrillWithUrl } from '@/services/cloud';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import resolveEndpoint from '@/services/resolveEndpoint';
 
 interface RecordDrillScreenProps {
     drillId: number;
@@ -317,9 +318,13 @@ export function RecordDrillScreen({
         try {
             setRecordingState('processing');
 
-            // Get the current user's ID from AsyncStorage
-            const storedUserID = await AsyncStorage.getItem('userID');
-            const studentID = storedUserID ? parseInt(storedUserID, 10) : 1;
+            // Get the current user's ID
+            const token = await AsyncStorage.getItem('authToken');
+            const meRes = await fetch(resolveEndpoint('/api/users/me/'), {
+                headers: { Authorization: `Token ${token}` },
+            });
+            const me = await meRes.json();
+            const studentID = me.id;
 
             // Create a submission for the assignment
             const submission = await createSubmission({

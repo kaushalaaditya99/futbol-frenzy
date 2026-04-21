@@ -8,7 +8,8 @@ import { getSubmission } from "@/services/submissions";
 import { theme } from "@/theme";
 import { router, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page() {
@@ -21,6 +22,10 @@ export default function Page() {
     useEffect(() => {
         loadSubmission();
     }, [token]);
+
+    useFocusEffect(useCallback(() => {
+        loadSubmission();
+    }, [token, id]));
 
     const loadSubmission = async () => {
         if (!token)

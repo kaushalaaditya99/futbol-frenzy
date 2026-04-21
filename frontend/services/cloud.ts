@@ -41,22 +41,20 @@ async function authHeaders(): Promise<{ Authorization: string }> {
         formData.append(key, value as string);
     });
 
-    // For web/blob URIs, we need to fetch blob first. React Native uses blobs and uris.
-    let fileBlob;
+    // Append file - React Native's FormData accepts {uri, type, name} objects directly
     if (uri.startsWith('blob:')) {
-        // Fetch blob from blob URL
+        // Web: fetch blob from blob URL
         const response = await fetch(uri);
-        fileBlob = await response.blob();
+        const fileBlob = await response.blob();
+        formData.append("file", fileBlob, fileName);
     } else {
-        // For native file URIs, use expo-file-system to read
-        const base64 = await FileSystem.readAsStringAsync(uri, {
-            encoding: FileSystem.EncodingType.Base64,
-        });
-        fileBlob = await fetch(`data:video/mp4;base64,${base64}`).then(r => r.blob());
+        // Native: pass file URI directly (React Native FormData handles this)
+        formData.append("file", {
+            uri: uri,
+            type: "video/mp4",
+            name: fileName,
+        } as any);
     }
-
-    // append file with proper blob
-    formData.append("file", fileBlob, fileName);
 
     // console.log("Uploading to:", uploadUrl);
     // console.log("File blob size:", fileBlob.size);

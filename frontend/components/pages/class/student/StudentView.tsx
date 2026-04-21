@@ -33,6 +33,7 @@ interface StudentSubmittedDrill {
     videoURL: string;
     grade: number | null;
     touchCount: number | null;
+    feedback: string | null;
 }
 
 const getStudentFullName = (student: Student) => `${student.first_name} ${student.last_name}`;
@@ -226,6 +227,11 @@ export default function StudentView(props: StudentViewProps) {
             if (gradedDrills.length > 0) {
                 const sd = gradedDrills[0];
                 const assignment = assignments.find(a => a.id === latestSub.assignmentID);
+                const defaultFeedback = sd.grade! >= 80
+                    ? "Great work on this drill! Keep it up."
+                    : sd.grade! >= 60
+                    ? "Good effort! Keep practicing to improve your form."
+                    : "Keep working on this drill. Watch the example video and try again.";
                 latestFeedback = {
                     drillName: "Drill",
                     drillEmoji: "⚽",
@@ -234,11 +240,7 @@ export default function StudentView(props: StudentViewProps) {
                     maxScore: 100,
                     coachName: "Coach",
                     coachInitials: "C",
-                    feedback: sd.grade! >= 80
-                        ? "Great work on this drill! Keep it up."
-                        : sd.grade! >= 60
-                        ? "Good effort! Keep practicing to improve your form."
-                        : "Keep working on this drill. Watch the example video and try again.",
+                    feedback: sd.feedback || defaultFeedback,
                 };
             }
         }

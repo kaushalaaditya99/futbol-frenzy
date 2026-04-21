@@ -33,6 +33,7 @@ export interface SubmittedDrill {
     videoURL: string;
     grade: number | null;
     touchCount: number;
+    feedback: string | null;
 }
 
 export interface Submission {

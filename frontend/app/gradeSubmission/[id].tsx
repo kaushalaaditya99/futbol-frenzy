@@ -6,7 +6,7 @@ import InputText from "@/components/ui/input/InputText";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { Assignment, getAssignment, Submission } from "@/services/assignments";
-import { getSubmission } from "@/services/submissions";
+import { getSubmission, gradeSubmittedDrill, gradeSubmission } from "@/services/submissions";
 import { shadow, theme } from "@/theme";
 import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
@@ -38,7 +38,9 @@ export default function Page() {
         player.loop = true;
     });
 
-    const [grades, setGrades] = useState({});
+    const [grades, setGrades] = useState<Record<number, string>>({});
+    const [feedbacks, setFeedbacks] = useState<Record<number, string>>({});
+    const [isGrading, setIsGrading] = useState(false);
 
     // Used for Blur Effect
     const insets = useSafeAreaInsets();
@@ -46,6 +48,21 @@ export default function Page() {
     useEffect(() => {
         loadSubmission();
     }, [token]);
+
+    useEffect(() => {
+        if (assignment) {
+            const drill = assignment.workout.drills[drillIndex];
+            if (drill?.url) {
+                refDrillPlayer.replace({ uri: drill.url });
+            }
+        }
+        if (submission) {
+            const submittedDrill = submission.submitted_drills[drillIndex];
+            if (submittedDrill?.videoURL) {
+                subDrillPlayer.replace({ uri: submittedDrill.videoURL });
+            }
+        }
+    }, [assignment, submission, drillIndex]);
 
     const loadSubmission = async () => {
         if (!token)
@@ -380,7 +397,7 @@ export default function Page() {
                                         </ThemedText>
                                     </Pressable>
                                 } */}
-                                {!!submission.submitted_drills[drillIndex].videoURL &&
+                                {!!submission.submitted_drills[drillIndex]?.videoURL &&
                                     <VideoView 
                                         player={subDrillPlayer}
                                         style={{ 
@@ -426,13 +443,43 @@ export default function Page() {
                                         </ThemedText>
                                     </View>
                                     <InputText
+                                        value={grades[drillIndex] || ''}
+                                        onChangeText={(text: string) => setGrades(prev => ({ ...prev, [drillIndex]: text }))}
+                                        placeholder="0-100"
                                         wrapperStyle={{
                                             flexShrink: 1,
                                         }}
                                         inputStyle={{
                                             borderTopLeftRadius: 0,
                                             borderBottomLeftRadius: 0,
-
+                                        }}
+                                    />
+                                </View>
+                                <View
+                                    style={{
+                                        paddingVertical: 10,
+                                        marginHorizontal: 12,
+                                    }}
+                                >
+                                    <ThemedText
+                                        style={{
+                                            fontSize: theme.fontSize.base,
+                                            fontWeight: 500,
+                                            letterSpacing: theme.letterSpacing.sm,
+                                            color: theme.colors.schemes.light.onSurfaceVariant,
+                                            marginBottom: 8,
+                                        }}
+                                    >
+                                        Feedback
+                                    </ThemedText>
+                                    <InputText
+                                        value={feedbacks[drillIndex] || ''}
+                                        onChangeText={(text: string) => setFeedbacks(prev => ({ ...prev, [drillIndex]: text }))}
+                                        placeholder="Write feedback for this drill..."
+                                        multiline={true}
+                                        inputStyle={{
+                                            minHeight: 80,
+                                            textAlignVertical: 'top',
                                         }}
                                     />
                                 </View>
@@ -632,13 +679,12 @@ export default function Page() {
                                     }}
                                 >
                                     <ButtonHalfWidth
-                                        {...((drillIndex !== 0) ? buttonTheme.black : buttonTheme.disabled)}
-                                        onPress={prevDrill}
+                                        {...buttonTheme.black}
+                                        onPress={drillIndex !== 0 ? prevDrill : () => router.back()}
                                     >
                                         <MoveLeft
                                             color={"white"}
                                             size={18}
-                                            opacity={drillIndex !== 0 ? 1: 0.75}
                                         />
                                         <ThemedText
                                             style={{
@@ -647,7 +693,6 @@ export default function Page() {
                                                 letterSpacing: theme.letterSpacing.lg,
                                                 color: "white",
                                                 textAlign: "center",
-                                                opacity: drillIndex !== 0 ? 1: 0.75
                                             }}
                                         >
                                             Back
@@ -675,18 +720,46 @@ export default function Page() {
                                             />
                                         </ButtonHalfWidth>
                                     }
-                                    {(drillIndex === assignment.workout.drills.length - 1) &&
-                                        <ButtonHalfWidth
-                                            {...buttonTheme.blue}
-                                            // onPress={() => submitSession(session, submissions)}
+                                    {(drillIndex === assignment.workout.drills.length - 1) && (() => {
+                                        const allGraded = submission.submitted_drills.every((_, i) => {
+                                            const g = parseInt(grades[i], 10);
+                                            return !isNaN(g) && g >= 0 && g <= 100;
+                                        });
+                                        return <ButtonHalfWidth
+                                            {...(allGraded ? buttonTheme.blue : buttonTheme.disabled)}
+                                            onPress={async () => {
+                                                if (!allGraded || !token || !submission) return;
+                                                setIsGrading(true);
+                                                try {
+                                                    // Grade each submitted drill with feedback
+                                                    for (const [idx, gradeStr] of Object.entries(grades)) {
+                                                        const grade = parseInt(gradeStr, 10);
+                                                        if (isNaN(grade)) continue;
+                                                        const sd = submission.submitted_drills[Number(idx)];
+                                                        if (sd) {
+                                                            await gradeSubmittedDrill(token, sd.id, grade, feedbacks[Number(idx)] || undefined);
+                                                        }
+                                                    }
+                                                    // Calculate average and grade the overall submission
+                                                    const gradeValues = Object.values(grades).map(g => parseInt(g, 10)).filter(g => !isNaN(g));
+                                                    if (gradeValues.length > 0) {
+                                                        const avg = Math.round(gradeValues.reduce((a, b) => a + b, 0) / gradeValues.length);
+                                                        await gradeSubmission(token, submission.id, avg);
+                                                    }
+                                                    router.back();
+                                                } catch (err) {
+                                                    console.error("Grading error:", err);
+                                                } finally {
+                                                    setIsGrading(false);
+                                                }
+                                            }}
                                         >
-                                            {false &&
+                                            {isGrading ?
                                                 <ActivityIndicator
                                                     color="white"
                                                     size={18}
                                                 />
-                                            }
-                                            {true &&
+                                            :
                                                 <CheckIcon
                                                     color="white"
                                                     size={18}
@@ -703,8 +776,8 @@ export default function Page() {
                                             >
                                                 Complete Grading
                                             </ThemedText>
-                                        </ButtonHalfWidth>
-                                    }
+                                        </ButtonHalfWidth>;
+                                    })()}
                                 </View>
                             </View>
                         </View>
