@@ -153,7 +153,7 @@ export default function TabProgress(props: TabProgressProps) {
                 <DisclosureCategory
                     options={[
                         ["drills", "Drills"],
-                        ["workouts", "Workouts"]
+                        ["workouts", "Assignments"]
                     ]}
                     value={category}
                     onChange={setCategory}

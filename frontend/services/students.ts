@@ -1,3 +1,5 @@
+import resolveEndpoint from "./resolveEndpoint";
+
 export interface Student {
     id: number;
     first_name: string;
@@ -5,25 +7,34 @@ export interface Student {
     position: string;
 }
 
-export async function getStudents(classID: number): Promise<Array<Student>> {
-    return [
-        {
-            id: 0,
-            first_name: "Pedri",
-            last_name: "González",
-            position: "Midfielder"
-        },
-        {
-            id: 1,
-            first_name: "Erling",
-            last_name: "Haaland",
-            position: "Striker"
-        },
-        {
-            id: 2,
-            first_name: "Lamine",
-            last_name: "Yamal",
-            position: "Winger"
-        },
-    ]
+const API_URL = resolveEndpoint("/api");
+
+export async function getStudents(classID: number, token?: string): Promise<Array<Student>> {
+    if (!classID || classID === 0) return [];
+
+    try {
+        // Fetch class details which includes students
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+        };
+        if (token) {
+            headers.Authorization = `Token ${token}`;
+        }
+
+        const response = await fetch(`${API_URL}/classes/${classID}/`, { headers });
+        if (!response.ok) return [];
+
+        const classData = await response.json();
+        const students: Student[] = (classData.students || []).map((s: any) => ({
+            id: s.id,
+            first_name: s.first_name,
+            last_name: s.last_name,
+            position: s.position || "Player",
+        }));
+
+        return students;
+    } catch (err) {
+        console.error("Error fetching students:", err);
+        return [];
+    }
 }

@@ -54,7 +54,7 @@ export default function ClassPage() {
             />
             {
           isTeacher ? <CoachView
-            param_class={soccerclass} /> : <StudentView />
+            param_class={soccerclass} /> : <StudentView classId={jojo_id} />
             }
         </SafeAreaView>
     )
