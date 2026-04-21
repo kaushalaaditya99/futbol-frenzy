@@ -38,7 +38,7 @@ export default function Page() {
         player.loop = true;
     });
 
-    const [grades, setGrades] = useState({});
+    const [grades, setGrades] = useState<{[k: number]: number}>({});
 
     // Used for Blur Effect
     const insets = useSafeAreaInsets();
@@ -240,153 +240,32 @@ export default function Page() {
                             </View>
                             <View
                                 style={{
-                                    paddingVertical: 12,
-                                    paddingTop: 20,
+                                    paddingVertical: 36,
                                     paddingHorizontal: 0,
+                                    rowGap: 12,
                                 }}
                             >
                                 <ThemedText
                                     style={{
+                                        paddingBottom: 12,
                                         paddingHorizontal: 12,
+                                        marginHorizontal: 12,
                                         fontSize: 18,
                                         fontWeight: 600,
                                         letterSpacing: -0.25,
-                                        marginBottom: 2,
-                                        textAlign: "center"
+                                        textAlign: "center",
+                                        borderBottomWidth: 1,
+                                        borderColor: theme.colors.schemes.light.outlineVariant
                                     }}
                                 >
                                     Submission
                                 </ThemedText>
-                                {/* <View
-                                    style={{
-                                        flexDirection: "row",
-                                        justifyContent: "center",
-                                        marginBottom: 20,
-                                        paddingHorizontal: 12,
-                                    }}
-                                >
-                                    <ThemedText
-                                        style={{
-                                            fontSize: 14,
-                                            letterSpacing: 0.25,
-                                            color: colors.schemes.light.onSurfaceVariant,
-                                            textAlign: "center",
-                                            maxWidth: 300,
-                                        }}
-                                    >
-                                        Upload a video of yourself performing the drill.
-                                    </ThemedText>
-                                </View> */}
-                                <View
-                                    style={{
-                                        paddingHorizontal: 12,
-                                        flexDirection: "row",
-                                        columnGap: theme.padding.lg,
-                                        marginBottom: 12,
-                                    }}
-                                >
-                                    {/* <ButtonHalfWidth
-                                        buttonHeight={60}
-                                        {...buttonTheme.black}
-                                        onPress={() => uploadVideoFromCamera(drillIndex)}
-                                    >
-                                        <Camera
-                                            color="white"
-                                            size={18}
-                                        />
-                                        <ThemedText
-                                            style={{
-                                                fontSize: 14,
-                                                fontWeight: 500,
-                                                letterSpacing: letterSpacing.lg,
-                                                color: "white",
-                                                textAlign: "center"
-                                            }}
-                                        >
-                                            Record Video
-                                        </ThemedText>
-                                    </ButtonHalfWidth> */}
-                                    {/* <ButtonHalfWidth
-                                        {...buttonTheme.black}
-                                        buttonHeight={60}
-                                        onPress={() => uploadVideoFromLibrary(drillIndex)}
-                                    >
-                                        <FolderOpen
-                                            color="white"
-                                            size={18}
-                                        />
-                                        <ThemedText
-                                            style={{
-                                                fontSize: 14,
-                                                fontWeight: 500,
-                                                letterSpacing: letterSpacing.lg,
-                                                color: "white",
-                                                textAlign: "center"
-                                            }}
-                                        >
-                                            Upload Video
-                                        </ThemedText>
-                                    </ButtonHalfWidth> */}
-                                </View>
-                                {/* {!submission.submitted_drills[drillIndex].videoURL &&
-                                    <Pressable
-                                        onPress={() => uploadVideoFromLibrary(drillIndex)}
-                                        style={{ 
-                                            width: "auto", 
-                                            height: 180,
-                                            marginBottom: 12,
-                                            marginHorizontal: 12,
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            borderWidth: 1,
-                                            borderColor: colors.schemes.light.outlineVariant,
-                                            borderStyle: "dashed",
-                                            borderRadius: 12,
-                                            backgroundColor: colors.schemes.light.surfaceContainerHigh
-                                        }}
-                                    >
-                                        <ThemedText
-                                            style={{
-                                                fontSize: 32,
-                                                marginBottom: 8
-                                            }}
-                                        >
-                                            🎥
-                                        </ThemedText>
-                                        <ThemedText
-                                            style={{
-                                                fontSize: 12,
-                                                fontWeight: 500,
-                                                marginBottom: 2,
-                                                letterSpacing: 0.1,
-                                                textAlign: "center",
-                                                color: colors.schemes.light.onSurfaceVariant
-                                            }}
-                                        >
-                                            MP4, MOV
-                                        </ThemedText>
-                                        <ThemedText
-                                            style={{
-                                                fontSize: 12,
-                                                fontWeight: 500,
-                                                letterSpacing: 0.1,
-                                                textAlign: "center",
-                                                color: colors.schemes.light.onSurfaceVariant,
-                                                opacity: 0.5
-                                            }}
-                                        >
-                                            Max 500MB
-                                        </ThemedText>
-                                    </Pressable>
-                                } */}
                                 {!!submission.submitted_drills[drillIndex].videoURL &&
                                     <VideoView 
                                         player={subDrillPlayer}
                                         style={{ 
                                             width: "auto", 
-                                            height: 180,
-                                            marginBottom: 12,
+                                            height: 240,
                                             marginHorizontal: 12,
                                             borderRadius: 12,
                                             backgroundColor: theme.colors.palettes.neutral[0]
@@ -396,7 +275,7 @@ export default function Page() {
                                 }
                                 <View
                                     style={{
-                                        paddingVertical: 10,
+                                        height: 44,
                                         marginHorizontal: 12,
                                         flexDirection: 'row',
                                         flexShrink: 1,
@@ -404,8 +283,9 @@ export default function Page() {
                                 >
                                     <View
                                         style={{
-                                            height: '100%',
+                                            height: 44,
                                             padding: theme.padding.md,
+                                            justifyContent: 'center',
                                             borderWidth: 1,
                                             borderRightWidth: 0,
                                             borderTopLeftRadius: theme.borderRadius.base,
@@ -417,7 +297,7 @@ export default function Page() {
                                         <ThemedText
                                             style={{
                                                 fontSize: theme.fontSize.base,
-                                                fontWeight: 500,
+                                                fontWeight: 400,
                                                 letterSpacing: theme.letterSpacing.sm,
                                                 color: theme.colors.schemes.light.onSurfaceVariant,
                                             }}
@@ -430,205 +310,56 @@ export default function Page() {
                                             flexShrink: 1,
                                         }}
                                         inputStyle={{
-                                            borderTopLeftRadius: 0,
-                                            borderBottomLeftRadius: 0,
-
+                                            height: 44,
+                                            borderRadius: 0,
+                                            fontSize: theme.fontSize.base,
+                                            fontWeight: 400,
+                                            letterSpacing: theme.letterSpacing.sm,
+                                        }}
+                                        value={(grades[drillIndex] || '') + ''}
+                                        onChangeText={(text) => {
+                                            setGrades(grades => ({
+                                                ...grades,
+                                                [drillIndex]: Number(text)
+                                            }));
                                         }}
                                     />
-                                </View>
-                                <View
-                                    style={{
-                                        marginHorizontal: 12,
-                                        marginBottom: 12
-                                    }}
-                                >
-                                    {/* <Button
-                                        {...((!!submissions[drillIndex]?.uri) ? buttonTheme.black : buttonTheme.disabled)}
-                                        onPress={() => {
-                                            if (!submissions[drillIndex]?.uri)
-                                                return;
-                                            analyzeVideoSubmission(submissions, session.drills, drillIndex);
-                                        }}
-                                        outerStyle={{
-                                            alignSelf: undefined,
-                                            borderBottomLeftRadius: !submissions[drillIndex]?.analysis ? 10 : 0,
-                                            borderBottomRightRadius: !submissions[drillIndex]?.analysis ? 10 : 0
-                                        }}
-                                        innerStyle={{
-                                            flex: 1,
-                                            columnGap: 6
+                                    <View
+                                        style={{
+                                            height: 44,
+                                            width: 44,
+                                            padding: theme.padding.md,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            borderWidth: 1,
+                                            borderLeftWidth: 0,
+                                            borderTopRightRadius: theme.borderRadius.base,
+                                            borderBottomRightRadius: theme.borderRadius.base,
+                                            borderColor: theme.colors.schemes.light.outlineVariant,
+                                            ...theme.shadow.sm
                                         }}
                                     >
-                                        <Sparkle
-                                            color={"white"}
-                                            size={18}
-                                            opacity={(!!submissions[drillIndex]?.uri) ? 1: 0.75}
-                                        />
                                         <ThemedText
                                             style={{
-                                                fontSize: 14,
+                                                fontSize: theme.fontSize.base,
                                                 fontWeight: 500,
-                                                letterSpacing: letterSpacing.lg,
-                                                color: "white",
-                                                textAlign: "center",
-                                                opacity: (!!submissions[drillIndex]?.uri) ? 1: 0.75
+                                                letterSpacing: theme.letterSpacing.sm,
+                                                color: theme.colors.schemes.light.onSurfaceVariant,
                                             }}
                                         >
-                                            Analyze Video
+                                            %
                                         </ThemedText>
-                                    </Button> */}
-                                    {/* {submissions[drillIndex]?.analysis &&
-                                        <View
-                                            style={{
-                                                borderWidth: 1,
-                                                borderColor: colors.schemes.light.outlineVariant,
-                                                borderBottomLeftRadius: 10,
-                                                borderBottomRightRadius: 10,
-                                                ...shadow.sm
-                                            }}
-                                        >
-                                            <View
-                                                style={{
-                                                    flexDirection: "row",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                    columnGap: 6,
-                                                    paddingHorizontal: 12,
-                                                    paddingVertical: 12,
-                                                    borderBottomWidth: 1,
-                                                    borderColor: colors.schemes.light.outlineVariant,
-                                                    borderStyle: "dashed",
-                                                    backgroundColor: colors.schemes.light.surfaceContainerHigh
-                                                }}
-                                            >
-                                                <NotepadText
-                                                    size={18}
-                                                />
-                                                <ThemedText
-                                                    style={{
-                                                        fontSize: 14,
-                                                        fontWeight: 500,
-                                                        letterSpacing: letterSpacing.lg,
-                                                        textAlign: "center"
-                                                    }}
-                                                >
-                                                    Video Analysis Results
-                                                </ThemedText>
-                                            </View>
-                                            <View
-                                                style={{
-                                                    padding: 12,
-                                                    paddingVertical: 16,
-                                                    rowGap: 12,
-                                                    backgroundColor: colors.schemes.light.surfaceBright,
-                                                    borderBottomRightRadius: 10,
-                                                    borderBottomLeftRadius: 10,
-                                                }}
-                                            >
-                                                <View>
-                                                    <ThemedText
-                                                        style={{
-                                                            marginBottom: 2,
-                                                            fontSize: 14,
-                                                            fontWeight: 600,
-                                                            letterSpacing: 0.25,
-                                                        }}
-                                                    >
-                                                        1. Statistics
-                                                    </ThemedText>
-                                                    <View
-                                                        style={{
-                                                            flexDirection: "row",
-                                                            columnGap: 4,
-                                                            marginLeft: 12,
-                                                            paddingLeft: 12,
-                                                            borderLeftWidth: 1,
-                                                            borderColor: colors.schemes.light.outlineVariant
-                                                        }}
-                                                    >
-                                                        <ThemedText
-                                                            style={{
-                                                                fontSize: 14,
-                                                                fontWeight: 500,
-                                                                letterSpacing: 0.25,
-                                                                color: colors.schemes.light.onSurface
-                                                            }}
-                                                        >
-                                                            1.1 Number Touches
-                                                        </ThemedText>
-                                                        <ThemedText
-                                                            style={{
-                                                                fontSize: 14,
-                                                                fontWeight: 400,
-                                                                letterSpacing: 0.25,
-                                                                color: colors.schemes.light.onSurfaceVariant
-                                                            }}
-                                                        >
-                                                            {submissions[drillIndex]?.analysis.numTouches}
-                                                        </ThemedText>
-                                                    </View>
-                                                </View>
-                                                <View>
-                                                    <ThemedText
-                                                        style={{
-                                                            marginBottom: 4,
-                                                            fontSize: 14,
-                                                            fontWeight: 600,
-                                                            letterSpacing: 0.25,
-                                                        }}
-                                                    >
-                                                        2. Mistakes
-                                                    </ThemedText>
-                                                    <View
-                                                        style={{
-                                                            rowGap: 4,
-                                                            marginLeft: 12,
-                                                            paddingLeft: 12,
-                                                            borderLeftWidth: 1,
-                                                            borderColor: colors.schemes.light.outlineVariant
-                                                        }}
-                                                    >
-                                                        {submissions[drillIndex]?.analysis.mistakes.map((mistake, i) => (
-                                                            <View
-                                                                key={i}
-                                                                style={{
-                                                                    flexDirection: "row",
-                                                                    columnGap: 4
-                                                                }}
-                                                            >
-                                                                <ThemedText
-                                                                    style={{
-                                                                        fontSize: 14,
-                                                                        fontWeight: 400,
-                                                                        letterSpacing: 0.25,
-                                                                        color: colors.schemes.light.onSurfaceVariant
-                                                                    }}
-                                                                >
-                                                                    <ThemedText
-                                                                        style={{
-                                                                            fontWeight: 500,
-                                                                            color: colors.schemes.light.onSurface
-                                                                        }}
-                                                                    >
-                                                                        2.{i+1}. {mistake.mistakeType}{' '}
-                                                                    </ThemedText>
-                                                                    {mistake.mistakeDesc}
-                                                                </ThemedText>
-                                                            </View>
-                                                        ))}
-                                                    </View>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    } */}
+                                    </View>
                                 </View>
                                 <View
                                     style={{
                                         display: "flex",
-                                        flexDirection: "row",
+                                        // flexDirection: "row",
+                                        paddingTop: 24,
                                         marginHorizontal: 12,
-                                        marginBottom: 36,
-                                        columnGap: 12
+                                        columnGap: 12,
+                                        borderTopWidth: 1,
+                                        borderColor: theme.colors.schemes.light.outlineVariant
                                     }}
                                 >
                                     <ButtonHalfWidth

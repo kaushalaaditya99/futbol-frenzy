@@ -67,14 +67,14 @@ export default function Page() {
                     backgroundColor: "#00000010"
                 }}
             />
-            {role === 'Coach' &&
+            {(assignment && assignmentClass && role === 'Coach') &&
                 <CoachView
                     assignmentID={parseInt(id)}
                     assignment={assignment}
                     assignmentClass={assignmentClass}
                 />
             }
-            {role !== 'Coach' &&
+            {(assignment && assignmentClass && role !== 'Coach') &&
                 <StudentView
                     assignmentID={parseInt(id)}
                 />
