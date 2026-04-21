@@ -30,7 +30,9 @@ export default function CoachView(props: CoachViewProps) {
     const [teacherID, setTeacherID] = useState(0);
 
     const [tab, setTab] = useState("Overview");
-    const tabs = ["Overview", "Assignments", "Students", "Progress"];
+    //remove progress tab
+    //const tabs = ["Overview", "Assignments", "Students", "Progress"];
+    const tabs = ["Overview", "Assignments", "Students"];
 
     const functionalDate = useFunctionalDate();
     const [markedDatesAndAssignments, setMarkedDatesAndAssignments] = useState<MarkedDates>({});
@@ -207,15 +209,10 @@ export default function CoachView(props: CoachViewProps) {
                     searchBar={studentSearchBar}
                     students={studentSearchBar.filtered}
                 />
-            }
-            {tab === "Progress" &&
-                <TabProgress
-                    drills={drills}
-                    assignments={assignments}
-                    students={students}
-                    param_class={props.param_class}
-                />
-            }
-        </ScrollView>
+        }
+
+
+
+          </ScrollView>
     )
 }

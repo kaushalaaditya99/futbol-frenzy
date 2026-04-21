@@ -42,7 +42,7 @@ interface StudentViewProps {
 
 export default function StudentView(props: StudentViewProps) {
     const [tab, setTab] = useState("Overview");
-    const tabs = ["Overview", "Assignments", "Students", "Progress"];
+    const tabs = ["Overview", "Assignments", "Students"];
 
     const { token } = useAuth();
     const classID = props.classId ?? 0;
@@ -330,7 +330,6 @@ export default function StudentView(props: StudentViewProps) {
                     students={studentSearchBar.filtered}
                 />
             )}
-            {tab === "Progress" && <StudentTabProgress />}
         </ScrollView>
     );
 }
