@@ -38,7 +38,7 @@ export default function RowCard(props: RowCardProps) {
                 borderColor: colors.schemes.light.outlineVariant,
                 borderStyle: "solid",
                 borderRadius: borderRadius.base,
-                // ...shadow.xs
+                ...shadow.sm
             }}   
         >
             <View

@@ -92,42 +92,8 @@ export default function CoachView(props: CoachViewProps) {
                         <RowCard
                             title={`${submission.student.first_name} ${submission.student.last_name}`}
                             onPress={() => (submission.id !== null && submission.id !== -1) && router.push(`/(tabs)/submissions/${submission.id}`)}
-                            descriptions={[]}
+                            descriptions={[submission.dateSubmitted ? 'Submitted' : 'Not Submitted', submission.dateGraded ? 'Graded' : 'Not Graded']}
                             titleTagClose={true}
-                            titleTag={(
-                                <>
-                                    {submission.dateSubmitted &&
-                                        <View
-                                            style={{
-                                                // width: 72,
-                                                // height: 16,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                // borderRadius: 1000,
-                                                // borderWidth: 1,
-                                                // borderColor: "#32a852",
-                                                // backgroundColor: "#b1f0c2"
-                                            }}
-                                        >
-                                            {/* <ThemedText
-                                                style={{
-                                                    fontSize: 10,
-                                                    fontWeight: 500,
-                                                    letterSpacing: theme.letterSpacing.xl * 0,
-                                                    color: "#32a852"
-                                                }}
-                                            >
-                                                COMPLETED
-                                            </ThemedText> */}
-                                            <BookCheckIcon
-                                                // strokeWidth={1.5}
-                                                size={16}
-                                                color={theme.colors.schemes.light.outlineVariant}
-                                            />
-                                        </View>
-                                    }
-                                </>
-                            )}
                             imageText={`${submission.student.first_name[0]}${submission.student.last_name[0]}`}
                             imageBackgroundColor=''
                             imageTextColor=''
@@ -172,8 +138,8 @@ export default function CoachView(props: CoachViewProps) {
                                         >
                                             <LinearGradient
                                                 colors={[
-                                                    submission.grade > 80 ? '#ffffff' : submission.grade > 60 ? '#e0a928' : '#e02828',
-                                                    submission.grade > 80 ? '#b1f0c2' : submission.grade > 60 ? '#e0a928' : '#e02828'
+                                                    submission.grade > 80 ? '#ffffff' : submission.grade > 60 ? '#ffffff' : '#ffffff',
+                                                    submission.grade > 80 ? '#b1f0c2' : submission.grade > 60 ? '#fff18a' : '#ffc1c1'
                                                 ]}
                                                 start={{ 
                                                     x: 0, 
@@ -198,7 +164,7 @@ export default function CoachView(props: CoachViewProps) {
                                                         justifyContent: "center",
                                                         alignItems: "center",
                                                         borderRadius: 1000,
-                                                        backgroundColor: "#b1f0c2"
+                                                        backgroundColor: submission.grade > 80 ? "#b1f0c2" : submission.grade > 60 ? '#fff18a' : '#ffc1c1'
                                                     }}
                                                 >
                                                     <ThemedText
