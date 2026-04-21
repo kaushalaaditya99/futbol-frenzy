@@ -5,6 +5,7 @@ import ThemedText from "@/components/ui/ThemedText";
 import ProgressBar from "./ProgressBar";
 import FeedbackCard from "./FeedbackCard";
 import NextSessionCard from "./NextSessionCard";
+import { Divider } from "@/components/Common";
 
 interface StudentTabOverviewProps {
     sessionsCompleted: number;
@@ -91,7 +92,13 @@ export default function StudentTabOverview(props: StudentTabOverviewProps) {
                     current={props.sessionsCompleted}
                     total={props.sessionsTotal}
                 />
-
+                <View
+                    style={{
+                        width: '100%',
+                        height: 1,
+                        backgroundColor: colors.schemes.light.outlineVariant
+                    }}
+                />
                 {/* Latest Feedback */}
                 {props.feedback && (
                     <>
@@ -116,7 +123,13 @@ export default function StudentTabOverview(props: StudentTabOverviewProps) {
                         <FeedbackCard {...props.feedback} />
                     </>
                 )}
-
+                <View
+                    style={{
+                        width: '100%',
+                        height: 1,
+                        backgroundColor: colors.schemes.light.outlineVariant
+                    }}
+                />
                 {/* Next Session */}
                 {props.nextSession && (
                     <>

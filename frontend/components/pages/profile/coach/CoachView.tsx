@@ -8,7 +8,7 @@ import { shadow, theme } from "@/theme";
 import { Fragment, useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BookTextIcon, DumbbellIcon, ZapIcon } from "lucide-react-native";
+import { BookTextIcon, DumbbellIcon, SettingsIcon, ZapIcon } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 import { simpleGetUser, User } from "@/services/user";
@@ -73,10 +73,35 @@ export default function CoachView() {
                         borderColor: theme.colors.schemes.light.outlineVariant,
                     }}
                 >
-                    <ProfilePicture
-                        width={24*2.5}
-                        height={24*2.5}
-                    />
+                    <View
+                        style={{
+                            position: 'relative',
+                        }}
+                    >
+                        <ProfilePicture
+                            width={24*2.5}
+                            height={24*2.5}
+                        />
+                        <Pressable
+                            onPress={() => router.push('/settings')}
+                            style={{
+                                position: 'absolute',
+                                bottom: -8,
+                                left: 24 * 2.5 - 20,
+                                padding: 4,
+                                backgroundColor: theme.colors.schemes.light.surfaceContainerHigh,
+                                borderWidth: 2,
+                                borderColor: 'white',
+                                borderRadius: 1000,
+                                // ...shadow.sm
+                            }}
+                        >
+                            <SettingsIcon
+                                size={16}
+                                color={theme.colors.schemes.light.onSurfaceVariant}
+                            />
+                        </Pressable>
+                    </View>
                     <View
                         style={{
                             rowGap: theme.padding.sm

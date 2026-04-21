@@ -62,7 +62,7 @@ export default function CardMetric(props: CardMetricProps) {
                     fontSize: fontSize.sm,
                     fontWeight: 500,
                     textAlign: "center",
-                    letterSpacing: letterSpacing.xl * 1.5,
+                    letterSpacing: letterSpacing.xl * 1,
                     color: colors.schemes.light.onSurfaceVariant,
                 }}
             >

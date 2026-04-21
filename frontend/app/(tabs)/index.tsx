@@ -1,7 +1,7 @@
-import { Flame } from "lucide-react-native";
+import { Flame, PackageOpenIcon } from "lucide-react-native";
 import { Dimensions, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding, theme } from "@/theme";
 import { Fragment, useEffect, useState } from "react";
 import CardMetric from "@/components/pages/CardMetric";
 import RowCardSession from "@/components/pages/home/RowCardSession";
@@ -197,16 +197,40 @@ export default function Home() {
                                     }}
                                 >
                                     {sessions.length === 0 && (
-                                        <ThemedText
+                                        <View
                                             style={{
-                                                textAlign: "center",
-                                                color: colors.schemes.light.onSurfaceVariant,
-                                                fontSize: fontSize.md,
-                                                paddingVertical: padding.xl,
+                                                paddingVertical: 36,
+                                                paddingHorizontal: padding.md,
+                                                minHeight: 100,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                rowGap: 12,
+                                                borderWidth: 1,
+                                                borderColor: colors.schemes.light.outlineVariant,
+                                                borderStyle: "dashed",
+                                                borderRadius: 12,
+                                                backgroundColor: colors.schemes.light.surfaceContainer,
                                             }}
                                         >
-                                            No assignments due on this day
-                                        </ThemedText>
+                                            <PackageOpenIcon
+                                                size={36}
+                                                strokeWidth={1.5}
+                                                color={theme.colors.schemes.light.outline}
+                                            />
+                                            <ThemedText 
+                                                style={{ 
+                                                    // fontWeight: 400, 
+                                                    // fontSize: fontSize.base, 
+                                                    color: colors.schemes.light.outline, 
+                                                    // letterSpacing: letterSpacing.lg,
+                                                    fontSize: fontSize.base,
+                                                    fontWeight: 500,
+                                                    letterSpacing: letterSpacing.xs,
+                                                }}
+                                            >
+                                                No Assignments Due Today
+                                            </ThemedText>
+                                        </View>
                                     )}
                                     {sessions.map((session: any, i: number) => (
                                         <Fragment key={i}>
@@ -248,19 +272,59 @@ export default function Home() {
                                         rowGap: padding.lg
                                     }}
                                 >
-                                    {results.map((result, i) => (
-                                        <Fragment key={i}>
-                                            <CardResult
-                                                name={result.name}
-                                                date={result.date}
-                                                type={result.type}
-                                                score={result.score}
-                                                imageBackgroundColor={result.imageBackgroundColor}
-                                                imageColor={result.imageTextColor}
+                                    {results.length === 0
+                                        ? 
+                                        <View
+                                            style={{
+                                                paddingVertical: 36,
+                                                paddingHorizontal: padding.md,
+                                                minHeight: 100,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                rowGap: 12,
+                                                borderWidth: 1,
+                                                borderColor: colors.schemes.light.outlineVariant,
+                                                borderStyle: "dashed",
+                                                borderRadius: 12,
+                                                backgroundColor: colors.schemes.light.surfaceContainer,
+                                            }}
+                                        >
+                                            <PackageOpenIcon
+                                                size={36}
+                                                strokeWidth={1.5}
+                                                color={theme.colors.schemes.light.outline}
                                             />
-                                        </Fragment>
-                                    ))}
-                                    <ViewAllButton/>
+                                            <ThemedText 
+                                                style={{ 
+                                                    // fontWeight: 400, 
+                                                    // fontSize: fontSize.base, 
+                                                    color: colors.schemes.light.outline, 
+                                                    // letterSpacing: letterSpacing.lg,
+                                                    fontSize: fontSize.base,
+                                                    fontWeight: 500,
+                                                    letterSpacing: letterSpacing.xs,
+                                                }}
+                                            >
+                                                No Recent Results
+                                            </ThemedText>
+                                        </View>
+                                        :
+                                        <>
+                                            {results.map((result, i) => (
+                                                <Fragment key={i}>
+                                                    <CardResult
+                                                        name={result.name}
+                                                        date={result.date}
+                                                        type={result.type}
+                                                        score={result.score}
+                                                        imageBackgroundColor={result.imageBackgroundColor}
+                                                        imageColor={result.imageTextColor}
+                                                    />
+                                                </Fragment>
+                                            ))}
+                                            <ViewAllButton/>
+                                        </>
+                                    }
                                 </View>
                             </View>
                         </ScrollView>

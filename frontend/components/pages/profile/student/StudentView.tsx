@@ -4,11 +4,11 @@ import ProfilePicture from "@/components/ui/user/ProfilePicture";
 import { Class, deleteClass, getClasses } from "@/services/classes";
 import { deleteDrill, Drillv2 as Drill, getDrills } from "@/services/drills";
 import { deleteWorkout, getSessions, Session } from "@/services/sessions";
-import { shadow, theme } from "@/theme";
+import { colors, shadow, theme } from "@/theme";
 import { Fragment, useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BookTextIcon, DumbbellIcon, StarIcon, ZapIcon } from "lucide-react-native";
+import { BookTextIcon, DumbbellIcon, SettingsIcon, StarIcon, ZapIcon } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 import { simpleGetUser, User } from "@/services/user";
@@ -37,7 +37,7 @@ export default function StudentView() {
             
             setUser(await simpleGetUser(token))
             setClasses(await getClasses(token));
-            setDrills(await getDrills());
+            setDrills(await getDrills(token));
             setWorkouts(await getSessions(token));
         }
         load();
@@ -75,10 +75,35 @@ export default function StudentView() {
                         borderColor: theme.colors.schemes.light.outlineVariant,
                     }}
                 >
-                    <ProfilePicture
-                        width={24*2.5}
-                        height={24*2.5}
-                    />
+                    <View
+                        style={{
+                            position: 'relative',
+                        }}
+                    >
+                        <ProfilePicture
+                            width={24*2.5}
+                            height={24*2.5}
+                        />
+                        <Pressable
+                            onPress={() => router.push('/settings')}
+                            style={{
+                                position: 'absolute',
+                                bottom: -8,
+                                left: 24 * 2.5 - 20,
+                                padding: 4,
+                                backgroundColor: theme.colors.schemes.light.surfaceContainerHigh,
+                                borderWidth: 2,
+                                borderColor: 'white',
+                                borderRadius: 1000,
+                                // ...shadow.sm
+                            }}
+                        >
+                            <SettingsIcon
+                                size={16}
+                                color={theme.colors.schemes.light.onSurfaceVariant}
+                            />
+                        </Pressable>
+                    </View>
                     <View
                         style={{
                             rowGap: theme.padding.sm
@@ -288,10 +313,10 @@ export default function StudentView() {
                                 >
                                     <InlineRowCard
                                         title={class_.className || ""}
-                                        imageBackgroundColor={class_.imageBackgroundColor || "lightgray"}
-                                        imageTextColor={class_.imageTextColor || "black"}
+                                        imageBackgroundColor={class_.imageBackgroundColor || colors.coreColors.primary}
+                                        imageTextColor={class_.imageTextColor || "white"}
                                         imageText={class_.imageText || ""}
-                                        description={class_.description || 'ok'}
+                                        description={class_.description || ''}
                                         descriptions={[
                                             `${class_.students?.length} students`
                                         ]}

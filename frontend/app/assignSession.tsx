@@ -1,11 +1,12 @@
+import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSessions, Session } from "@/services/sessions";
-import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow } from "@/theme";
+import { borderRadius, colors, fontSize, letterSpacing, margin, padding, shadow, theme } from "@/theme";
 import { router, useLocalSearchParams } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
+import { ChevronLeft, PackageOpenIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
+import { ActivityIndicator, Dimensions, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface SessionCardProps {
@@ -26,7 +27,7 @@ function SessionCard({ session, onPress }: SessionCardProps) {
                 borderColor: colors.schemes.light.outlineVariant,
                 borderRadius: borderRadius.base,
                 padding: 12,
-                ...shadow.md,
+                ...shadow.sm,
             }}
         >
             {/* Icon */}
@@ -49,7 +50,7 @@ function SessionCard({ session, onPress }: SessionCardProps) {
             <View style={{ flex: 1, rowGap: 2 }}>
                 <ThemedText
                     style={{
-                        fontSize: fontSize.md,
+                        fontSize: fontSize.base,
                         fontWeight: 500,
                         color: colors.schemes.light.onSurface,
                     }}
@@ -59,7 +60,7 @@ function SessionCard({ session, onPress }: SessionCardProps) {
                 <View style={{ flexDirection: "row", alignItems: "center", columnGap: 6 }}>
                     <ThemedText
                         style={{
-                            fontSize: fontSize.sm,
+                            fontSize: fontSize.md,
                             letterSpacing: letterSpacing.xl,
                             color: colors.schemes.light.onSurfaceVariant,
                         }}
@@ -76,7 +77,7 @@ function SessionCard({ session, onPress }: SessionCardProps) {
                     />
                     <ThemedText
                         style={{
-                            fontSize: fontSize.sm,
+                            fontSize: fontSize.md,
                             letterSpacing: letterSpacing.xl,
                             color: colors.schemes.light.onSurfaceVariant,
                         }}
@@ -133,44 +134,32 @@ export default function AssignSession() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.background }}>
             {/* Header */}
-            <View
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    paddingHorizontal: 16,
-                    paddingVertical: 14,
-                    borderBottomWidth: 1,
-                    borderColor: colors.schemes.light.outlineVariant,
-                    backgroundColor: colors.schemes.light.background,
+            <HeaderWithBack
+                header='Select Workout'
+                subHeader={(
+                    <View>
+                        <ThemedText
+                            style={{
+                                fontSize: 16,
+                                letterSpacing: theme.letterSpacing.xl * 1,
+                                color: theme.colors.schemes.light.onSurfaceVariant
+                            }}
+                        >
+                            Choose a workout to assign to your class
+                        </ThemedText>
+                    </View>
+                )}
+                onBack={() => router.back()}
+                containerStyle={{
+                    paddingVertical: theme.margin.xs,
+                    paddingHorizontal: theme.margin.sm,
+                    // borderBottomWidth: 0
                 }}
-            >
-                <Pressable onPress={() => router.back()} hitSlop={8} style={{ marginRight: 8 }}>
-                    <ChevronLeft size={24} color={colors.schemes.light.onSurface} />
-                </Pressable>
-                <View style={{ flex: 1 }}>
-                    <ThemedText
-                        style={{
-                            fontSize: fontSize.lg,
-                            fontWeight: 600,
-                            letterSpacing: letterSpacing.xs,
-                            color: colors.schemes.light.onSurface,
-                        }}
-                    >
-                        Select Workout
-                    </ThemedText>
-                    <ThemedText
-                        style={{
-                            fontSize: fontSize.sm,
-                            color: colors.schemes.light.onSurfaceVariant,
-                            letterSpacing: letterSpacing.xl,
-                        }}
-                    >
-                        Choose a workout to assign to your class
-                    </ThemedText>
-                </View>
-            </View>
-
+            />
             <ScrollView
+                style={{
+                    flex: 1,
+                }}
                 contentContainerStyle={{
                     padding: margin["3xs"],
                     rowGap: 10,
@@ -186,27 +175,47 @@ export default function AssignSession() {
                 ) : sessions.length === 0 ? (
                     <View
                         style={{
+                            flex: 1,
+                            flexGrow: 1,
+                            height: '100%',
                             alignItems: "center",
-                            paddingTop: 60,
-                            rowGap: 8,
+                            paddingTop: Dimensions.get('window').height / 2 - 200,
+                            paddingHorizontal: 24,
+                            rowGap: 24,
                         }}
                     >
-                        <ThemedText
+                        <PackageOpenIcon
+                            size={48}
+                            strokeWidth={1.5}
+                            color={colors.schemes.light.outline}
+                        />
+                        <View
                             style={{
-                                fontSize: fontSize.base,
-                                color: colors.schemes.light.onSurfaceVariant,
+                                rowGap: 6
                             }}
                         >
-                            No workouts available.
-                        </ThemedText>
-                        <ThemedText
-                            style={{
-                                fontSize: fontSize.sm,
-                                color: colors.schemes.light.outlineVariant,
-                            }}
-                        >
-                            Create a workout first in the Workouts tab.
-                        </ThemedText>
+                            <ThemedText
+                                style={{
+                                    fontSize: fontSize.xl,
+                                    fontWeight: 500,
+                                    color: colors.schemes.light.onSurface,
+                                    textAlign: 'center'
+                                }}
+                            >
+                                No Workouts Available
+                            </ThemedText>
+                            <ThemedText
+                                style={{
+                                    fontSize: fontSize.base,
+                                    color: colors.schemes.light.onSurfaceVariant,
+                                    letterSpacing: letterSpacing.xl,
+                                    textAlign: 'center',
+                                    maxWidth: 272
+                                }}
+                            >
+                                There are no workouts. Create a workout first in the Workouts tab.
+                            </ThemedText>
+                        </View>
                     </View>
                 ) : (
                     sessions.map((session) => (

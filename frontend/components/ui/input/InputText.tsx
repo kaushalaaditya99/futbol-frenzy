@@ -49,6 +49,7 @@ export default function InputText(props: InputTextProps) {
                     style={{
                         width: "100%",
                         minWidth: "100%",
+                        minHeight: 44,
                         paddingVertical: padding.md,
                         paddingHorizontal: padding.lg,
                         paddingRight: isPassword ? 44 : padding.lg,
@@ -58,7 +59,7 @@ export default function InputText(props: InputTextProps) {
                         borderWidth: 1,
                         borderStyle: props.errorMessage ? "dashed" : "solid",
                         borderColor: props.errorMessage ? colors.schemes.light.error : colors.schemes.light.outlineVariant,
-                        borderRadius: borderRadius.sm,
+                        borderRadius: borderRadius.base,
                         backgroundColor: "white",
                         ...shadow.sm,
                         ...flatInputStyle

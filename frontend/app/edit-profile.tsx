@@ -8,7 +8,8 @@ import { useProfile } from "@/contexts/ProfileContext";
 import { patchUser, patchUserSettings } from "@/services/extendeduser";
 import ThemedText from "@/components/ui/ThemedText";
 import ProfilePicture from "@/components/ui/user/ProfilePicture";
-import { colors, fontSize, borderRadius, margin, padding } from "@/theme";
+import { colors, fontSize, borderRadius, margin, padding, theme, shadow, letterSpacing } from "@/theme";
+import HeaderWithBack from "@/components/ui/HeaderWithBack";
 
 const POSITIONS = [
   { label: "Goalkeeper", value: "GK" },
@@ -75,32 +76,29 @@ export default function EditProfile() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.schemes.light.background }}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: margin.sm,
-          paddingVertical: padding.lg,
+      <HeaderWithBack
+        header="Edit Profile"
+        onBack={() => router.back()}
+        containerStyle={{
+            paddingVertical: theme.margin.xs,
+            paddingHorizontal: theme.margin.sm,
         }}
-      >
-        <Pressable onPress={() => router.replace("/settings")} style={{ marginRight: padding.lg }}>
-          <ArrowLeft size={24} color={colors.schemes.light.onBackground} />
-        </Pressable>
-        <ThemedText style={{ fontSize: fontSize.xl, fontWeight: "700", color: colors.schemes.light.onBackground, flex: 1 }}>
-          Edit Profile
-        </ThemedText>
-        <Pressable onPress={handleSave} disabled={saving}>
-          {saving ? (
-            <ActivityIndicator size="small" color={colors.coreColors.primary} />
-          ) : (
-            <ThemedText style={{ fontSize: fontSize.base, fontWeight: "600", color: colors.coreColors.primary }}>
-              Save
-            </ThemedText>
-          )}
-        </Pressable>
-      </View>
-
-      <ScrollView style={{ flex: 1, paddingHorizontal: margin.sm }}>
+        buttonStyle={{
+            backgroundColor: "#00000010"
+        }}
+        leftHeader={(
+          <Pressable onPress={handleSave} disabled={saving} style={{backgroundColor: theme.colors.schemes.light.surfaceContainerHigh, padding: 6, paddingHorizontal: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center'}}>
+            {saving ? (
+              <ActivityIndicator size="small" color={colors.coreColors.primary} />
+            ) : (
+              <ThemedText style={{ fontSize: fontSize.base, fontWeight: "600", color: colors.coreColors.primary, letterSpacing: theme.letterSpacing.xl }}>
+                Save
+              </ThemedText>
+            )}
+          </Pressable>
+        )}
+      />
+      <ScrollView style={{ flex: 1, padding: margin.sm }}>
         {/* Profile Picture */}
         <View style={{ alignItems: "center", marginBottom: margin.sm }}>
           <View style={{ position: "relative" }}>
@@ -126,9 +124,14 @@ export default function EditProfile() {
           <ThemedText
             style={{
               fontSize: fontSize.md,
-              color: colors.coreColors.primary,
+              color: 'white',
+              letterSpacing: letterSpacing.lg,
               fontWeight: "600",
               marginTop: padding.lg,
+              padding: 6,
+              paddingHorizontal: 12,
+              borderRadius: 8,
+              backgroundColor: colors.coreColors.primary
             }}
           >
             Change Photo
@@ -136,7 +139,7 @@ export default function EditProfile() {
         </View>
 
         {/* Form Fields */}
-        <View style={{ gap: margin["3xs"] }}>
+        <View style={{ gap: margin.sm }}>
           <FormField label="First Name" value={firstName} onChangeText={setFirstName} />
           <FormField label="Last Name" value={lastName} onChangeText={setLastName} />
           <FormField label="Username" value={username} onChangeText={setUsername} />
@@ -212,7 +215,8 @@ function FormField({
       <ThemedText
         style={{
           fontSize: fontSize.md,
-          fontWeight: "600",
+          fontWeight: "500",
+          letterSpacing: letterSpacing.sm,
           color: colors.schemes.light.onSurfaceVariant,
           marginBottom: padding.md,
         }}
@@ -233,6 +237,7 @@ function FormField({
           color: colors.schemes.light.onSurface,
           borderWidth: 1,
           borderColor: colors.schemes.light.outlineVariant,
+          ...shadow.sm
         }}
       />
     </View>
