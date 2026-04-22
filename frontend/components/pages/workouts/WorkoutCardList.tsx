@@ -95,7 +95,7 @@ export default function WorkoutCardList(props: WorkoutCardListProps) {
                         color: theme.colors.schemes.light.onSurfaceVariant
                     }}
                 >
-                    {props.uploadedBy}
+                    {props.coach.first_name} {props.coach.last_name}
                 </ThemedText>
                 <View
                     style={{

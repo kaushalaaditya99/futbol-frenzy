@@ -37,7 +37,7 @@ export async function getDrills(token: string): Promise<Drill[]> {
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
 
-    // console.log("backend drills:", data);
+    console.log("backend drills:", data);
 
     return data.map((d: any) => ({
         ...d,
@@ -74,6 +74,7 @@ export async function getDrill(token: string, drillID: number): Promise<Drill|nu
         throw new Error(`HTTP Error! Status: ${res.status}`);
 
     const data = await res.json();
+    console.log(data);
     return data;
 
   } 

@@ -136,7 +136,6 @@ export default function Workout() {
                                 stroke={theme.colors.coreColors.primary}
                                 fill={workout?.bookmarked ? theme.colors.coreColors.primary : "transparent"}
                                 onPress={async () => {
-                                    console.log('clicked')
                                     if (!workout || !token)
                                         return;
                                     const bookmarked = await bookmarkWorkout(token, workout.id);

@@ -95,7 +95,7 @@ class DrillSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
             return False
-        return False
+        return DrillBookmark.objects.filter(drillID=obj, userID=request.user).exists()
 
 class DrillBookmarkSerializer(serializers.ModelSerializer):
     class Meta:

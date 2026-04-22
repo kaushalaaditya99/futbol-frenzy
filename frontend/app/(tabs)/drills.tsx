@@ -20,13 +20,6 @@ import { useFocusEffect } from "@react-navigation/native";
 
 
 export default function Drills() {
-    const feedOptions = [
-        ["library", "My Library"],
-        ["explore", "Explore"],
-        ["bookmark", "Bookmarks"]
-    ];
-
-    const [feed, setFeed] = useState("library");
     const [viewType, setViewType] = useState("list");
 
     const { role, token } = useAuth();
@@ -34,21 +27,15 @@ export default function Drills() {
     const [drills, setDrills] = useState<Array<Drill>>([]);
     const drillSearchBar = useDrillSearchBar(drills);
 
-    useEffect(() => {
-        const id = 0;
-        loadDrills(id);
-        console.log("Drills loaded")
-    }, [token]);
-
 
     useFocusEffect(
       useCallback(() => {
-          const id = 0;
-            loadDrills(id);
+            console.log('called')
+            loadDrills();
         }, [token])
     );
 
-    const loadDrills = async (id: number) => {
+    const loadDrills = async () => {
         if (!token)
             return;
         const drills = await getDrills(token);
@@ -115,9 +102,9 @@ export default function Drills() {
                             }}
                         >
                             <InputDropdownV2
-                                value={feed}
-                                onChange={setFeed}
-                                options={feedOptions as [string, string][]}
+                                value={drillSearchBar.feed}
+                                onChange={drillSearchBar.setFeed}
+                                options={drillSearchBar.feedOptions as any}
                                 buttonStyle={{
                                     borderRadius: 8,
                                     height: 36,
@@ -153,7 +140,7 @@ export default function Drills() {
                                     scrollEnabled={false}
                                     data={drillSearchBar.filtered}
                                     numColumns={2}
-                                    contentContainerStyle={{ gap: 12 }}
+                                    contentContainerStyle={{ flexGrow: 1, gap: 12 }}
                                     columnWrapperStyle={{ gap: padding.lg }}
                                     renderItem={({item}: any) => (
                                         <DrillCardGrid
@@ -171,7 +158,7 @@ export default function Drills() {
                             >
                                 {drillSearchBar.filtered.map((drill, i) => (
                                     <Fragment
-                                        key={i}
+                                        key={drill.id}
                                     >
                                         <DrillCardList
                                             {...drill}

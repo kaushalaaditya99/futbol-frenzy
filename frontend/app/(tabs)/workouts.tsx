@@ -30,14 +30,6 @@ export default function Workouts() {
     const { token, role } = useAuth();
     const sideBar = useSideBar();
 
-    // Feed
-    const [feed, setFeed] = useState("library");
-    const feedOptions = [
-        ["library", "My Library"],
-        ["explore", "Explore"],
-        ["bookmark", "Bookmarks"]
-    ];
-
     // Workouts (Sessions)
     const [workouts, setWorkouts] = useState<Array<Session>>([]);
     const searchBar = useWorkoutSearch(workouts);
@@ -347,9 +339,9 @@ export default function Workouts() {
                                 }}
                             >
                                 <InputDropdownV2
-                                    value={feed}
-                                    onChange={setFeed}
-                                    options={feedOptions as [string, string][]}
+                                    value={searchBar.feed}
+                                    onChange={searchBar.setFeed}
+                                    options={searchBar.feedOptions as [string, string][]}
                                     buttonStyle={{
                                         borderRadius: 8,
                                         height: 36,
@@ -393,9 +385,9 @@ export default function Workouts() {
                                     columnGap: theme.padding.md,
                                 }}
                             >
-                                <FilterButton
+                                {/* <FilterButton
                                     onPress={() => setShowFilter(true)}
-                                />
+                                /> */}
                                 <SortButton
                                     searchBar={searchBar}
                                 />

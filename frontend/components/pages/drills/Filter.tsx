@@ -85,7 +85,7 @@ export default function Filter(props: FilterProps) {
                         }}
                     />
                 </View>
-                <View>
+                {/* <View>
                     <InputDropdownV2
                         value={props.drillSearchBar.accessControl}
                         onChange={(value: string) => props.drillSearchBar.setAccessControl(value as any)}
@@ -94,7 +94,7 @@ export default function Filter(props: FilterProps) {
                             height: 36
                         }}
                     />
-                </View>
+                </View> */}
                 <View
                     style={{
                         flexDirection: "row"

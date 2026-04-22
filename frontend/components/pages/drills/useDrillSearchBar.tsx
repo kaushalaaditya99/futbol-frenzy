@@ -2,9 +2,15 @@ import useSearchBar, { Key } from "@/hooks/useSearchBar";
 import { Drill } from "@/services/drills";
 import { useEffect, useState } from "react";
 
-export type AccessControl = "public" | "private";
-
 export default function useDrillSearchBar(drills: Array<Drill>) {
+    const feedOptions = [
+        ["library", "My Library"],
+        ["explore", "Explore"],
+        ["bookmarked", "Bookmarks"]
+    ];
+
+    const [feed, setFeed] = useState("library");
+
     const searchKeyOptions = [
         ["name", "Name"],
         ["uploadedByName", "Uploaded By"],
@@ -16,46 +22,41 @@ export default function useDrillSearchBar(drills: Array<Drill>) {
         ["level", "Level"],
     ];
 
-    const accessControlOptions = [
-        ["public", "Public"],
-        ["private", "Private"]
-    ];
-
     const [sort, setSort] = useState<0|1|2>(0);
     const [sortKey, setSortKey] = useState("name");
-    const [isPublic, setIsPublic] = useState(true);
-
+    
     const [search, setSearch] = useState("");
     const [searchKey, setSearchKey] = useState("name");
-
-    const [accessControl, setAccessControl] = useState<AccessControl>("public");
 
     const [filtered, setFiltered] = useState<Array<Drill>>([]);
     const searchBar = useSearchBar<Drill>(drills, searchKey, sortKey);
 
 
     useEffect(() => {
-        const fDrills = searchAndSortDrills(search, searchKey, sort, sortKey, accessControl, drills);
+        console.log('\n\n\n\nFILTERED')
+        console.log(drills);
+        const fDrills = searchAndSortDrills(search, searchKey, sort, sortKey, feed, drills);
         setFiltered(fDrills);
-    }, [search, searchKey, sort, sortKey, accessControl, drills]);
+    }, [search, searchKey, sort, sortKey, feed, drills]);
 
 
-  const searchDrillsByAccessControl = (accessControl: AccessControl, drills: Array<Drill>) => {
-    //absolutely disgusting logic to set IsPublic and match with accessControl
-    const wantPublic = accessControl === 'public';
-    console.log("Current Public State is: ")
-    console.log(wantPublic)
-    const fDrills = drills.filter((drill) => drill.publicDrill === wantPublic);
-        return fDrills;
+  const searchDrillsByFeed = (feed: any, drills: Array<Drill>) => {
+    if (feed === 'explore')
+        return [...drills];
+    if (feed === 'library')
+        return drills.filter((session) => session.publicDrill === false);
+    if (feed === 'bookmarked')
+        return drills.filter((drill) => drill.bookmarked === true);
+    return [...drills];
     }
 
 
-    const searchAndSortDrills = (search: string, searchKey: Key, sort: 0|1|2, sortKey: Key, accessControl: AccessControl, drills: Array<Drill>) => {
+    const searchAndSortDrills = (search: string, searchKey: Key, sort: 0|1|2, sortKey: Key, feed: any, drills: Array<Drill>) => {
         return searchBar.sortObjects(
             sort,
             sortKey,
-            searchDrillsByAccessControl(
-                accessControl,
+            searchDrillsByFeed(
+                feed,
                 searchBar.searchObjects(
                     search,
                     searchKey,
@@ -68,7 +69,6 @@ export default function useDrillSearchBar(drills: Array<Drill>) {
     return {
         searchKeyOptions,
         sortKeysOptions,
-        accessControlOptions,
         sort,
         setSort,
         search,
@@ -78,11 +78,12 @@ export default function useDrillSearchBar(drills: Array<Drill>) {
         sortKey,
         setSortKey,
         getNextDirection: searchBar.getNextDirection,
-        accessControl,
-        setAccessControl,
+        feed,
+        setFeed,
+        feedOptions,
         filtered,
         setFiltered,
-        searchDrillsByAccessControl,
+        searchDrillsByFeed,
         searchAndSortDrills
     }
 }
