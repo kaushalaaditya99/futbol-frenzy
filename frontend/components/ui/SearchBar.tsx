@@ -52,7 +52,7 @@ export default function SearchBar(props: SearchBarProps) {
                     paddingHorizontal: padding.lg,
                     color: "black",
                     fontFamily: "Arimo-Regular",
-                    ...props.textInputStyle
+                    ...props.textInputStyle,
                 }}
                 placeholderTextColor={colors.schemes.light.onSurfaceVariant}
                 placeholder={props.placeholder}

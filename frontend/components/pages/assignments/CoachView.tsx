@@ -54,6 +54,7 @@ export default function CoachView(props: CoachViewProps) {
                     imageBackgroundColor: '',
                     imageText: '',
                     imageTextColor: '',
+                    feedback: '',
                     student: {
                         ...student,
                         username: '',
@@ -190,6 +191,9 @@ export default function CoachView(props: CoachViewProps) {
                         enableSort={false}
                         containerStyle={{
                             height: 36,
+                        }}
+                        textInputStyle={{
+                            height: 36
                         }}
                     />
                     <View
