@@ -4,10 +4,12 @@ import { borderRadius, letterSpacing, padding, theme } from "@/theme";
 import { Asset } from "expo-asset";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { Bookmark } from "lucide-react-native";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dimensions, FlatListProps, Pressable, View } from "react-native";
 import Tag from "./Tag";
 import { router } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
+import { bookmarkDrill } from "@/services/bookmarks";
 
 interface DrillCardGridProps extends Drill {
     onBookmark?: () => void;
@@ -27,11 +29,14 @@ const localVideos = {
 };
 
 export default function DrillCardGrid(props: DrillCardGridProps) {
+    const {token} = useAuth();
     const videoPlayer = useVideoPlayer(null, (player) => {
         player.muted = true;
         player.audioMixingMode = "mixWithOthers";
         player.pause();
     });
+
+    const [bookmarked, setBookmarked] = useState(props.bookmarked);
 
     useEffect(() => {
         if (props.url) {
@@ -59,7 +64,7 @@ export default function DrillCardGrid(props: DrillCardGridProps) {
     return (
         <View
             style={{
-                width: ((Dimensions.get("screen").width - 48 - 12) / 2),
+                width: ((Dimensions.get("screen").width - 28) / 2),
                 height: 200,
                 padding: theme.padding.sm,
                 borderWidth: 1,
@@ -118,8 +123,14 @@ export default function DrillCardGrid(props: DrillCardGridProps) {
                     </ThemedText>
                     <Bookmark
                         size={16}
-                        stroke={props.bookmarked ? theme.colors.coreColors.primary : theme.colors.schemes.light.onSurfaceVariant}
-                        fill={props.bookmarked ? theme.colors.coreColors.primary : "transparent"}
+                        stroke={bookmarked ? theme.colors.coreColors.primary : theme.colors.schemes.light.onSurfaceVariant}
+                        fill={bookmarked ? theme.colors.coreColors.primary : "transparent"}
+                        onPress={async () => {
+                            if (!token)
+                                return;
+                            const bookmarked = await bookmarkDrill(token, props.id);
+                            setBookmarked(bookmarked || false);
+                        }}
                     />
                 </View>
                 <View

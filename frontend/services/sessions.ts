@@ -19,6 +19,7 @@ export interface Session {
     bookmarked: boolean;
     accessControl: string;
     coach: User;
+    publicWorkout: boolean;
 }
 
 const API_URL = resolveEndpoint("/api");

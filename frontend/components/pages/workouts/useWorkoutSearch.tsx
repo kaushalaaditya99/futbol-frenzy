@@ -12,8 +12,13 @@ export default function useWorkoutSearch(sessions: Array<Session>) {
 
     const sortKeysOptions = [
         ["name", "Name"],
-        ["uploadedByName", "Uploaded By"],
-        // ["level", "Level"],
+        ["uploadedByName", "Uploaded By"]
+    ];
+
+    const feedOptions = [
+        ["library", "My Library"],
+        ["explore", "Explore"],
+        ["bookmarked", "Bookmarked"]
     ];
 
     const accessControlOptions = [
@@ -27,30 +32,38 @@ export default function useWorkoutSearch(sessions: Array<Session>) {
     const [search, setSearch] = useState("");
     const [searchKey, setSearchKey] = useState("name");
     
-    const [accessControl, setAccessControl] = useState<AccessControl>("public");
+    const [feed, setFeed] = useState("explore");
     
     const [filtered, setFiltered] = useState<Array<Session>>([]);
     const searchBar = useSearchBar<Session>(sessions, searchKey, sortKey);
 
 
     useEffect(() => {
-        const fDrills = searchAndSortDrills(search, searchKey, sort, sortKey, accessControl, sessions);
+        const fDrills = searchAndSortDrills(search, searchKey, sort, sortKey, feed, sessions);
         setFiltered(fDrills);
-    }, [search, searchKey, sort, sortKey, accessControl, sessions]);
+    }, [search, searchKey, sort, sortKey, feed, sessions]);
 
-
-    const searchDrillsByAccessControl = (accessControl: AccessControl, drills: Array<Session>) => {
-        const fDrills = drills.filter((session) => session.accessControl === accessControl);
-        return fDrills;
+    const searchDrillsByFeed = (feed: any, workouts: Array<Session>) => {
+        if (feed === 'library') {
+            const fDrills = workouts.filter((session) => session.publicWorkout === false);
+            return fDrills;
+        }
+        else if (feed === 'bookmarked') {
+            const fDrills = workouts.filter((session) => session.bookmarked === true);
+            return fDrills;
+        }
+        else {
+            return [...workouts];
+        }
     }
 
 
-    const searchAndSortDrills = (search: string, searchKey: Key, sort: 0|1|2, sortKey: Key, accessControl: AccessControl, sessions: Array<Session>) => {
+    const searchAndSortDrills = (search: string, searchKey: Key, sort: 0|1|2, sortKey: Key, feed: any, sessions: Array<Session>) => {
         return searchBar.sortObjects(
             sort, 
             sortKey, 
-            searchDrillsByAccessControl(
-                accessControl,
+            searchDrillsByFeed(
+                feed,
                 searchBar.searchObjects(
                     search, 
                     searchKey, 
@@ -63,7 +76,6 @@ export default function useWorkoutSearch(sessions: Array<Session>) {
     return {
         searchKeyOptions,
         sortKeysOptions,
-        accessControlOptions,
         sort,
         setSort,
         search,
@@ -73,11 +85,11 @@ export default function useWorkoutSearch(sessions: Array<Session>) {
         sortKey,
         setSortKey,
         getNextDirection: searchBar.getNextDirection,
-        accessControl,
-        setAccessControl,
         filtered,
         setFiltered,
-        searchDrillsByAccessControl,
-        searchAndSortDrills
+        searchAndSortDrills,
+        feed,
+        setFeed,
+        feedOptions
     }
 }

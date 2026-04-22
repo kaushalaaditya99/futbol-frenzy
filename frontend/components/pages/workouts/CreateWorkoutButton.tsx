@@ -26,7 +26,7 @@ export default function CreateWorkoutButton(props: CreateWorkoutButtonProps) {
             <ThemedText
                 style={{
                     fontSize: 14,
-                    fontWeight: 500,
+                    fontWeight: 400,
                     letterSpacing: theme.letterSpacing.xl,
                     color: theme.colors.schemes.light.onSurface
                 }}

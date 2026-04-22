@@ -1,35 +1,19 @@
-import ButtonBack from "@/components/ui/button/ButtonBack";
+import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
+import { bookmarkDrill } from "@/services/bookmarks";
 import { Drill, getDrill } from "@/services/drills";
-import { padding, theme } from "@/theme";
-import { Asset } from "expo-asset";
-import { BlurView } from "expo-blur";
+import { theme } from "@/theme";
 import { router, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { Bookmark } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Dimensions, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-// const localVideos = {
-//     "@/assets/videos/video.mp4": require("@/assets/videos/video.mp4"),
-//     "@/assets/videos/video2.mp4": require("@/assets/videos/video2.mp4"),
-//     "@/assets/videos/video3.mp4": require("@/assets/videos/video3.mp4"),
-//     "@/assets/videos/video4.mp4": require("@/assets/videos/video4.mp4"),
-//     "@/assets/videos/video5.mp4": require("@/assets/videos/video5.mp4"),
-//     "@/assets/videos/video6.mp4": require("@/assets/videos/video6.mp4"),
-//     "@/assets/videos/video7.mp4": require("@/assets/videos/video7.mp4"),
-//     "@/assets/videos/video8.mp4": require("@/assets/videos/video8.mp4"),
-//     "@/assets/videos/video9.mp4": require("@/assets/videos/video9.mp4"),
-//     "@/assets/videos/video10.mp4": require("@/assets/videos/video10.mp4"),
-// };
-
 export default function ShowDrill() {
     const {token} = useAuth();
     const { id } = useLocalSearchParams();
-
 
     // Used for Blur Effect
     const insets = useSafeAreaInsets();
@@ -81,47 +65,30 @@ export default function ShowDrill() {
 
 
     return (
-        <View
+        <SafeAreaView
+            edges={["top"]}
             style={{
                 flex: 1,
-                position: "relative",
-                backgroundColor: "blue"
+                backgroundColor: theme.colors.schemes.light.surface,
             }}
         >
-            <StatusBar
-                style="light"  
-            />
-            <BlurView
-                intensity={50}
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    minHeight: insets.top,
-                    paddingTop: insets.top,
-                    zIndex: 100,
-                    paddingVertical: theme.padding.xl,
-                    paddingHorizontal: theme.padding.md,
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    columnGap: 12,
-                    backgroundColor: "#ffffff75"
+            <HeaderWithBack
+                header={drill ? drill.drillName : "Drill"}
+                onBack={() => router.back()}
+                containerStyle={{
+                    paddingVertical: theme.margin.xs,
+                    paddingHorizontal: theme.margin.sm,
+                    borderBottomWidth: 0,
                 }}
-            >
-                <ButtonBack
-                    onBack={() => router.back()}
-                />
-            </BlurView>
+                buttonStyle={{
+                    backgroundColor: "#00000010"
+                }}
+            />
             <VideoView 
                 player={drillPlayer}
                 style={{ 
                     width: Dimensions.get("screen").width * 1, 
                     height: Dimensions.get("screen").height * 0.5,
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
                     backgroundColor: theme.colors.palettes.neutral[0]
                 }}
                 contentFit="cover"
@@ -157,7 +124,7 @@ export default function ShowDrill() {
                                         borderColor: theme.colors.schemes.light.outlineVariant,
                                     }}
                                 >
-                                    {[drill.drillType, `${drill.time} min`, drill.difficultyLevel].map((tag, i) => (
+                                    {[drill.drillType, drill.difficultyLevel].map((tag, i) => (
                                         <View
                                             key={i}
                                             style={{
@@ -221,6 +188,15 @@ export default function ShowDrill() {
                                         size={20}
                                         stroke={drill.bookmarked ? theme.colors.coreColors.primary : theme.colors.schemes.light.onSurfaceVariant}
                                         fill={drill.bookmarked ? theme.colors.coreColors.primary : "transparent"}
+                                        onPress={async () => {
+                                            if (!drill || !token)
+                                                return;
+                                            const bookmarked = await bookmarkDrill(token, drill.id);
+                                            setDrill(drill => ({
+                                                ...drill,
+                                                bookmarked
+                                            }) as any)
+                                        }}
                                     />
                                 </View>
                                 <ThemedText
@@ -240,6 +216,6 @@ export default function ShowDrill() {
                     }
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     )
 }
