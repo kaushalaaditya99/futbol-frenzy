@@ -234,25 +234,6 @@ export default function ManageStudents(props: ManageStudentsProps) {
                                 {/* Action buttons */}
                                 <View style={{ gap: 8 }}>
                                     <Pressable
-                                        style={{
-                                            paddingVertical: 12,
-                                            borderRadius: borderRadius.base,
-                                            borderWidth: 1.5,
-                                            borderColor: colors.schemes.light.outlineVariant,
-                                            backgroundColor: "white",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <ThemedText style={{
-                                            fontSize: 13,
-                                            fontWeight: "600",
-                                            color: colors.schemes.light.onSurface,
-                                        }}>
-                                            Change Position
-                                        </ThemedText>
-                                    </Pressable>
-
-                                    <Pressable
                                         onPress={() => setShowRemoveConfirm(true)}
                                         style={{
                                             paddingVertical: 12,

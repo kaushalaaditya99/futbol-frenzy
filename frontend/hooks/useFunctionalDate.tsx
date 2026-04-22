@@ -1,6 +1,7 @@
 import { Assignment } from "@/services/assignments";
 import { Session } from "@/services/sessions";
 import { colors } from "@/theme";
+import { toESTDateString } from "@/utils/dateUtils";
 import { useEffect, useState } from "react";
 import { DateData } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
@@ -81,13 +82,13 @@ export default function useFunctionalDate() {
 
 
     const getShortISOString = (date: Date) => {
-        return date.toISOString().split('T')[0];
+        return toESTDateString(date);
     }
 
 
     const getMarkedDates = (): MarkedDates => {
         return ({
-            [date.toISOString().split('T')[0]]: {
+            [toESTDateString(date)]: {
                 selected: true, 
                 disableTouchEvent: true, 
                 selectedColor: colors.coreColors.primary

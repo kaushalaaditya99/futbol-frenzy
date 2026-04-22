@@ -111,19 +111,10 @@ export default function CoachView(props: CoachViewProps) {
     }
 
     const loadSessionsToday = (assignments: Array<Assignment>) => {
-        const todaysSessions: Array<Assignment> = [];
-        const today = new Date();
-        const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
-
-        for (const assignment of assignments) {
-            const dueStr = assignment.dueDate instanceof Date
-                ? assignment.dueDate.toISOString().split('T')[0]
-                : String(assignment.dueDate).split('T')[0];
-            if (dueStr === todayStr) {
-                todaysSessions.push(assignment);
-            }
-        }
-
+        const todayString = functionalDate.getShortISOString(new Date());
+        const todaysSessions = assignments.filter(
+            (assignment) => functionalDate.getShortISOString(assignment.dueDate) === todayString
+        );
         setAssignmentsToday(todaysSessions);
     }
 
@@ -180,6 +171,10 @@ export default function CoachView(props: CoachViewProps) {
                     classId={props.param_class.id}
                     className={props.param_class.className}
                     classCode={props.param_class.classCode}
+                    onStudentRemoved={() => {
+                        setStudents(props.param_class.students);
+                        loadAssignments();
+                    }}
                 />
             }
             {tab === "Assignments" &&
