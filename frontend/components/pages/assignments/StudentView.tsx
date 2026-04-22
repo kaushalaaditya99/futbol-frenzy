@@ -159,7 +159,7 @@ export default function StudentView(props: StudentViewProps) {
                     return (
                         <RowCard
                             key={drillId}
-                            onPress={() => handleRecordDrill(drillId)}
+                            onPress={isCompleted ? () => {} : () => handleRecordDrill(drillId)}
                             title={`${index + 1}. ${drill.drillName || drill.name || 'Drill'}`}
                             descriptions={[
                                 drill.drillType || drill.type || "Drill",

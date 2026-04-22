@@ -167,18 +167,31 @@ def coach_submissions(request):
 @permission_classes([IsAuthenticated])
 def student_stats(request):
     from django.utils import timezone
-    from datetime import timedelta
+    from datetime import timedelta, datetime, time
+    import zoneinfo
     student = request.user
-    today = timezone.now().date()
+    est = zoneinfo.ZoneInfo('America/New_York')
+    now_est = timezone.now().astimezone(est)
+    today = now_est.date()
+    today_start = datetime.combine(today, time.min, tzinfo=est)
+    today_end = datetime.combine(today, time.max, tzinfo=est)
 
     # Get all classes this student is in
     student_classes = SoccerClass.objects.filter(members__studentID=student)
 
-    # Due Today: assignments due today across all student's classes
-    due_today = Assignment.objects.filter(
+    # Due Today: assignments due today that the student hasn't submitted yet
+    todays_assignments = Assignment.objects.filter(
         soccer_classes__in=student_classes,
-        dueDate__date=today,
-    ).distinct().count()
+        dueDate__gte=today_start,
+        dueDate__lte=today_end,
+    ).distinct()
+    submitted_today_ids = set(
+        Submission.objects.filter(
+            studentID=student,
+            assignmentID__in=todays_assignments,
+        ).values_list('assignmentID', flat=True)
+    )
+    due_today = todays_assignments.exclude(id__in=submitted_today_ids).count()
 
     # This Week: submissions the student made this week (Mon-Sun)
     start_of_week = today - timedelta(days=today.weekday())
@@ -212,14 +225,19 @@ def student_stats(request):
 @permission_classes([IsAuthenticated])
 def student_schedule(request):
     from django.utils import timezone
+    from datetime import datetime, time
+    import zoneinfo
     student = request.user
     date_str = request.query_params.get('date')
+    est = zoneinfo.ZoneInfo('America/New_York')
 
     if date_str:
-        from datetime import datetime
         target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
     else:
-        target_date = timezone.now().date()
+        target_date = timezone.now().astimezone(est).date()
+
+    target_start = datetime.combine(target_date, time.min, tzinfo=est)
+    target_end = datetime.combine(target_date, time.max, tzinfo=est)
 
     # Get classes the student is in
     student_classes = SoccerClass.objects.filter(members__studentID=student)
@@ -227,7 +245,8 @@ def student_schedule(request):
     # Get assignments due on target date
     assignments = Assignment.objects.filter(
         soccer_classes__in=student_classes,
-        dueDate__date=target_date,
+        dueDate__gte=target_start,
+        dueDate__lte=target_end,
     ).select_related('workoutID').distinct()
 
     # Check which assignments the student has already submitted
@@ -278,9 +297,13 @@ def student_results(request):
 
     # Filter by assignment due date if provided
     if date_str:
-        from datetime import datetime
+        from datetime import datetime, time
+        import zoneinfo
+        est = zoneinfo.ZoneInfo('America/New_York')
         target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        all_submissions = all_submissions.filter(assignmentID__dueDate__date=target_date)
+        target_start = datetime.combine(target_date, time.min, tzinfo=est)
+        target_end = datetime.combine(target_date, time.max, tzinfo=est)
+        all_submissions = all_submissions.filter(assignmentID__dueDate__gte=target_start, assignmentID__dueDate__lte=target_end)
 
     all_submissions = all_submissions.order_by('-dateGraded')
 
@@ -341,10 +364,16 @@ def coach_stats(request):
 
     # Completion: average today's completion across classes
     from django.utils import timezone
-    today = timezone.now().date()
+    from datetime import datetime, time
+    import zoneinfo
+    est = zoneinfo.ZoneInfo('America/New_York')
+    now_est = timezone.now().astimezone(est)
+    today = now_est.date()
+    today_start = datetime.combine(today, time.min, tzinfo=est)
+    today_end = datetime.combine(today, time.max, tzinfo=est)
     completion_values = []
     for sc in coach_classes:
-        todays_assignments = sc.assignments.filter(dueDate__date=today)
+        todays_assignments = sc.assignments.filter(dueDate__gte=today_start, dueDate__lte=today_end)
         num_students = ClassMember.objects.filter(classID=sc).count()
         if num_students == 0 or todays_assignments.count() == 0:
             continue
@@ -369,15 +398,21 @@ def coach_stats(request):
 @permission_classes([IsAuthenticated])
 def coach_class_progress(request):
     from django.utils import timezone
+    from datetime import datetime, time
+    import zoneinfo
     coach = request.user
-    today = timezone.now().date()
+    est = zoneinfo.ZoneInfo('America/New_York')
+    now_est = timezone.now().astimezone(est)
+    today = now_est.date()
+    today_start = datetime.combine(today, time.min, tzinfo=est)
+    today_end = datetime.combine(today, time.max, tzinfo=est)
 
     coach_classes = SoccerClass.objects.filter(coachID=coach)
     results = []
 
     for sc in coach_classes:
         # Get assignments due today for this class
-        todays_assignments = sc.assignments.filter(dueDate__date=today)
+        todays_assignments = sc.assignments.filter(dueDate__gte=today_start, dueDate__lte=today_end)
 
         # Total students in the class
         total_students = ClassMember.objects.filter(classID=sc).count()
@@ -642,6 +677,18 @@ def grade_submission(request, submission_id):
             if str(index) in feedbacks:
                 drill.feedback = feedbacks[str(index)]
                 drill.save()
+
+        # Notify the student that their submission was graded
+        from .services import notify_user
+        student = submission.studentID
+        workout_name = submission.assignmentID.workoutID.workoutName
+        notify_user(
+            student,
+            title="Submission Graded!",
+            description=f"You scored {grade}/100 on {workout_name}.",
+            icon="graded",
+            iconBackground="#c3f7c8",
+        )
 
         return Response({"success": True}, status=200)
 

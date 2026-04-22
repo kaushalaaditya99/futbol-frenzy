@@ -318,7 +318,7 @@ class SubmittedDrillViewSet(viewsets.ModelViewSet):
             notify_user(
                 student,
                 title="Drill Graded!",
-                description=f"You scored {instance.grade}/10 on {drill.drillName}.",
+                description=f"You scored {instance.grade}/100 on {drill.drillName}.",
                 icon="graded",
                 iconBackground="#c3f7c8",
             )
