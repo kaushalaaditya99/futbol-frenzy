@@ -47,7 +47,7 @@ export default function Home() {
 
     useEffect(() => {
         if (!token) return;
-        const dateStr = functionalDate.date.toISOString().split('T')[0];
+        const dateStr = functionalDate.getShortISOString(functionalDate.date);
         getStudentSchedule(token, dateStr)
             .then(setSchedule)
             .catch((err) => console.log("Failed to load schedule:", err));

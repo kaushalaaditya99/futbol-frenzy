@@ -293,7 +293,7 @@ export default function StudentView(props: StudentViewProps) {
         if (upcoming.length > 0) {
             const next = upcoming[0];
             const dueDate = new Date(next.dueDate);
-            const dueDateStr = dueDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+            const dueDateStr = dueDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/New_York" });
             nextAssignment = {
                 name: next.workout?.workoutName || "Assignment",
                 dueLabel: `Due ${dueDateStr}`,

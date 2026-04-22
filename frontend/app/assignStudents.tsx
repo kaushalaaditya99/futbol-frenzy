@@ -1,3 +1,4 @@
+import { toESTDateString } from "@/utils/dateUtils";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSession, Session } from "@/services/sessions";
@@ -139,7 +140,7 @@ export default function AssignStudents() {
 
     // Due date state
     const selectedDate = date ? new Date(date) : new Date();
-    const [dueDate, setDueDate] = useState(selectedDate.toISOString().split('T')[0]);
+    const [dueDate, setDueDate] = useState(toESTDateString(selectedDate));
 
     useEffect(() => {
         loadData();
@@ -205,7 +206,7 @@ export default function AssignStudents() {
         try {
             const result = await createAssignment(token, {
                 workoutID: sessionIdNum,
-                dueDate: new Date(dueDate).toISOString(),
+                dueDate: `${dueDate}T12:00:00`,
                 classIds: Array.from(selectedClassIds),
             });
 

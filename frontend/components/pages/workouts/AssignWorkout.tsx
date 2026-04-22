@@ -1,3 +1,4 @@
+import { toESTDateString } from "@/utils/dateUtils";
 import BottomScreen from "@/components/ui/BottomScreen";
 import Button from "@/components/ui/button/Button";
 import { buttonTheme } from "@/components/ui/button/buttonTheme";
@@ -38,7 +39,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
     useEffect(() => {
         const today = new Date();
         console.log("today", today);
-        setDate(today.toISOString().split('T')[0]);
+        setDate(toESTDateString(today));
     }, []);
 
     useEffect(() => {
@@ -71,12 +72,13 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
         setMarked(marked);
     }, [date, classes]);
 
+    const buildDateTimeString = (date: string, hour: number, minute: number, day: string) => {
+        const h = hour + ((day === "PM" && hour < 12) ? 12 : 0) - ((day === "AM" && hour === 12) ? 12 : 0);
+        return `${date}T${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    };
+
     const toggleID = (classes: {[k: string]: Set<number>}, id: number, date: string, hour: number, minute: number, day: string) => {
-        // console.log("input date", date);
-        const d = new Date(`${date}T01:00`);
-        // console.log("hour", hour, minute, day);
-        d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
-        const dString = d.toISOString().slice(0, -8);
+        const dString = buildDateTimeString(date, hour, minute, day);
         // console.log("toggleID dString", dString);
         const ids = classes[dString] || new Set();
 
@@ -97,9 +99,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
 
     const addID = (classes: {[k: string]: Set<number>}, id: number, date: string, hour: number, minute: number, day: string) => {
         setClasses(prevClasses => {
-            const d = new Date(`${date}T01:00`);
-            d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
-            const dString = d.toISOString().slice(0, -8);
+            const dString = buildDateTimeString(date, hour, minute, day);
             const ids = new Set(prevClasses[dString] || []);  // new Set!
 
             if (!ids.has(id)) ids.add(id);
@@ -110,9 +110,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
 
     const delID = (classes: {[k: string]: Set<number>}, id: number, date: string, hour: number, minute: number, day: string) => {
         setClasses(prevClasses => {
-            const d = new Date(`${date}T01:00`);
-            d.setUTCHours(hour + ((day === "PM" && hour > 12) ? 12 : 0), minute, 0, 0);
-            const dString = d.toISOString().slice(0, -8);
+            const dString = buildDateTimeString(date, hour, minute, day);
             const ids = new Set(prevClasses[dString] || []);  // new Set!
 
             ids.delete(id);
@@ -125,9 +123,7 @@ export default function AssignWorkout(props: AssignWorkoutProps) {
         if (!date)
             return new Set();
 
-        const d = new Date(`${date}T00:00`);
-        d.setUTCHours(hour + ((day === "PM" && hour !== 12) ? 12 : 0), minute, 0, 0);
-        const dString = d.toISOString().slice(0, -8);
+        const dString = buildDateTimeString(date, hour, minute, day);
         const ids = classes[dString] || new Set();
         return ids;
     }

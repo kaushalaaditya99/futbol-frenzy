@@ -114,7 +114,7 @@ export default function StudentView(props: StudentViewProps) {
                         color: theme.colors.schemes.light.onSurfaceVariant,
                     }}>
                         {assignment.dueDate
-                            ? `Due: ${new Date(assignment.dueDate).toLocaleDateString('en-US', { timeZone: 'UTC' })}`
+                            ? `Due: ${new Date(assignment.dueDate).toLocaleDateString('en-US', { timeZone: 'America/New_York' })}`
                             : "No Due Date"
                         }
                     </ThemedText>

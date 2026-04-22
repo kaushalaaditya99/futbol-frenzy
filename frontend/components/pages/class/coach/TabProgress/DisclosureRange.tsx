@@ -1,3 +1,4 @@
+import { toESTDateString } from "@/utils/dateUtils";
 import ThemedText from "@/components/ui/ThemedText";
 import DisclosureModal from "./DisclosureModal";
 import { BottomScreenProps } from "@/components/ui/BottomScreen";
@@ -28,7 +29,7 @@ export default function DisclosureRange(props: DisclosureRangeProps) {
 
 
     const getShortDateString = (date: Date) => {
-        return date.toISOString().split('T')[0];
+        return toESTDateString(date);
     }
 
     const markPeriod = (startDate: Date, endDate: Date) => {

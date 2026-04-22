@@ -1,12 +1,12 @@
 import HeaderWithCloseSpacious from "@/components/ui/HeaderWithCloseSpacious";
 import ThemedText from "@/components/ui/ThemedText";
 import { borderRadius, colors, fontSize, margin, padding } from "@/theme";
-import { View, Modal, ScrollView, Pressable, Switch, TextInput, Alert } from "react-native";
+import { View, Modal, ScrollView, Pressable, TextInput, Alert } from "react-native";
 import { useState } from "react";
 import InputText from "@/components/ui/input/InputText";
 import { Student } from "@/services/students";
 import * as Clipboard from "expo-clipboard";
-import { ChevronRight, Trash2, Archive } from "lucide-react-native";
+import { ChevronRight, Trash2 } from "lucide-react-native";
 import ManageStudents from "./ManageStudents";
 import { deleteClass } from "@/services/classes";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +19,7 @@ interface SettingsProps {
     description?: string;
     classCode?: string;
     students?: Student[];
+    onStudentRemoved?: () => void;
 }
 
 const AVATAR_COLORS = ["#3B82F6", "#F59E0B", "#8B5CF6", "#10B981"];
@@ -50,61 +51,6 @@ function HintText({ text }: { text: string }) {
         >
             {text}
         </ThemedText>
-    );
-}
-
-function ToggleRow({
-    label,
-    description,
-    value,
-    onValueChange,
-}: {
-    label: string;
-    description: string;
-    value: boolean;
-    onValueChange: (val: boolean) => void;
-}) {
-    return (
-        <View
-            style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingVertical: 14,
-                borderBottomWidth: 1,
-                borderBottomColor: "#F0F0F0",
-            }}
-        >
-            <View style={{ flex: 1, marginRight: 12 }}>
-                <ThemedText
-                    style={{
-                        fontSize: fontSize.md,
-                        fontWeight: 600,
-                        color: colors.schemes.light.onSurface,
-                    }}
-                >
-                    {label}
-                </ThemedText>
-                <ThemedText
-                    style={{
-                        fontSize: 11,
-                        color: colors.schemes.light.outline,
-                        marginTop: 2,
-                    }}
-                >
-                    {description}
-                </ThemedText>
-            </View>
-            <Switch
-                value={value}
-                onValueChange={onValueChange}
-                trackColor={{
-                    false: "#E0E0E0",
-                    true: colors.schemes.light.primary,
-                }}
-                thumbColor="white"
-            />
-        </View>
     );
 }
 
@@ -311,10 +257,6 @@ export default function Settings(props: SettingsProps) {
     const [description, setDescription] = useState(props.description ?? "");
     const classCode = props.classCode ?? "XK7M2P";
     const students = props.students ?? [];
-
-    const [allowLateSubmissions, setAllowLateSubmissions] = useState(true);
-    const [showAIFeedback, setShowAIFeedback] = useState(true);
-    const [notifyOnSubmissions, setNotifyOnSubmissions] = useState(false);
 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
@@ -589,29 +531,6 @@ export default function Settings(props: SettingsProps) {
                             />
                         </Pressable>
 
-                        {/* Preferences */}
-                        <SectionLabel label="Preferences" />
-                        <View>
-                            <ToggleRow
-                                label="Allow Late Submissions"
-                                description="Students can submit after session due date"
-                                value={allowLateSubmissions}
-                                onValueChange={setAllowLateSubmissions}
-                            />
-                            <ToggleRow
-                                label="Show AI Feedback to Students"
-                                description="Students see AI analysis alongside your grade"
-                                value={showAIFeedback}
-                                onValueChange={setShowAIFeedback}
-                            />
-                            <ToggleRow
-                                label="Notify on Submissions"
-                                description="Get push notifications when students submit"
-                                value={notifyOnSubmissions}
-                                onValueChange={setNotifyOnSubmissions}
-                            />
-                        </View>
-
                         {/* Save Button */}
                         <Pressable
                             onPress={() => {
@@ -705,6 +624,7 @@ export default function Settings(props: SettingsProps) {
                 classId={props.classId}
                 onStudentRemoved={() => {
                     setShowManageStudents(false);
+                    props.onStudentRemoved?.();
                 }}
             />
         </Modal>

@@ -23,6 +23,7 @@ interface TabOverviewProps {
     classId?: number;
     className?: string;
     classCode?: string;
+    onStudentRemoved?: () => void;
 }
 
 export default function TabOverview(props: TabOverviewProps) {
@@ -54,6 +55,7 @@ export default function TabOverview(props: TabOverviewProps) {
                     className={props.className}
                     classCode={props.classCode}
                     students={props.students}
+                    onStudentRemoved={props.onStudentRemoved}
                 />
             }
             {props.showShareClass &&
