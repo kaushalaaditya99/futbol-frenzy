@@ -7,6 +7,7 @@ import HeaderWithBack from "@/components/ui/HeaderWithBack";
 import InputCheckbox from "@/components/ui/input/InputCheckbox";
 import ThemedText from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
+import { bookmarkWorkout } from "@/services/bookmarks";
 import { Class, getClasses } from "@/services/classes";
 import { getSession, Session } from "@/services/sessions";
 import { padding, shadow, theme } from "@/theme";
@@ -134,11 +135,21 @@ export default function Workout() {
                                 size={20}
                                 stroke={theme.colors.coreColors.primary}
                                 fill={workout?.bookmarked ? theme.colors.coreColors.primary : "transparent"}
+                                onPress={async () => {
+                                    console.log('clicked')
+                                    if (!workout || !token)
+                                        return;
+                                    const bookmarked = await bookmarkWorkout(token, workout.id);
+                                    setWorkout(workout => ({
+                                        ...workout,
+                                        bookmarked
+                                    }) as any)
+                                }}
                             />
                         </View>
                     </View>
                 </View>
-                <ThemedText
+                {/* <ThemedText
                     style={{
                         fontSize: theme.fontSize.base,
                         letterSpacing: theme.letterSpacing["2xl"],
@@ -147,7 +158,7 @@ export default function Workout() {
                     }}
                 >
                     Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
-                </ThemedText>
+                </ThemedText> */}
             </View>
             <View
                 style={{

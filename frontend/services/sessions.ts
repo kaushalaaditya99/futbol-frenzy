@@ -54,7 +54,7 @@ export async function getSessions(token: string): Promise<Array<Session>> {
             imageTextColor: workout.imageTextColor,
             imageText: workout.imageText || "",
             uploadedBy: "",
-            bookmarked: false,
+            // bookmarked: false,
             accessControl: workout.publicWorkout ? "public" : "private",
         }));
     } catch (err) {
@@ -77,6 +77,7 @@ export async function getSession(token: string, sessionID: number): Promise<Sess
         const workout = await response.json();
 
         return {
+            ...workout,
             id: workout.id,
             date: workout.dueDate ? new Date(workout.dueDate) : new Date(),
             name: workout.workoutName,
@@ -91,7 +92,7 @@ export async function getSession(token: string, sessionID: number): Promise<Sess
             imageTextColor: workout.imageTextColor,
             imageText: workout.imageText || "",
             uploadedBy: "",
-            bookmarked: false,
+            // bookmarked: false,
             accessControl: workout.publicWorkout ? "public" : "private",
         };
     } catch (err) {

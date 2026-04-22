@@ -3,7 +3,7 @@ from .models import Drill, Settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Drill, Workout, Assignment, Submission, SubmittedDrill, SoccerClass, ClassMember, WorkoutDrill, WorkoutBookmark, DrillBookmark
-from .serializers import SoccerClassSerializer, AssignmentSerializer, SubmissionSerializer
+from .serializers import SoccerClassSerializer, AssignmentSerializer, SubmissionSerializer, WorkoutSerializer
 import os
 import boto3
 from rest_framework.decorators import api_view
@@ -686,14 +686,20 @@ def bookmark_drill(request, drill_id):
 @api_view(['POST'])
 def bookmark_workout(request, workout_id):
     try:
+        print(workout_id)
+        print(request.user)
         workout = Workout.objects.get(id=workout_id)
         bookmark = WorkoutBookmark.objects.filter(workoutID=workout, userID=request.user)
 
         if bookmark.exists():
+            print('delete')
             bookmark.delete()
+            print(WorkoutSerializer(workout).data)
             return Response({"bookmarked": False}, status=status.HTTP_200_OK)
         else:
+            print('added')
             WorkoutBookmark.objects.create(workoutID=workout, userID=request.user)
+            print(WorkoutSerializer(workout, context={'request': request}).data)
             return Response({"bookmarked": True}, status=status.HTTP_201_CREATED)
 
     except Workout.DoesNotExist:

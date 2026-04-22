@@ -75,8 +75,8 @@ export default function WorkoutCardList(props: WorkoutCardListProps) {
                     alignItems: "center",
                 }}
             >
-                <ThemedText style={{ fontSize: 36 }}>
-                    {props.imageText}
+                <ThemedText style={{ fontSize: 18, color: 'white', fontWeight: 500 }}>
+                    {(props.imageText || '')}
                 </ThemedText>
             </View>
             <Pressable

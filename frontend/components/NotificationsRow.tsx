@@ -1,7 +1,7 @@
 import { View, Pressable } from "react-native";
 import { CircleCheck, Calendar1, MessageCircleMore, AlarmClock } from "lucide-react-native";
 import ThemedText from "@/components/ui/ThemedText";
-import { colors, fontSize, margin, padding } from "@/theme";
+import { colors, fontSize, letterSpacing, margin, padding } from "@/theme";
 
 export interface Notification {
     id: string;
@@ -20,7 +20,7 @@ export default function NotificationItem({ notification, onPress }: { notificati
             style={{
                 flexDirection: "row",
                 alignItems: "center",
-                paddingHorizontal: margin.sm,
+                paddingHorizontal: padding.lg,
                 paddingVertical: padding.xl,
             }}
         >
@@ -38,7 +38,7 @@ export default function NotificationItem({ notification, onPress }: { notificati
             >
                 <View>
                     {notification.icon === "graded"   && <CircleCheck        size={25} color={colors.coreColors.tertiary} />}
-                    {notification.icon === "session"  && <Calendar1          size={22} color={colors.coreColors.primary} />}
+                    {notification.icon === "session"  && <Calendar1          size={22} color={colors.coreColors.tertiary} />}
                     {notification.icon === "chat"     && <MessageCircleMore  size={22} color={colors.schemes.light.onSurfaceVariant} />}
                     {notification.icon === "reminder" && <AlarmClock         size={22} color="#FF9800" />}
                 </View>
@@ -46,10 +46,10 @@ export default function NotificationItem({ notification, onPress }: { notificati
 
             {/* Text content */}
             <View style={{ flex: 1 }}>
-                <ThemedText style={{ fontWeight: "700", fontSize: fontSize.md, color: colors.schemes.light.onSurface }}>
+                <ThemedText style={{ fontWeight: "600", fontSize: fontSize.base, color: colors.schemes.light.onSurface }}>
                     {notification.title}
                 </ThemedText>
-                <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.onSurfaceVariant, marginTop: padding.xs }}>
+                <ThemedText style={{ fontSize: fontSize.md, color: colors.schemes.light.onSurfaceVariant, letterSpacing: letterSpacing.xl * 1.5, marginTop: padding.xs }}>
                     {notification.description}
                 </ThemedText>
             </View>
