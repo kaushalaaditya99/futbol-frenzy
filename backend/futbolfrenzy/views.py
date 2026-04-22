@@ -17,7 +17,7 @@ from django.contrib.auth.models import User, Group
 import os
 from dotenv import load_dotenv
 import uuid
-from .mediapipe import PoseService, VideoPoseService
+from .mediapipe import PoseService, VideoPoseService, compare_videos
 from rest_framework import status
 from django.utils.dateparse import parse_datetime, parse_date
 from django.db.models import Q
@@ -267,13 +267,22 @@ def student_schedule(request):
 @permission_classes([IsAuthenticated])
 def student_results(request):
     student = request.user
+    date_str = request.query_params.get('date')
 
     # Get all submissions for this student that have been graded
     # Since each drill may create a separate submission, group by assignment
     # and use the submission that has a grade
     all_submissions = Submission.objects.filter(
         studentID=student,
-    ).select_related('assignmentID', 'assignmentID__workoutID').order_by('-dateGraded')
+    ).select_related('assignmentID', 'assignmentID__workoutID')
+
+    # Filter by assignment due date if provided
+    if date_str:
+        from datetime import datetime
+        target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        all_submissions = all_submissions.filter(assignmentID__dueDate__date=target_date)
+
+    all_submissions = all_submissions.order_by('-dateGraded')
 
     # Group by assignment, pick the graded submission for each
     seen_assignments = set()
@@ -596,28 +605,40 @@ def grade_submission(request, submission_id):
         submission.dateGraded = timezone.now()
         submission.save()
 
-        submitted_drills = SubmittedDrill.objects.filter(submissionID=submission_id)
+        # Get ALL submissions for this student+assignment (each drill may be a separate submission)
+        all_submission_ids = Submission.objects.filter(
+            studentID=submission.studentID,
+            assignmentID=submission.assignmentID,
+        ).values_list('id', flat=True)
+
+        submitted_drills = SubmittedDrill.objects.filter(
+            submissionID__in=all_submission_ids
+        )
 
         if not submitted_drills.exists():
-            # Get the drills from the assignment's workout
-            submission = Submission.objects.get(id=submission_id)
             workout_drills = WorkoutDrill.objects.filter(workoutID=submission.assignmentID.workoutID)
-            
             for workout_drill in workout_drills:
                 SubmittedDrill.objects.create(
                     submissionID=submission,
                     drillID=workout_drill.drillID,
                     videoURL="",
                 )
+            submitted_drills = SubmittedDrill.objects.filter(
+                submissionID__in=all_submission_ids
+            )
 
-        submitted_drills = SubmittedDrill.objects.filter(
-            submissionID=submission_id
-        ).order_by("id")
+        # Deduplicate by drillID, prefer ones with video
+        drill_map = {}
+        for sd in submitted_drills.order_by("id"):
+            drill_id = sd.drillID_id
+            if drill_id not in drill_map or (sd.videoURL and not drill_map[drill_id].videoURL):
+                drill_map[drill_id] = sd
+        ordered_drills = sorted(drill_map.values(), key=lambda sd: sd.id)
 
-        for index, drill in enumerate(submitted_drills):
+        for index, drill in enumerate(ordered_drills):
             if str(index) in grades:
                 drill.grade = grades[str(index)]
-                drill.save()            
+                drill.save()
             if str(index) in feedbacks:
                 drill.feedback = feedbacks[str(index)]
                 drill.save()
@@ -706,3 +727,21 @@ def bookmark_workout(request, workout_id):
         return Response({"error": "Workout not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def suggest_grade(request):
+    """Compare a submitted drill video against the reference drill video and return a suggested score."""
+    try:
+        data = json.loads(request.body)
+        reference_url = data.get('referenceUrl')
+        submission_url = data.get('submissionUrl')
+
+        if not reference_url or not submission_url:
+            return Response({'error': 'Both referenceUrl and submissionUrl are required'}, status=400)
+
+        result = compare_videos(reference_url, submission_url)
+        return Response(result)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)

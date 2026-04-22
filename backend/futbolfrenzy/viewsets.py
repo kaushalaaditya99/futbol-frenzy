@@ -268,6 +268,26 @@ class SubmittedDrillViewSet(viewsets.ModelViewSet):
     ordering_fields = ["grade", "touchCount"]
     ordering = ["-grade"]  # default
 
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        # Run AI pose comparison in background thread
+        import threading
+        def analyze(sd_id):
+            try:
+                from .mediapipe import compare_videos
+                import django
+                django.setup()
+                sd = SubmittedDrill.objects.select_related('drillID').get(id=sd_id)
+                reference_url = sd.drillID.url
+                submission_url = sd.videoURL
+                if reference_url and submission_url:
+                    result = compare_videos(reference_url, submission_url)
+                    sd.suggestedGrade = round(result.get('score', 0))
+                    sd.save(update_fields=['suggestedGrade'])
+            except Exception as e:
+                print(f"Background pose analysis failed for SubmittedDrill {sd_id}: {e}")
+        threading.Thread(target=analyze, args=(instance.id,), daemon=True).start()
+
     def get_queryset(self):
         queryset = super().get_queryset()
         student_id = self.request.query_params.get("studentID")

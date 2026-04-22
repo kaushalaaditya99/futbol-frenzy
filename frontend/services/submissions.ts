@@ -82,6 +82,25 @@ export async function getSubmission(token: string, submissionID: number): Promis
 }
 
 
+export async function suggestGrade(token: string, referenceUrl: string, submissionUrl: string): Promise<number | null> {
+    try {
+        const response = await fetch(`${API_URL}/suggest-grade/`, {
+            method: "POST",
+            headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ referenceUrl, submissionUrl }),
+        });
+        if (!response.ok) return null;
+        const data = await response.json();
+        return data.score ?? null;
+    } catch (err) {
+        console.error("Error getting suggested grade:", err);
+        return null;
+    }
+}
+
 export async function createSubmission(token: string, assignmentID: number,studentID: number): Promise<Submission|null> {
     try {
         const response = await fetch(`${API_URL}/create_submission/`, {

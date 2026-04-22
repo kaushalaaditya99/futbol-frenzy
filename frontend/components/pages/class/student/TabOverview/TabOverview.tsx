@@ -12,7 +12,7 @@ interface StudentTabOverviewProps {
     sessionsTotal: number;
     classAvg: string;
     classAvgTrend: string;
-    feedback: {
+    feedbacks: {
         drillName: string;
         drillEmoji: string;
         sessionLabel: string;
@@ -21,7 +21,7 @@ interface StudentTabOverviewProps {
         coachName: string;
         coachInitials: string;
         feedback: string;
-    } | null;
+    }[];
     nextSession: {
         name: string;
         dueLabel: string;
@@ -99,28 +99,22 @@ export default function StudentTabOverview(props: StudentTabOverviewProps) {
                         backgroundColor: colors.schemes.light.outlineVariant
                     }}
                 />
-                {/* Latest Feedback */}
-                {props.feedback && (
+                {/* Feedback */}
+                {props.feedbacks.length > 0 && (
                     <>
-                        <View
+                        <ThemedText
                             style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
+                                fontWeight: "500",
+                                fontSize: fontSize.lg,
+                                letterSpacing: letterSpacing.xs,
+                                color: colors.schemes.light.onBackground,
                             }}
                         >
-                            <ThemedText
-                                style={{
-                                    fontWeight: "500",
-                                    fontSize: fontSize.lg,
-                                    letterSpacing: letterSpacing.xs,
-                                    color: colors.schemes.light.onBackground,
-                                }}
-                            >
-                                Latest Feedback
-                            </ThemedText>
-                        </View>
-                        <FeedbackCard {...props.feedback} />
+                            Feedback
+                        </ThemedText>
+                        {props.feedbacks.map((fb, i) => (
+                            <FeedbackCard key={i} {...fb} />
+                        ))}
                     </>
                 )}
                 <View

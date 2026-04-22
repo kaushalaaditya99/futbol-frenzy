@@ -137,6 +137,7 @@ class SubmittedDrill(models.Model):
     drillID = models.ForeignKey(Drill, on_delete=models.CASCADE)
     videoURL = models.URLField(max_length=200)
     grade = models.IntegerField(null=True, blank=True)
+    suggestedGrade = models.IntegerField(null=True, blank=True)
     touchCount = models.IntegerField(null=True, blank=True)
     feedback = models.TextField(null=True, blank=True)
 

@@ -5,7 +5,7 @@ from . import viewsets
 from .views import me, detailed_user_info, change_password, student_stats, student_schedule, student_results, coach_submissions, coach_stats, coach_class_progress
 from .views import get_class_by_assignment, me, detailed_user_info, change_password, coach_submissions, coach_stats, coach_class_progress
 from .views import me, detailed_user_info, analyze_pose, analyze_video_pose, get_assignments_for_class, get_class_submission_workout_analytics
-from .views import me, detailed_user_info, analyze_pose, analyze_video_pose, get_assignments_for_class, grade_submission, create_submission
+from .views import me, detailed_user_info, analyze_pose, analyze_video_pose, get_assignments_for_class, grade_submission, create_submission, suggest_grade
 
 
 api_router = DefaultRouter()
@@ -52,4 +52,5 @@ urlpatterns = [
     path('api/create_submission/', create_submission),
     path('api/drills/<int:drill_id>/bookmark/', views.bookmark_drill),
     path('api/workouts/<int:workout_id>/bookmark/', views.bookmark_workout),
+    path('api/suggest-grade/', suggest_grade, name='suggest-grade'),
 ]

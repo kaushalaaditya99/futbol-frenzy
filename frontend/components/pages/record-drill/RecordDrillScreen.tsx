@@ -20,7 +20,6 @@ interface RecordDrillScreenProps {
     drillName: string;
     instructorVideoUrl: string;
     assignmentId: number;
-    returnToAssignment?: boolean;
 }
 
 export function RecordDrillScreen({
@@ -28,7 +27,6 @@ export function RecordDrillScreen({
     drillName,
     instructorVideoUrl,
     assignmentId,
-    returnToAssignment,
 }: RecordDrillScreenProps) {
     const router = useRouter();
 
@@ -354,11 +352,7 @@ export function RecordDrillScreen({
 
             // Show success message and navigate
             const navigateAfterSubmit = () => {
-                if (returnToAssignment) {
-                    router.replace(`/assignments/${assignmentId}`);
-                } else {
-                    router.back();
-                }
+                router.back();
             };
 
             if (Platform.OS === 'web') {

@@ -205,36 +205,41 @@ export default function StudentView(props: StudentViewProps) {
             avgGrade = (gradeSum / gradedSubs.length).toFixed(1);
         }
 
-        // Find latest graded drill for feedback
-        let latestFeedback: {
-            drillName: string;
-            drillEmoji: string;
-            sessionLabel: string;
-            score: number;
-            maxScore: number;
-            coachName: string;
-            coachInitials: string;
-            feedback: string;
-        } | null = null;
-
-        // Find the most recently graded submission
+        // Build feedback for all graded assignments (most recent first)
         const gradedSubmissions = classSubmissions
-            .filter(s => s.dateGraded !== null)
+            .filter(s => s.dateGraded !== null && s.grade !== null)
             .sort((a, b) => new Date(b.dateGraded!).getTime() - new Date(a.dateGraded!).getTime());
 
-        if (gradedSubmissions.length > 0) {
-            const latestSub = gradedSubmissions[0];
-            const assignment = assignments.find(a => a.id === latestSub.assignmentID);
-            const subGrade = latestSub.grade ?? 0;
-            // Collect drills from all submissions for this assignment
+        // Group by assignment, pick the graded submission for each
+        const seenAssignmentIds = new Set<number>();
+        const allFeedbacks: { drillName: string; drillEmoji: string; sessionLabel: string; score: number; maxScore: number; coachName: string; coachInitials: string; feedback: string; }[] = [];
+
+        for (const sub of gradedSubmissions) {
+            if (seenAssignmentIds.has(sub.assignmentID)) continue;
+            seenAssignmentIds.add(sub.assignmentID);
+
+            const assignment = assignments.find(a => a.id === sub.assignmentID);
+            const subGrade = sub.grade ?? 0;
+
             const allSubIdsForAssignment = new Set(
-                classSubmissions.filter(s => s.assignmentID === latestSub.assignmentID).map(s => s.id)
+                classSubmissions.filter(s => s.assignmentID === sub.assignmentID).map(s => s.id)
+            );
+            const assignmentDrillIds = new Set(
+                (assignment?.workout?.drills || []).map((d: any) => d.drillID || d.id)
             );
             const drillsForSub = classSubmittedDrills.filter(
-                sd => allSubIdsForAssignment.has(sd.submissionID)
+                sd => allSubIdsForAssignment.has(sd.submissionID) && assignmentDrillIds.has(sd.drillID)
             );
-            // Build per-drill feedback summaries
-            const drillFeedbacks = drillsForSub.map((sd, i) => {
+            // Deduplicate by drillID, prefer graded ones
+            const drillMap = new Map<number, typeof drillsForSub[0]>();
+            for (const sd of drillsForSub) {
+                const existing = drillMap.get(sd.drillID);
+                if (!existing || (sd.grade !== null && existing.grade === null)) {
+                    drillMap.set(sd.drillID, sd);
+                }
+            }
+            const uniqueDrills = Array.from(drillMap.values());
+            const drillFeedbacks = uniqueDrills.map((sd, i) => {
                 const drill = assignment?.workout?.drills?.find((d: any) => (d.drillID || d.id) === sd.drillID);
                 return {
                     drillName: drill?.drillName || drill?.name || `Drill ${i + 1}`,
@@ -242,7 +247,6 @@ export default function StudentView(props: StudentViewProps) {
                     feedback: sd.feedback || null,
                 };
             });
-            // Combine all drill feedbacks into one summary
             const feedbackLines = drillFeedbacks.map(df => {
                 const line = `${df.drillName}: ${df.grade}/100`;
                 return df.feedback ? `${line} — ${df.feedback}` : line;
@@ -252,17 +256,19 @@ export default function StudentView(props: StudentViewProps) {
                 : subGrade >= 60
                 ? "Good effort! Keep practicing to improve."
                 : "Keep working on these drills. Watch the example videos and try again.";
-            latestFeedback = {
+
+            allFeedbacks.push({
                 drillName: assignment?.workout?.workoutName || "Assignment",
                 drillEmoji: "⚽",
-                sessionLabel: `${drillsForSub.length} drill${drillsForSub.length !== 1 ? 's' : ''} graded`,
+                sessionLabel: `${uniqueDrills.length} drill${uniqueDrills.length !== 1 ? 's' : ''} graded`,
                 score: subGrade,
                 maxScore: 100,
                 coachName: "Coach",
                 coachInitials: "C",
                 feedback: feedbackLines || defaultFeedback,
-            };
+            });
         }
+
 
         // Find next upcoming assignment (not yet submitted, due today or later)
         const today = new Date();
@@ -303,7 +309,7 @@ export default function StudentView(props: StudentViewProps) {
             classAvgTrend: "",
             sessionsCompleted: completedCount,
             sessionsTotal: totalAssignments,
-            feedback: latestFeedback,
+            feedbacks: allFeedbacks,
             nextSession: nextAssignment,
         };
     };
@@ -315,7 +321,7 @@ export default function StudentView(props: StudentViewProps) {
             classAvgTrend: "",
             sessionsCompleted: 0,
             sessionsTotal: 0,
-            feedback: null,
+            feedbacks: [],
             nextSession: null,
         };
 
